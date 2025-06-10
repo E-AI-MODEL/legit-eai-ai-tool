@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -300,6 +299,11 @@ const PromptGenerator = () => {
     });
   };
 
+  const handleScenarioSelect = (phaseNumber: number, scenarioIndex: number) => {
+    setSelectedPhase(phaseNumber);
+    setSelectedScenario(scenarioIndex);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
@@ -339,9 +343,9 @@ const PromptGenerator = () => {
                       setSelectedScenario(null);
                     }}
                   >
-                    <div>
-                      <div className="font-medium">Phase {phase.number}</div>
-                      <div className="text-sm opacity-75 whitespace-normal">{phase.title}</div>
+                    <div className="min-w-0 w-full">
+                      <div className="font-medium truncate">Phase {phase.number}</div>
+                      <div className="text-sm opacity-75 whitespace-normal break-words">{phase.title}</div>
                     </div>
                   </Button>
                 ))}
@@ -362,124 +366,149 @@ const PromptGenerator = () => {
             <CardContent>
               {selectedPhase ? (
                 <div className="space-y-4">
-                  {/* Scenario Tabs */}
-                  <Tabs value={selectedScenario?.toString() || ""} onValueChange={(value) => setSelectedScenario(parseInt(value))}>
-                    <TabsList className="grid w-full grid-cols-1 md:grid-cols-2 h-auto">
-                      {phases.find(p => p.number === selectedPhase)?.scenarios.map((scenario, index) => (
-                        <TabsTrigger key={index} value={index.toString()} className="text-left h-auto p-3">
-                          <div>
-                            <div className="font-medium">{scenario.name}</div>
-                            <div className="text-xs opacity-75">{scenario.goal}</div>
-                          </div>
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-
+                  {/* Scenario Cards Grid */}
+                  <div className="grid gap-4 md:grid-cols-2">
                     {phases.find(p => p.number === selectedPhase)?.scenarios.map((scenario, index) => (
-                      <TabsContent key={index} value={index.toString()} className="space-y-4">
-                        {/* Scenario Details */}
-                        <Card>
-                          <CardHeader>
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <CardTitle className="text-lg flex items-center gap-2">
-                                  <Target className="w-5 h-5 text-[#0B3C5D]" />
-                                  {scenario.name}
-                                </CardTitle>
-                                <CardDescription className="mt-2">{scenario.goal}</CardDescription>
-                              </div>
-                              <Button onClick={copyPrompt} variant="outline" className="gap-2">
-                                <Copy className="w-4 h-4" />
-                                Copy Prompt
-                              </Button>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            {/* Micro-Skills */}
-                            <div>
-                              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                <Users className="w-4 h-4 text-blue-600" />
-                                Micro-Skills Developed
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                {scenario.microSkills.map((skill, idx) => (
-                                  <Badge key={idx} variant="secondary" className="text-xs">
-                                    {skill}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Prompt */}
-                            <div>
-                              <h4 className="font-semibold mb-2">EAI-Compliant Prompt Template</h4>
-                              <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D]">
-                                {scenario.prompt}
-                              </div>
-                            </div>
-
-                            {/* Expected Output */}
-                            <div>
-                              <h4 className="font-semibold mb-2">Expected Output Format</h4>
-                              <Badge variant="outline" className="font-mono">
-                                {scenario.output}
+                      <Card 
+                        key={index} 
+                        className={`cursor-pointer transition-all hover:shadow-md border-2 ${
+                          selectedScenario === index ? 'border-[#0B3C5D] bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => handleScenarioSelect(selectedPhase, index)}
+                      >
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-base leading-tight">{scenario.name}</CardTitle>
+                          <CardDescription className="text-sm line-clamp-2">{scenario.goal}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="flex flex-wrap gap-1">
+                            {scenario.microSkills.slice(0, 2).map((skill, idx) => (
+                              <Badge key={idx} variant="secondary" className="text-xs">
+                                {skill}
                               </Badge>
-                            </div>
+                            ))}
+                            {scenario.microSkills.length > 2 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{scenario.microSkills.length - 2} more
+                              </Badge>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
 
-                            {/* Example */}
-                            {scenario.example && scenario.example.length > 0 && (
+                  {/* Selected Scenario Details */}
+                  {selectedScenario !== null && (
+                    <div className="mt-6">
+                      {(() => {
+                        const scenario = phases.find(p => p.number === selectedPhase)?.scenarios[selectedScenario];
+                        if (!scenario) return null;
+                        
+                        return (
+                          <Card>
+                            <CardHeader>
+                              <div className="flex justify-between items-start">
+                                <div className="min-w-0 flex-1">
+                                  <CardTitle className="text-lg flex items-center gap-2">
+                                    <Target className="w-5 h-5 text-[#0B3C5D] flex-shrink-0" />
+                                    <span className="break-words">{scenario.name}</span>
+                                  </CardTitle>
+                                  <CardDescription className="mt-2 break-words">{scenario.goal}</CardDescription>
+                                </div>
+                                <Button onClick={copyPrompt} variant="outline" className="gap-2 flex-shrink-0 ml-4">
+                                  <Copy className="w-4 h-4" />
+                                  Copy Prompt
+                                </Button>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              {/* Micro-Skills */}
                               <div>
                                 <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                  <Lightbulb className="w-4 h-4 text-yellow-600" />
-                                  Example Implementation
+                                  <Users className="w-4 h-4 text-blue-600" />
+                                  Micro-Skills Developed
                                 </h4>
-                                <div className="bg-yellow-50 p-3 rounded-lg border">
-                                  <pre className="text-sm text-gray-700 whitespace-pre-wrap">
-                                    {JSON.stringify(scenario.example[0], null, 2)}
-                                  </pre>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    onClick={() => copyExample(scenario.example![0])}
-                                    className="mt-2 gap-1"
-                                  >
-                                    <Copy className="w-3 h-3" />
-                                    Copy Example
-                                  </Button>
+                                <div className="flex flex-wrap gap-2">
+                                  {scenario.microSkills.map((skill, idx) => (
+                                    <Badge key={idx} variant="secondary" className="text-xs">
+                                      {skill}
+                                    </Badge>
+                                  ))}
                                 </div>
                               </div>
-                            )}
 
-                            {/* Tips */}
-                            {scenario.tips && (
-                              <div className="bg-blue-50 p-3 rounded-lg">
-                                <div className="flex items-start gap-2">
-                                  <Users className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                                  <div>
-                                    <h4 className="font-semibold text-blue-800 mb-1">Implementation Tips</h4>
-                                    <p className="text-sm text-blue-700">{scenario.tips}</p>
+                              {/* Prompt */}
+                              <div>
+                                <h4 className="font-semibold mb-2">EAI-Compliant Prompt Template</h4>
+                                <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D] break-words whitespace-pre-wrap">
+                                  {scenario.prompt}
+                                </div>
+                              </div>
+
+                              {/* Expected Output */}
+                              <div>
+                                <h4 className="font-semibold mb-2">Expected Output Format</h4>
+                                <Badge variant="outline" className="font-mono break-words">
+                                  {scenario.output}
+                                </Badge>
+                              </div>
+
+                              {/* Example */}
+                              {scenario.example && scenario.example.length > 0 && (
+                                <div>
+                                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                    <Lightbulb className="w-4 h-4 text-yellow-600" />
+                                    Example Implementation
+                                  </h4>
+                                  <div className="bg-yellow-50 p-3 rounded-lg border">
+                                    <pre className="text-sm text-gray-700 whitespace-pre-wrap break-words overflow-x-auto">
+                                      {JSON.stringify(scenario.example[0], null, 2)}
+                                    </pre>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      onClick={() => copyExample(scenario.example![0])}
+                                      className="mt-2 gap-1"
+                                    >
+                                      <Copy className="w-3 h-3" />
+                                      Copy Example
+                                    </Button>
                                   </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
 
-                            {/* Warnings */}
-                            {scenario.warnings && (
-                              <div className="bg-yellow-50 p-3 rounded-lg">
-                                <div className="flex items-start gap-2">
-                                  <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                                  <div>
-                                    <h4 className="font-semibold text-yellow-800 mb-1">EAI Model Warnings</h4>
-                                    <p className="text-sm text-yellow-700">{scenario.warnings}</p>
+                              {/* Tips */}
+                              {scenario.tips && (
+                                <div className="bg-blue-50 p-3 rounded-lg">
+                                  <div className="flex items-start gap-2">
+                                    <Users className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                    <div className="min-w-0">
+                                      <h4 className="font-semibold text-blue-800 mb-1">Implementation Tips</h4>
+                                      <p className="text-sm text-blue-700 break-words">{scenario.tips}</p>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                    ))}
-                  </Tabs>
+                              )}
+
+                              {/* Warnings */}
+                              {scenario.warnings && (
+                                <div className="bg-yellow-50 p-3 rounded-lg">
+                                  <div className="flex items-start gap-2">
+                                    <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                                    <div className="min-w-0">
+                                      <h4 className="font-semibold text-yellow-800 mb-1">EAI Model Warnings</h4>
+                                      <p className="text-sm text-yellow-700 break-words">{scenario.warnings}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-12">
@@ -499,13 +528,13 @@ const PromptGenerator = () => {
             <CardDescription>Target Roles: Students, Instructors | EAI Model Compliance: ✅</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700 mb-4">
+            <p className="text-gray-700 mb-4 break-words">
               These prompt templates are designed for legal education contexts where AI tools are used to enhance learning 
               while maintaining human agency and critical thinking. Each scenario includes built-in reflection points and 
               quality checks aligned with the EAI Model principles.
             </p>
             <div className="bg-[#0B3C5D] bg-opacity-5 p-4 rounded-lg">
-              <p className="text-sm text-[#0B3C5D]">
+              <p className="text-sm text-[#0B3C5D] break-words">
                 <strong>Base Prompt Structure:</strong> Use this structure to create legal education scenarios supported by AI. 
                 Insert the case, clause, or topic where required. Output must be structured, legally sound, and include a section for human review or accountability.
               </p>
