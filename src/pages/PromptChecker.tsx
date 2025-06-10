@@ -24,64 +24,64 @@ const PromptChecker = () => {
 
   const checkRules: Omit<CheckResult, 'status'>[] = [
     {
-      rubric: "Ownership & Traceability",
+      rubric: "Cognitive Ownership & Traceability",
       flag: "🟠 Traceability missing",
-      check: "Prompt lacks justification mapping.",
-      advice: "Ask users to annotate or explain acceptance/rejection of AI output."
+      check: "Prompt does not require users to reconstruct or justify their own reasoning; no trace-back or justification mapping.",
+      advice: "Add a step for user to annotate, explain, or justify acceptance/rejection of AI output."
     },
     {
-      rubric: "Agency Control",
+      rubric: "Agency & Didactic Controllability",
       flag: "🚨 Agency risk",
-      check: "No explicit review/approval workflow.",
-      advice: "Define roles and handover points between AI and human."
+      check: "Unclear or missing specification of who decides (AI or human); no explicit review/approval workflow.",
+      advice: "Define exact roles: when AI suggests, when human reviews/approves, and where handover occurs."
     },
     {
-      rubric: "Task Density",
+      rubric: "Reverse Scaffolding/Task Density",
       flag: "⚠️ Reverse scaffolding",
-      check: "AI does most thinking; user passive.",
-      advice: "Distribute key steps; require user reflection before/after AI."
+      check: "AI is assigned most or all thinking, drafting, and review steps; user is passive.",
+      advice: "Distribute key steps: require user to plan, draft, or reflect before/after AI involvement."
     },
     {
-      rubric: "Drift Awareness",
+      rubric: "Sycophancy & Drift Awareness",
       flag: "🟡 Drift risk",
-      check: "No user-AI comparison or critique step.",
-      advice: "Ask user to challenge AI reasoning and justify differences."
+      check: "Prompt lacks user-AI comparison, critique, or challenge step; risk of passive alignment.",
+      advice: "Ask user to compare their reasoning to AI, challenge differences, and justify agreement/disagreement."
     },
     {
-      rubric: "Audit Trail",
+      rubric: "Compliance, Audit & Logging",
       flag: "🔒 Audit trail missing",
-      check: "No logging of decisions or changes.",
-      advice: "Specify who logs, where, and how long data is retained."
+      check: "No mention of how decisions or outputs will be logged for audit/compliance.",
+      advice: "Specify who logs decisions, changes, and rationale; require an audit trail."
     },
     {
-      rubric: "Bias & Inclusion",
+      rubric: "Bias, Inclusion & Professional Neutrality",
       flag: "🚨 Potential bias",
-      check: "Prompt uses absolute/biased terms or lacks neutral alternatives.",
-      advice: "Use neutral language and require multiple viewpoints."
+      check: "Prompt uses absolute/biased terms, or lacks instruction for alternatives/perspectives.",
+      advice: "Use neutral language; require multiple viewpoints or explicit alternative interpretations."
     },
     {
-      rubric: "Output Format",
-      flag: "⚪ Format missing",
-      check: "Output structure ambiguous.",
-      advice: "State required format (table, memo, checklist, log)."
+      rubric: "Output Specification & Structure",
+      flag: "⚪ Output format missing",
+      check: "Output structure is not specified or is ambiguous.",
+      advice: "State required format: table, memo, checklist, log; assign section reviewers if needed."
     },
     {
-      rubric: "Visible Reasoning",
+      rubric: "Problem Complexity & Visible Reasoning",
       flag: "⚠️ Shallow reasoning",
-      check: "Prompt asks only for final answer.",
-      advice: "Request step-wise reasoning and alternatives."
+      check: "Prompt requests only final answer, no breakdown, no trace or alternative solutions.",
+      advice: "Request stepwise reasoning, breakdowns, and explicit reasoning traces."
     },
     {
-      rubric: "Error Awareness",
+      rubric: "Error & Failure Analysis",
       flag: "🟠 Error awareness missing",
-      check: "No error-detection or correction step.",
-      advice: "Require users to identify and correct mistakes."
+      check: "No error detection, correction, or reflection step in the prompt.",
+      advice: "Add a requirement to identify, reflect on, and correct mistakes or edge cases."
     },
     {
-      rubric: "Reflection",
+      rubric: "Legal Learning Mode",
       flag: "🟣 Reflection missing",
-      check: "Prompt lacks reflection or learning summary.",
-      advice: "Add summary of insights or next steps."
+      check: "Prompt does not ask for user reflection, learning summary, or uncertainty analysis.",
+      advice: "Require summary of insights, open questions, or next steps for deeper learning."
     }
   ];
 
@@ -100,27 +100,48 @@ const PromptChecker = () => {
     // Simulate analysis with realistic timing
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Simple heuristic checking (in a real implementation, this would use AI/NLP)
+    // Enhanced heuristic checking based on EAI Model criteria
     const promptLower = prompt.toLowerCase();
     const results: CheckResult[] = checkRules.map(rule => {
-      let status: "pass" | "warning" | "fail" = "pass";
+      let status: "pass" | "warning" | "fail" = "fail";
       
-      // Simple keyword-based checks (placeholder for real analysis)
-      if (rule.rubric === "Ownership & Traceability") {
-        status = promptLower.includes("justify") || promptLower.includes("explain") ? "pass" : "warning";
-      } else if (rule.rubric === "Agency Control") {
-        status = promptLower.includes("review") || promptLower.includes("approve") ? "pass" : "fail";
-      } else if (rule.rubric === "Task Density") {
-        status = promptLower.includes("think") || promptLower.includes("analyze") ? "pass" : "warning";
-      } else if (rule.rubric === "Visible Reasoning") {
-        status = promptLower.includes("step") || promptLower.includes("reasoning") ? "pass" : "warning";
-      } else if (rule.rubric === "Output Format") {
-        status = promptLower.includes("format") || promptLower.includes("table") || promptLower.includes("list") ? "pass" : "warning";
-      } else if (rule.rubric === "Reflection") {
-        status = promptLower.includes("reflection") || promptLower.includes("learn") ? "pass" : "warning";
-      } else {
-        // Random assignment for demo purposes
-        status = Math.random() > 0.7 ? "fail" : Math.random() > 0.4 ? "warning" : "pass";
+      // Sophisticated keyword and pattern analysis
+      if (rule.rubric === "Cognitive Ownership & Traceability") {
+        const tracabilityKeywords = ["justify", "explain", "reasoning", "trace", "annotate", "reconstruct"];
+        status = tracabilityKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Agency & Didactic Controllability") {
+        const agencyKeywords = ["review", "approve", "decide", "human", "final decision", "handover"];
+        status = agencyKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
+      } else if (rule.rubric === "Reverse Scaffolding/Task Density") {
+        const scaffoldingWords = ["plan", "draft", "reflect", "before", "after", "user"];
+        const aiDominanceWords = ["ai will", "ai should", "ai must", "generate", "create"];
+        const hasScaffolding = scaffoldingWords.some(keyword => promptLower.includes(keyword));
+        const hasAiDominance = aiDominanceWords.some(keyword => promptLower.includes(keyword));
+        status = hasScaffolding && !hasAiDominance ? "pass" : hasScaffolding ? "warning" : "fail";
+      } else if (rule.rubric === "Sycophancy & Drift Awareness") {
+        const driftKeywords = ["compare", "critique", "challenge", "disagree", "question"];
+        status = driftKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Compliance, Audit & Logging") {
+        const auditKeywords = ["log", "record", "audit", "track", "document"];
+        status = auditKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
+      } else if (rule.rubric === "Bias, Inclusion & Professional Neutrality") {
+        const biasedTerms = ["always", "never", "obviously", "clearly", "definitely"];
+        const neutralTerms = ["consider", "alternative", "perspective", "viewpoint"];
+        const hasBiasedTerms = biasedTerms.some(term => promptLower.includes(term));
+        const hasNeutralTerms = neutralTerms.some(term => promptLower.includes(term));
+        status = !hasBiasedTerms && hasNeutralTerms ? "pass" : !hasBiasedTerms ? "warning" : "fail";
+      } else if (rule.rubric === "Output Specification & Structure") {
+        const formatKeywords = ["format", "table", "list", "structure", "memo", "checklist"];
+        status = formatKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Problem Complexity & Visible Reasoning") {
+        const reasoningKeywords = ["step", "reasoning", "breakdown", "trace", "explain how"];
+        status = reasoningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Error & Failure Analysis") {
+        const errorKeywords = ["error", "mistake", "correct", "check", "verify"];
+        status = errorKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Legal Learning Mode") {
+        const learningKeywords = ["reflection", "learn", "insight", "summary", "question"];
+        status = learningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
       }
       
       return { ...rule, status };
@@ -132,10 +153,11 @@ const PromptChecker = () => {
     
     const failCount = results.filter(r => r.status === "fail").length;
     const warningCount = results.filter(r => r.status === "warning").length;
+    const passCount = results.filter(r => r.status === "pass").length;
     
     toast({
-      title: "Prompt Analysis Complete",
-      description: `${failCount} critical issues, ${warningCount} warnings found.`
+      title: "EAI Compliance Analysis Complete",
+      description: `${passCount} passed, ${warningCount} warnings, ${failCount} critical issues found.`
     });
   };
 
@@ -163,7 +185,7 @@ const PromptChecker = () => {
     navigator.clipboard.writeText(summary);
     toast({
       title: "Copied",
-      description: "Results copied to clipboard."
+      description: "EAI compliance results copied to clipboard."
     });
   };
 
@@ -177,19 +199,20 @@ const PromptChecker = () => {
         passed: results.filter(r => r.status === "pass").length,
         warnings: results.filter(r => r.status === "warning").length,
         failed: results.filter(r => r.status === "fail").length
-      }
+      },
+      eaiModel: "EAI Model Compliance Check v1.0"
     };
     
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'prompt-check-report.json';
+    a.download = `eai-compliance-report-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     
     toast({
       title: "Export Complete",
-      description: "Prompt check report downloaded."
+      description: "EAI compliance report downloaded."
     });
   };
 
@@ -205,7 +228,7 @@ const PromptChecker = () => {
             <CheckCircle className="w-6 h-6 text-[#0B3C5D]" />
             <h1 className="text-xl font-bold text-[#0B3C5D]">Prompt Checker (pCheck)</h1>
           </div>
-          <p className="text-gray-600 mt-2">Paste any AI prompt and run a full compliance & quality check.</p>
+          <p className="text-gray-600 mt-2">Paste any AI prompt and run a full EAI Model compliance & quality check.</p>
         </div>
       </header>
 
@@ -214,7 +237,7 @@ const PromptChecker = () => {
         <Card>
           <CardHeader>
             <CardTitle>Step 1: Paste Prompt</CardTitle>
-            <CardDescription>Enter the AI prompt you want to check for EAI compliance.</CardDescription>
+            <CardDescription>Enter the AI prompt you want to check for EAI Model compliance.</CardDescription>
           </CardHeader>
           <CardContent>
             <Textarea 
@@ -230,12 +253,12 @@ const PromptChecker = () => {
                 {isChecking ? (
                   <>
                     <Clock className="w-4 h-4 animate-spin" />
-                    Analyzing...
+                    Analyzing EAI Compliance...
                   </>
                 ) : (
                   <>
                     <CheckCircle className="w-4 h-4" />
-                    Check Prompt
+                    Check EAI Compliance
                   </>
                 )}
               </Button>
@@ -250,8 +273,8 @@ const PromptChecker = () => {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle>Step 2: Analysis Results</CardTitle>
-                    <CardDescription>EAI Model compliance check results</CardDescription>
+                    <CardTitle>Step 2: EAI Model Analysis Results</CardTitle>
+                    <CardDescription>Comprehensive compliance check against all EAI Model criteria</CardDescription>
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={copyResults} className="gap-2">
@@ -272,7 +295,7 @@ const PromptChecker = () => {
                     <div className="text-2xl font-bold text-green-600">
                       {results.filter(r => r.status === "pass").length}
                     </div>
-                    <div className="text-sm text-green-700">Passed</div>
+                    <div className="text-sm text-green-700">Compliant</div>
                   </div>
                   <div className="text-center p-4 bg-yellow-50 rounded-lg">
                     <div className="text-2xl font-bold text-yellow-600">
@@ -284,7 +307,7 @@ const PromptChecker = () => {
                     <div className="text-2xl font-bold text-red-600">
                       {results.filter(r => r.status === "fail").length}
                     </div>
-                    <div className="text-sm text-red-700">Critical</div>
+                    <div className="text-sm text-red-700">Critical Issues</div>
                   </div>
                 </div>
 
@@ -300,12 +323,15 @@ const PromptChecker = () => {
                             <p className="text-sm text-gray-600">{result.check}</p>
                           </div>
                         </div>
-                        <Badge className={getStatusColor(result.status)}>
-                          {result.status.toUpperCase()}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">{result.flag}</span>
+                          <Badge className={getStatusColor(result.status)}>
+                            {result.status.toUpperCase()}
+                          </Badge>
+                        </div>
                       </div>
                       <div className="bg-blue-50 p-3 rounded-lg">
-                        <p className="text-sm"><strong>Recommendation:</strong> {result.advice}</p>
+                        <p className="text-sm"><strong>EAI Recommendation:</strong> {result.advice}</p>
                       </div>
                     </div>
                   ))}

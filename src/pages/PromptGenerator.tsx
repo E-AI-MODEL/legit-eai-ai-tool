@@ -2,25 +2,27 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, FileText, Copy, Users, BookOpen, AlertTriangle } from "lucide-react";
+import { ArrowLeft, FileText, Copy, Users, BookOpen, AlertTriangle, Lightbulb, Target } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface Scenario {
   name: string;
   goal: string;
+  microSkills: string[];
   prompt: string;
   output: string;
   tips?: string;
   warnings?: string;
+  example?: any[];
 }
 
 interface Phase {
   number: number;
   title: string;
+  description: string;
   scenarios: Scenario[];
 }
 
@@ -32,96 +34,239 @@ const PromptGenerator = () => {
     {
       number: 1,
       title: "Orientation & Knowledge Activation",
+      description: "Learners engage with legal concepts using AI-generated scenarios and questions.",
       scenarios: [
         {
-          name: "AI-Generated Case Scenario",
-          goal: "Introduce a legal issue with AI-generated facts.",
-          prompt: "Generate a short legal scenario about [topic] that raises 2-3 legal questions.",
-          output: "Scenario | Key Questions",
-          tips: "Have students annotate who/what/where/legal issue.",
-          warnings: "AI scenarios may contain stereotypes."
+          name: "Using AI to Generate Legal Case Scenarios",
+          goal: "Orient learners to a legal issue using an AI-generated case scenario.",
+          microSkills: [
+            "Identify legal structure",
+            "Recognize relevant legal domains",
+            "Pose clarifying questions"
+          ],
+          prompt: "Generate a short legal scenario about [topic]. Ensure the scenario raises 2–3 legal questions and leaves room for interpretation.",
+          output: "Case summary + Questions list: Scenario | Key Questions",
+          tips: "Ask students to annotate the scenario (who, what, where, legal issue).",
+          warnings: "AI-generated scenarios may contain stereotypes or lack legal nuance.",
+          example: [
+            {
+              scenario: "An AI system rejects job applicants using undisclosed algorithms. Is this legal under anti-discrimination law?",
+              key_questions: [
+                "Does this constitute discrimination?",
+                "What transparency requirements apply under GDPR?"
+              ]
+            }
+          ]
         }
       ]
     },
     {
       number: 2,
       title: "Analysis & Application",
+      description: "AI is used to analyze legal clauses and support applied reasoning.",
       scenarios: [
         {
-          name: "Clause Ambiguity Spotting",
-          goal: "Find vagueness and risk in an NDA clause.",
-          prompt: "Analyse the clause ↓ for ambiguity; return phrase, risk, suggested rewording.",
-          output: "Phrase | Risk | Revision",
-          tips: "Let students compare their version with AI suggestion.",
-          warnings: "AI may miss context-specific risks."
+          name: "Clause Ambiguity Spotting with AI",
+          goal: "Train students to detect vagueness and legal risk in contract clauses with AI assistance.",
+          microSkills: [
+            "Detect ambiguity",
+            "Name legal risks", 
+            "Formulate clarifying questions"
+          ],
+          prompt: "Use AI to analyze an NDA clause for ambiguity or legal incompleteness. Return: (1) flagged phrase, (2) explanation of the risk, (3) suggested rewording.",
+          output: "Table: Clause | Ambiguity | Risk | Suggested Revision",
+          tips: "Let students compare their revision with the AI's suggestion.",
+          warnings: "AI might miss risks without legal context.",
+          example: [
+            {
+              clause: "The party shall keep the information confidential.",
+              ambiguity: "Unclear what 'confidential' specifically entails.",
+              risk: "Interpretation disputes",
+              revision: "Specify confidentiality: no sharing with third parties without written consent."
+            }
+          ]
         }
       ]
     },
     {
       number: 3,
       title: "Evaluation & Reflection",
+      description: "Learners evaluate the correctness, consistency and completeness of AI-generated legal output.",
       scenarios: [
         {
-          name: "Critique AI Legal Advice",
-          goal: "Review AI opinion step-by-step.",
-          prompt: "Have AI draft an opinion; students evaluate each step.",
-          output: "Step | AI | Evaluation | Student Input",
-          tips: "Ensure students take final responsibility.",
-          warnings: "AI can appear persuasive yet be wrong."
+          name: "Critiquing AI Legal Advice",
+          goal: "Students reflect on and refine the reasoning behind AI-generated legal advice.",
+          microSkills: [
+            "Critique AI reasoning",
+            "Evaluate legal consistency",
+            "Propose additional arguments"
+          ],
+          prompt: "Have AI generate a legal opinion based on a case. Students should then: (1) review each reasoning step, (2) note gaps, (3) suggest improvements.",
+          output: "Review Sheet: Step | AI Reasoning | Evaluation | Student's Input",
+          tips: "Use a structured feedback model (e.g. Hattie & Timperley).",
+          warnings: "Students must take final responsibility—AI is support, not authority.",
+          example: [
+            {
+              step: "Apply GDPR Article 5",
+              ai: "Personal data was processed without consent.",
+              evaluation: "Incorrect: consent was implied through platform use.",
+              student_input: "Better: assess if legitimate interest under Article 6 applies."
+            }
+          ]
         }
       ]
     },
     {
       number: 4,
-      title: "Collaboration & Drafting",
+      title: "Collaboration & Document Drafting",
+      description: "Using AI to co-author legal texts and track contribution quality.",
       scenarios: [
         {
-          name: "Multi-user Drafting Log",
-          goal: "Track edits by AI and humans.",
-          prompt: "Record every change, author, and reason.",
-          output: "Change | Author | Reason | Time"
+          name: "Multi-user AI Legal Drafting",
+          goal: "Coordinate edits and contributions in a shared legal draft.",
+          microSkills: [
+            "Coordinate edits",
+            "Merge input",
+            "Resolve conflicts"
+          ],
+          prompt: "For a collaborative legal drafting project, track all edits from both human users and AI. Log the change, author (AI or human), and reasoning.",
+          output: "Log: Change | Author | Justification | Timestamp",
+          tips: "Use version control features and comment threading for clarity.",
+          warnings: "Ensure traceability and legal validity of final version.",
+          example: [
+            {
+              change: "Modified clause 3.1 for GDPR compliance",
+              author: "AI",
+              justification: "Original clause lacked explicit consent handling",
+              timestamp: "2025-06-09T13:32Z"
+            }
+          ]
         },
         {
           name: "Alternative Clause Drafting",
-          goal: "Generate 2-3 clause versions and compare impacts.",
-          prompt: "Ask AI for clause versions A/B/C plus legal effect summary.",
-          output: "Version | Text | Effect | Risk"
+          goal: "Draft and compare multiple legal clause options using AI.",
+          microSkills: [
+            "Adapt legal language",
+            "Compare formulations",
+            "Note implications"
+          ],
+          prompt: "Ask AI to draft 2–3 alternative phrasings of a specific clause in a contract. Summarize their legal implications.",
+          output: "Table: Version | Text | Legal Effect | Risk Note",
+          tips: "Discuss with peers or instructors before selecting final version.",
+          warnings: "AI-generated clauses may sound correct but lack nuance.",
+          example: [
+            {
+              version: "A",
+              text: "The parties shall not disclose any confidential info without prior written consent.",
+              legal_effect: "Strict mutual confidentiality",
+              risk_note: "Overly rigid; may block internal audits"
+            }
+          ]
         }
       ]
     },
     {
       number: 5,
       title: "Legal Risk & Ethics",
+      description: "Use AI to identify risks, evaluate biases, and uphold professional responsibility.",
       scenarios: [
         {
-          name: "Bias Review",
-          goal: "Detect biased language.",
-          prompt: "Scan text for exclusionary terms and propose neutral wording.",
-          output: "Phrase | Bias Risk | Neutral Alternative"
+          name: "Bias Review of AI Output",
+          goal: "Check AI-generated content for inappropriate or biased suggestions.",
+          microSkills: [
+            "Detect stereotypes",
+            "Ensure inclusive language",
+            "Propose corrections"
+          ],
+          prompt: "Review this AI-generated legal output for signs of bias or exclusionary language. Suggest neutral alternatives.",
+          output: "Review Log: Phrase | Bias Risk | Neutral Alternative | Reviewer Judgment",
+          tips: "Use inclusive legal writing guidelines as reference.",
+          warnings: "Be aware of implicit biases in tone and structure.",
+          example: [
+            {
+              phrase: "The chairman must approve...",
+              bias_risk: "Gender-exclusive term",
+              neutral_alternative: "The chairperson must approve...",
+              judgment: "Needs correction"
+            }
+          ]
         },
         {
-          name: "Risk Assessment Matrix",
-          goal: "List legal risks and mitigations.",
-          prompt: "Identify risks in [context]; rate level; suggest mitigation.",
-          output: "Risk | Level | Mitigation | Approved"
+          name: "Legal Risk Assessment",
+          goal: "Identify and categorize legal risks in a transaction or policy using AI.",
+          microSkills: [
+            "Identify breaches",
+            "Assign risk levels", 
+            "Propose mitigations"
+          ],
+          prompt: "Use AI to list possible legal risks in [context]. Assign a human-assessed risk level and propose mitigations.",
+          output: "Matrix: Risk | Level | Mitigation | Approved by",
+          tips: "Review risks with a supervisor before implementation.",
+          warnings: "Don't rely on AI's level rating—human confirmation is needed.",
+          example: [
+            {
+              risk: "Lack of data processing agreement",
+              level: "High",
+              mitigation: "Draft and sign DPA with vendor",
+              approved_by: "Senior Legal Counsel"
+            }
+          ]
         }
       ]
     },
     {
       number: 6,
-      title: "Client Communication",
+      title: "Client Advisory & Communication",
+      description: "Translate AI-generated insights into client-ready communication.",
       scenarios: [
         {
-          name: "Plain-Language Brief",
-          goal: "Explain legal content in everyday language.",
-          prompt: "Summarise AI legal output in plain English; add client FAQ.",
-          output: "Summary | Key Points | FAQ"
+          name: "Plain-Language Summary for Clients",
+          goal: "Make AI-generated legal output understandable to non-lawyers.",
+          microSkills: [
+            "Translate legal terms",
+            "Clarify AI logic",
+            "Ensure client understanding"
+          ],
+          prompt: "Summarize this AI-generated legal content in plain language. Include a short FAQ for the client.",
+          output: "Client Brief: Summary | Key Points | FAQ",
+          tips: "Avoid Latin terms and use client-relevant examples.",
+          warnings: "Ensure legal precision is preserved in simplification.",
+          example: [
+            {
+              summary: "You can terminate the agreement with 30 days' notice.",
+              key_points: [
+                "Termination possible",
+                "Notice period: 30 days"
+              ],
+              faq: [
+                "Can I cancel immediately? → No, a notice is needed."
+              ]
+            }
+          ]
         },
         {
-          name: "Case Workshop Prompt",
-          goal: "Create discussion prompts with AI stance for critique.",
-          prompt: "Generate a hypothetical scenario on [topic] + AI opinion + discussion Qs.",
-          output: "Scenario | Questions | AI Position | Reflection"
+          name: "Instructor Prompt for Case Workshop",
+          goal: "Provide AI-enhanced material for classroom use on a legal issue.",
+          microSkills: [
+            "Design prompts",
+            "Link to learning objectives",
+            "Embed AI insights"
+          ],
+          prompt: "Generate a realistic hypothetical scenario involving [legal topic]. Include discussion prompts and AI opinion for critique.",
+          output: "Case Handout: Scenario | Discussion Questions | AI Position | Reflection Section",
+          tips: "Use Bloom's taxonomy to structure your classroom questions.",
+          warnings: "Remind students to challenge the AI, not just accept it.",
+          example: [
+            {
+              scenario: "An employee is fired after criticizing a company algorithm online.",
+              discussion_questions: [
+                "Is free speech at issue?",
+                "Was due process followed?"
+              ],
+              ai_position: "Likely lawful termination",
+              reflection: "Do you agree? Why or why not?"
+            }
+          ]
         }
       ]
     }
@@ -137,12 +282,21 @@ const PromptGenerator = () => {
     const scenario = getSelectedScenario();
     if (!scenario) return;
     
-    const fullPrompt = `${scenario.prompt}\n\nExpected Output: ${scenario.output}${scenario.tips ? '\n\nTips: ' + scenario.tips : ''}${scenario.warnings ? '\n\nWarnings: ' + scenario.warnings : ''}`;
+    const fullPrompt = `${scenario.prompt}\n\nExpected Output: ${scenario.output}\n\nMicro-Skills: ${scenario.microSkills.join(', ')}${scenario.tips ? '\n\nImplementation Tips: ' + scenario.tips : ''}${scenario.warnings ? '\n\nWarnings: ' + scenario.warnings : ''}`;
     
     navigator.clipboard.writeText(fullPrompt);
     toast({
-      title: "Copied",
-      description: "Prompt copied to clipboard."
+      title: "EAI Prompt Copied",
+      description: "Legal education prompt template copied to clipboard."
+    });
+  };
+
+  const copyExample = (example: any) => {
+    const exampleText = JSON.stringify(example, null, 2);
+    navigator.clipboard.writeText(exampleText);
+    toast({
+      title: "Example Copied",
+      description: "Scenario example copied to clipboard."
     });
   };
 
@@ -150,7 +304,7 @@ const PromptGenerator = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <Link to="/" className="text-[#0B3C5D] hover:text-[#0B3C5D]/80">
               <ArrowLeft className="w-5 h-5" />
@@ -162,7 +316,7 @@ const PromptGenerator = () => {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid md:grid-cols-3 gap-6">
           {/* Phase Selection */}
           <Card className="md:col-span-1">
@@ -171,7 +325,7 @@ const PromptGenerator = () => {
                 <BookOpen className="w-5 h-5" />
                 Learning Phases
               </CardTitle>
-              <CardDescription>Select a learning phase to explore scenarios</CardDescription>
+              <CardDescription>Select a learning phase to explore EAI-compliant scenarios</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -199,10 +353,10 @@ const PromptGenerator = () => {
           <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle>
-                {selectedPhase ? `Phase ${selectedPhase}: ${phases.find(p => p.number === selectedPhase)?.title}` : "Select a Phase"}
+                {selectedPhase ? `Phase ${selectedPhase}: ${phases.find(p => p.number === selectedPhase)?.title}` : "Select a Learning Phase"}
               </CardTitle>
               <CardDescription>
-                {selectedPhase ? "Choose a scenario to generate prompts" : "Choose a learning phase to view available scenarios"}
+                {selectedPhase ? phases.find(p => p.number === selectedPhase)?.description : "Choose a learning phase to view EAI-compliant scenarios"}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -228,20 +382,38 @@ const PromptGenerator = () => {
                           <CardHeader>
                             <div className="flex justify-between items-start">
                               <div>
-                                <CardTitle className="text-lg">{scenario.name}</CardTitle>
-                                <CardDescription>{scenario.goal}</CardDescription>
+                                <CardTitle className="text-lg flex items-center gap-2">
+                                  <Target className="w-5 h-5 text-[#0B3C5D]" />
+                                  {scenario.name}
+                                </CardTitle>
+                                <CardDescription className="mt-2">{scenario.goal}</CardDescription>
                               </div>
                               <Button onClick={copyPrompt} variant="outline" className="gap-2">
                                 <Copy className="w-4 h-4" />
-                                Copy
+                                Copy Prompt
                               </Button>
                             </div>
                           </CardHeader>
                           <CardContent className="space-y-4">
+                            {/* Micro-Skills */}
+                            <div>
+                              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                <Users className="w-4 h-4 text-blue-600" />
+                                Micro-Skills Developed
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {scenario.microSkills.map((skill, idx) => (
+                                  <Badge key={idx} variant="secondary" className="text-xs">
+                                    {skill}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+
                             {/* Prompt */}
                             <div>
-                              <h4 className="font-semibold mb-2">Prompt Template</h4>
-                              <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm">
+                              <h4 className="font-semibold mb-2">EAI-Compliant Prompt Template</h4>
+                              <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D]">
                                 {scenario.prompt}
                               </div>
                             </div>
@@ -253,6 +425,30 @@ const PromptGenerator = () => {
                                 {scenario.output}
                               </Badge>
                             </div>
+
+                            {/* Example */}
+                            {scenario.example && scenario.example.length > 0 && (
+                              <div>
+                                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                  <Lightbulb className="w-4 h-4 text-yellow-600" />
+                                  Example Implementation
+                                </h4>
+                                <div className="bg-yellow-50 p-3 rounded-lg border">
+                                  <pre className="text-sm text-gray-700 whitespace-pre-wrap">
+                                    {JSON.stringify(scenario.example[0], null, 2)}
+                                  </pre>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={() => copyExample(scenario.example![0])}
+                                    className="mt-2 gap-1"
+                                  >
+                                    <Copy className="w-3 h-3" />
+                                    Copy Example
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
 
                             {/* Tips */}
                             {scenario.tips && (
@@ -273,7 +469,7 @@ const PromptGenerator = () => {
                                 <div className="flex items-start gap-2">
                                   <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                                   <div>
-                                    <h4 className="font-semibold text-yellow-800 mb-1">Important Warnings</h4>
+                                    <h4 className="font-semibold text-yellow-800 mb-1">EAI Model Warnings</h4>
                                     <p className="text-sm text-yellow-700">{scenario.warnings}</p>
                                   </div>
                                 </div>
@@ -289,7 +485,7 @@ const PromptGenerator = () => {
                 <div className="text-center py-12">
                   <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No Phase Selected</h3>
-                  <p className="text-gray-600">Select a learning phase from the left to view available prompt scenarios.</p>
+                  <p className="text-gray-600">Select a learning phase from the left to view EAI-compliant prompt scenarios.</p>
                 </div>
               )}
             </CardContent>
@@ -300,14 +496,20 @@ const PromptGenerator = () => {
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>Domain: Legal Education / AI & Law</CardTitle>
-            <CardDescription>Target Roles: Students, Instructors</CardDescription>
+            <CardDescription>Target Roles: Students, Instructors | EAI Model Compliance: ✅</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700">
+            <p className="text-gray-700 mb-4">
               These prompt templates are designed for legal education contexts where AI tools are used to enhance learning 
               while maintaining human agency and critical thinking. Each scenario includes built-in reflection points and 
               quality checks aligned with the EAI Model principles.
             </p>
+            <div className="bg-[#0B3C5D] bg-opacity-5 p-4 rounded-lg">
+              <p className="text-sm text-[#0B3C5D]">
+                <strong>Base Prompt Structure:</strong> Use this structure to create legal education scenarios supported by AI. 
+                Insert the case, clause, or topic where required. Output must be structured, legally sound, and include a section for human review or accountability.
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
