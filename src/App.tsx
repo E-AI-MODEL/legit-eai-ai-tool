@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Intro from "./pages/Intro";
 import Index from "./pages/Index";
 import TaskDensity from "./pages/TaskDensity";
 import PromptChecker from "./pages/PromptChecker";
@@ -19,7 +20,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Intro />} />
+          <Route path="/main" element={<Index />} />
           <Route path="/task-density" element={<TaskDensity />} />
           <Route path="/prompt-checker" element={<PromptChecker />} />
           <Route path="/prompt-generator" element={<PromptGenerator />} />
