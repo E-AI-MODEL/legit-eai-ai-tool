@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, FileText, Copy, Users, BookOpen, AlertTriangle, Lightbulb, Target } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Scenario {
   name: string;
@@ -28,6 +29,9 @@ interface Phase {
 const PromptGenerator = () => {
   const [selectedPhase, setSelectedPhase] = useState<number | null>(null);
   const [selectedScenario, setSelectedScenario] = useState<number | null>(null);
+  const [genTopic, setGenTopic] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
 
   const phases: Phase[] = [
     {
@@ -304,6 +308,32 @@ const PromptGenerator = () => {
     setSelectedScenario(scenarioIndex);
   };
 
+  const handleGeneratePrompt = async () => {
+    if (!genTopic.trim()) {
+      toast({ title: "Enter a topic", description: "Describe your legal task or topic first.", variant: "destructive" });
+      return;
+    }
+    try {
+      setIsGenerating(true);
+      setGeneratedPrompt(null);
+      const { data, error } = await supabase.functions.invoke("eai-prompt-suggest", {
+        body: { mode: "generate", context: { topic: genTopic, audience: "law students", output: "Structured checklist or table" } },
+      });
+      if (error) throw error;
+      if (data?.prompt) {
+        setGeneratedPrompt(data.prompt);
+        toast({ title: "Prompt generated", description: "An AI-optimized prompt is ready." });
+      } else {
+        toast({ title: "No prompt returned", description: "Try refining your topic.", variant: "destructive" });
+      }
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Generation failed", description: "Please try again.", variant: "destructive" });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
@@ -321,6 +351,47 @@ const PromptGenerator = () => {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Quick AI Prompt Generator */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-yellow-600" />
+              AI-Optimized Prompt Generator
+            </CardTitle>
+            <CardDescription>Describe your legal topic or task. We'll craft an EAI-compliant prompt template.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <textarea
+                value={genTopic}
+                onChange={(e) => setGenTopic(e.target.value)}
+                rows={3}
+                placeholder="e.g., Analyze an NDA clause for ambiguity and suggest revisions"
+                className="w-full border rounded-md p-3 text-sm"
+              />
+              <div className="flex items-center gap-2">
+                <Button onClick={handleGeneratePrompt} disabled={isGenerating || !genTopic.trim()} className="gap-2">
+                  {isGenerating ? "Generating..." : "Generate Prompt"}
+                </Button>
+                {generatedPrompt && (
+                  <Button
+                    variant="outline"
+                    className="gap-2"
+                    onClick={() => { navigator.clipboard.writeText(generatedPrompt!); toast({ title: "Copied", description: "Generated prompt copied." }); }}
+                  >
+                    <Copy className="w-4 h-4" /> Copy
+                  </Button>
+                )}
+              </div>
+              {generatedPrompt && (
+                <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D] whitespace-pre-wrap">
+                  {generatedPrompt}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="grid md:grid-cols-3 gap-6">
           {/* Phase Selection */}
           <Card className="md:col-span-1">

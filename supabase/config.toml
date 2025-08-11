@@ -2,3 +2,6 @@ project_id = "ngcyfbstajfcfdhlelbz"
 
 [functions.eai-semantic-check]
 verify_jwt = false
+
+[functions.eai-prompt-suggest]
+verify_jwt = false

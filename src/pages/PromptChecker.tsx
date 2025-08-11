@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, CheckCircle, Copy, FileDown, AlertTriangle, XCircle, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle, Copy, FileDown, AlertTriangle, XCircle, Clock, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -22,6 +22,8 @@ const PromptChecker = () => {
   const [isChecking, setIsChecking] = useState(false);
   const [results, setResults] = useState<CheckResult[]>([]);
   const [hasResults, setHasResults] = useState(false);
+  const [isSuggesting, setIsSuggesting] = useState(false);
+  const [suggestedPrompt, setSuggestedPrompt] = useState<string | null>(null);
 
   const checkRules: Omit<CheckResult, 'status'>[] = [
     {
@@ -186,6 +188,28 @@ const PromptChecker = () => {
     }
   };
 
+  const suggestBetterPrompt = async () => {
+    if (!prompt.trim()) return;
+    try {
+      setIsSuggesting(true);
+      const { data, error } = await supabase.functions.invoke("eai-prompt-suggest", {
+        body: { mode: "improve", prompt },
+      });
+      if (error) throw error;
+      if (data?.prompt) {
+        setSuggestedPrompt(data.prompt);
+        toast({ title: "Suggestion ready", description: "An improved prompt was generated." });
+      } else {
+        toast({ title: "No suggestion", description: "The AI couldn't suggest a better prompt.", variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to suggest a better prompt.", variant: "destructive" });
+      console.error(e);
+    } finally {
+      setIsSuggesting(false);
+    }
+  };
+
   const getStatusIcon = (status: "pass" | "warning" | "fail") => {
     switch (status) {
       case "pass": return <CheckCircle className="w-5 h-5 text-green-500" />;
@@ -306,6 +330,10 @@ const PromptChecker = () => {
                       <Copy className="w-4 h-4" />
                       Copy Summary
                     </Button>
+                    <Button variant="outline" onClick={suggestBetterPrompt} disabled={isSuggesting} className="gap-2">
+                      <Lightbulb className="w-4 h-4" />
+                      {isSuggesting ? "Suggesting..." : "Suggest Better Prompt"}
+                    </Button>
                     <Button onClick={downloadReport} className="gap-2">
                       <FileDown className="w-4 h-4" />
                       Download Report
@@ -361,6 +389,23 @@ const PromptChecker = () => {
                     </div>
                   ))}
                 </div>
+
+                {suggestedPrompt && (
+                  <div className="mt-6">
+                    <h4 className="font-semibold mb-2">Suggested Improved Prompt</h4>
+                    <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D] whitespace-pre-wrap">
+                      {suggestedPrompt}
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => { navigator.clipboard.writeText(suggestedPrompt!); toast({ title: "Copied", description: "Suggested prompt copied to clipboard." }); }}
+                      className="mt-2 gap-2"
+                    >
+                      <Copy className="w-4 h-4" />
+                      Copy Suggested Prompt
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </>
