@@ -65,12 +65,13 @@ Return STRICT JSON with shape SuggestResponse = { prompt: string; notes?: string
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
+          model: "gpt-4.1-2025-04-14",
           messages: [
             { role: "system", content: system },
             { role: "user", content: user },
           ],
           temperature: 0.2,
+          response_format: { type: "json_object" },
         }),
       });
 
@@ -90,11 +91,31 @@ Return STRICT JSON with shape SuggestResponse = { prompt: string; notes?: string
       try {
         parsed = JSON.parse(content);
       } catch (e) {
-        console.error("JSON parse error (improve):", content);
-        return new Response(
-          JSON.stringify({ error: "Model returned non-JSON response" }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
+        const fenced = content.replace(/```(?:json)?\s*([\s\S]*?)\s*```/i, "$1").trim();
+        try {
+          parsed = JSON.parse(fenced);
+        } catch (e2) {
+          const start = content.indexOf("{");
+          const end = content.lastIndexOf("}");
+          if (start !== -1 && end !== -1 && end > start) {
+            const slice = content.slice(start, end + 1);
+            try {
+              parsed = JSON.parse(slice);
+            } catch (e3) {
+              console.error("JSON parse error (improve):", content);
+              return new Response(
+                JSON.stringify({ error: "Model returned non-JSON response" }),
+                { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+              );
+            }
+          } else {
+            console.error("JSON parse error (improve):", content);
+            return new Response(
+              JSON.stringify({ error: "Model returned non-JSON response" }),
+              { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
+        }
       }
 
       return new Response(JSON.stringify(parsed), {
@@ -126,12 +147,13 @@ Return STRICT JSON: { prompt: string; notes?: string }`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-4.1-2025-04-14",
         messages: [
           { role: "system", content: systemGen },
           { role: "user", content: userGen },
         ],
         temperature: 0.3,
+        response_format: { type: "json_object" },
       }),
     });
 
@@ -151,11 +173,31 @@ Return STRICT JSON: { prompt: string; notes?: string }`;
     try {
       parsedGen = JSON.parse(contentGen);
     } catch (e) {
-      console.error("JSON parse error (generate):", contentGen);
-      return new Response(
-        JSON.stringify({ error: "Model returned non-JSON response" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      const fenced = contentGen.replace(/```(?:json)?\s*([\s\S]*?)\s*```/i, "$1").trim();
+      try {
+        parsedGen = JSON.parse(fenced);
+      } catch (e2) {
+        const start = contentGen.indexOf("{");
+        const end = contentGen.lastIndexOf("}");
+        if (start !== -1 && end !== -1 && end > start) {
+          const slice = contentGen.slice(start, end + 1);
+          try {
+            parsedGen = JSON.parse(slice);
+          } catch (e3) {
+            console.error("JSON parse error (generate):", contentGen);
+            return new Response(
+              JSON.stringify({ error: "Model returned non-JSON response" }),
+              { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
+        } else {
+          console.error("JSON parse error (generate):", contentGen);
+          return new Response(
+            JSON.stringify({ error: "Model returned non-JSON response" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      }
     }
 
     return new Response(JSON.stringify(parsedGen), {
