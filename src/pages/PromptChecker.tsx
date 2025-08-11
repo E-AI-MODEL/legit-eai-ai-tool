@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, CheckCircle, Copy, FileDown, AlertTriangle, XCircle, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CheckResult {
   rubric: string;
@@ -96,69 +97,93 @@ const PromptChecker = () => {
     }
 
     setIsChecking(true);
-    
-    // Simulate analysis with realistic timing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Enhanced heuristic checking based on EAI Model criteria
-    const promptLower = prompt.toLowerCase();
-    const results: CheckResult[] = checkRules.map(rule => {
-      let status: "pass" | "warning" | "fail" = "fail";
-      
-      // Sophisticated keyword and pattern analysis
-      if (rule.rubric === "Cognitive Ownership & Traceability") {
-        const tracabilityKeywords = ["justify", "explain", "reasoning", "trace", "annotate", "reconstruct"];
-        status = tracabilityKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-      } else if (rule.rubric === "Agency & Didactic Controllability") {
-        const agencyKeywords = ["review", "approve", "decide", "human", "final decision", "handover"];
-        status = agencyKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
-      } else if (rule.rubric === "Reverse Scaffolding/Task Density") {
-        const scaffoldingWords = ["plan", "draft", "reflect", "before", "after", "user"];
-        const aiDominanceWords = ["ai will", "ai should", "ai must", "generate", "create"];
-        const hasScaffolding = scaffoldingWords.some(keyword => promptLower.includes(keyword));
-        const hasAiDominance = aiDominanceWords.some(keyword => promptLower.includes(keyword));
-        status = hasScaffolding && !hasAiDominance ? "pass" : hasScaffolding ? "warning" : "fail";
-      } else if (rule.rubric === "Sycophancy & Drift Awareness") {
-        const driftKeywords = ["compare", "critique", "challenge", "disagree", "question"];
-        status = driftKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-      } else if (rule.rubric === "Compliance, Audit & Logging") {
-        const auditKeywords = ["log", "record", "audit", "track", "document"];
-        status = auditKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
-      } else if (rule.rubric === "Bias, Inclusion & Professional Neutrality") {
-        const biasedTerms = ["always", "never", "obviously", "clearly", "definitely"];
-        const neutralTerms = ["consider", "alternative", "perspective", "viewpoint"];
-        const hasBiasedTerms = biasedTerms.some(term => promptLower.includes(term));
-        const hasNeutralTerms = neutralTerms.some(term => promptLower.includes(term));
-        status = !hasBiasedTerms && hasNeutralTerms ? "pass" : !hasBiasedTerms ? "warning" : "fail";
-      } else if (rule.rubric === "Output Specification & Structure") {
-        const formatKeywords = ["format", "table", "list", "structure", "memo", "checklist"];
-        status = formatKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-      } else if (rule.rubric === "Problem Complexity & Visible Reasoning") {
-        const reasoningKeywords = ["step", "reasoning", "breakdown", "trace", "explain how"];
-        status = reasoningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-      } else if (rule.rubric === "Error & Failure Analysis") {
-        const errorKeywords = ["error", "mistake", "correct", "check", "verify"];
-        status = errorKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-      } else if (rule.rubric === "Legal Learning Mode") {
-        const learningKeywords = ["reflection", "learn", "insight", "summary", "question"];
-        status = learningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-      }
-      
-      return { ...rule, status };
-    });
 
-    setResults(results);
-    setHasResults(true);
-    setIsChecking(false);
-    
-    const failCount = results.filter(r => r.status === "fail").length;
-    const warningCount = results.filter(r => r.status === "warning").length;
-    const passCount = results.filter(r => r.status === "pass").length;
-    
-    toast({
-      title: "EAI Compliance Analysis Complete",
-      description: `${passCount} passed, ${warningCount} warnings, ${failCount} critical issues found.`
-    });
+    // Try AI semantic check via Supabase Edge Function first
+    try {
+      const { data, error } = await supabase.functions.invoke("eai-semantic-check", {
+        body: { prompt },
+      });
+
+      if (error) throw error;
+
+      if (data && Array.isArray(data.results) && data.results.length > 0) {
+        setResults(data.results as CheckResult[]);
+        setHasResults(true);
+        const failCount = data.results.filter((r: CheckResult) => r.status === "fail").length;
+        const warningCount = data.results.filter((r: CheckResult) => r.status === "warning").length;
+        const passCount = data.results.filter((r: CheckResult) => r.status === "pass").length;
+        toast({
+          title: "EAI Compliance Analysis Complete (AI)",
+          description: `${passCount} passed, ${warningCount} warnings, ${failCount} critical issues found.`
+        });
+        return;
+      }
+    } catch (e) {
+      console.warn("AI check failed, falling back to heuristic:", e);
+    } finally {
+      setIsChecking(false);
+    }
+
+    // Fallback: heuristic keyword-based check
+    setIsChecking(true);
+    try {
+      const promptLower = prompt.toLowerCase();
+      const results: CheckResult[] = checkRules.map(rule => {
+        let status: "pass" | "warning" | "fail" = "fail";
+
+        if (rule.rubric === "Cognitive Ownership & Traceability") {
+          const tracabilityKeywords = ["justify", "explain", "reasoning", "trace", "annotate", "reconstruct"];
+          status = tracabilityKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+        } else if (rule.rubric === "Agency & Didactic Controllability") {
+          const agencyKeywords = ["review", "approve", "decide", "human", "final decision", "handover"];
+          status = agencyKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
+        } else if (rule.rubric === "Reverse Scaffolding/Task Density") {
+          const scaffoldingWords = ["plan", "draft", "reflect", "before", "after", "user"];
+          const aiDominanceWords = ["ai will", "ai should", "ai must", "generate", "create"];
+          const hasScaffolding = scaffoldingWords.some(keyword => promptLower.includes(keyword));
+          const hasAiDominance = aiDominanceWords.some(keyword => promptLower.includes(keyword));
+          status = hasScaffolding && !hasAiDominance ? "pass" : hasScaffolding ? "warning" : "fail";
+        } else if (rule.rubric === "Sycophancy & Drift Awareness") {
+          const driftKeywords = ["compare", "critique", "challenge", "disagree", "question"];
+          status = driftKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+        } else if (rule.rubric === "Compliance, Audit & Logging") {
+          const auditKeywords = ["log", "record", "audit", "track", "document"];
+          status = auditKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
+        } else if (rule.rubric === "Bias, Inclusion & Professional Neutrality") {
+          const biasedTerms = ["always", "never", "obviously", "clearly", "definitely"];
+          const neutralTerms = ["consider", "alternative", "perspective", "viewpoint"];
+          const hasBiasedTerms = biasedTerms.some(term => promptLower.includes(term));
+          const hasNeutralTerms = neutralTerms.some(term => promptLower.includes(term));
+          status = !hasBiasedTerms && hasNeutralTerms ? "pass" : !hasBiasedTerms ? "warning" : "fail";
+        } else if (rule.rubric === "Output Specification & Structure") {
+          const formatKeywords = ["format", "table", "list", "structure", "memo", "checklist"];
+          status = formatKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+        } else if (rule.rubric === "Problem Complexity & Visible Reasoning") {
+          const reasoningKeywords = ["step", "reasoning", "breakdown", "trace", "explain how"];
+          status = reasoningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+        } else if (rule.rubric === "Error & Failure Analysis") {
+          const errorKeywords = ["error", "mistake", "correct", "check", "verify"];
+          status = errorKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+        } else if (rule.rubric === "Legal Learning Mode") {
+          const learningKeywords = ["reflection", "learn", "insight", "summary", "question"];
+          status = learningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+        }
+
+        return { ...rule, status };
+      });
+
+      setResults(results);
+      setHasResults(true);
+      const failCount = results.filter(r => r.status === "fail").length;
+      const warningCount = results.filter(r => r.status === "warning").length;
+      const passCount = results.filter(r => r.status === "pass").length;
+      toast({
+        title: "EAI Compliance Analysis Complete (Heuristic)",
+        description: `${passCount} passed, ${warningCount} warnings, ${failCount} critical issues found.`
+      });
+    } finally {
+      setIsChecking(false);
+    }
   };
 
   const getStatusIcon = (status: "pass" | "warning" | "fail") => {

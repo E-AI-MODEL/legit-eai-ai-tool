@@ -1,1 +1,4 @@
 project_id = "ngcyfbstajfcfdhlelbz"
+
+[functions.eai-semantic-check]
+verify_jwt = false
