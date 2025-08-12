@@ -363,15 +363,15 @@ const PromptChecker = () => {
               className="w-full"
               maxLength={5000}
             />
-            <div className="flex justify-between items-center mt-4">
-              <div className="flex items-center gap-4">
-                <p className="text-sm text-gray-600">{prompt.length}/5000 characters</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
+              <div className="flex items-center gap-4 flex-wrap">
+                <p className="text-sm text-gray-600 whitespace-nowrap">{prompt.length}/5000<span className="hidden sm:inline"> characters</span></p>
                 <div className="flex items-center gap-2">
                   <Switch id="strict-mode" checked={strictMode} onCheckedChange={setStrictMode} />
                   <label htmlFor="strict-mode" className="text-sm text-gray-700">Strict Mode</label>
                 </div>
               </div>
-              <Button onClick={runPromptCheck} disabled={isChecking || !prompt.trim()} className="gap-2">
+              <Button onClick={runPromptCheck} disabled={isChecking || !prompt.trim()} className="gap-2 w-full sm:w-auto">
                 {isChecking ? (
                   <>
                     <Clock className="w-4 h-4 animate-spin" />
@@ -393,21 +393,21 @@ const PromptChecker = () => {
           <>
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
                     <CardTitle>Step 2: EAI Model Analysis Results</CardTitle>
                     <CardDescription>Comprehensive compliance check against all EAI Model criteria</CardDescription>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={copyResults} className="gap-2">
+                  <div className="flex flex-wrap gap-2 md:justify-end">
+                    <Button variant="outline" onClick={copyResults} className="gap-2 w-full sm:w-auto">
                       <Copy className="w-4 h-4" />
                       Copy Summary
                     </Button>
-                    <Button variant="outline" onClick={suggestBetterPrompt} disabled={isSuggesting} className="gap-2">
+                    <Button variant="outline" onClick={suggestBetterPrompt} disabled={isSuggesting} className="gap-2 w-full sm:w-auto">
                       <Lightbulb className="w-4 h-4" />
                       {isSuggesting ? "Suggesting..." : "Suggest Better Prompt"}
                     </Button>
-                    <Button onClick={downloadReport} className="gap-2">
+                    <Button onClick={downloadReport} className="gap-2 w-full sm:w-auto">
                       <FileDown className="w-4 h-4" />
                       Download Report
                     </Button>
@@ -416,7 +416,7 @@ const PromptChecker = () => {
               </CardHeader>
               <CardContent>
                 {/* Summary */}
-                <div className="grid grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">
                       {results.filter(r => r.status === "pass").length}
@@ -447,7 +447,7 @@ const PromptChecker = () => {
                 <div className="space-y-4">
                   {results.map((result, index) => (
                     <div key={index} className="border rounded-lg p-4 bg-white">
-                      <div className="flex items-start justify-between mb-3">
+                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-3">
                         <div className="flex items-center gap-3">
                           {getStatusIcon(result.status)}
                           <div>
@@ -455,7 +455,7 @@ const PromptChecker = () => {
                             <p className="text-sm text-gray-600">{result.check}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 md:self-center">
                           <span className="text-sm">{result.flag}</span>
                           <Badge className={getStatusColor(result.status)}>
                             {result.status.toUpperCase()}
