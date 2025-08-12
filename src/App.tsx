@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,25 +9,30 @@ import TaskDensity from "./pages/TaskDensity";
 import PromptChecker from "./pages/PromptChecker";
 import PromptGenerator from "./pages/PromptGenerator";
 import NotFound from "./pages/NotFound";
+import { ViewModeProvider } from "@/context/view-mode";
+import ViewModeSwitcher from "@/components/ViewModeSwitcher";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Intro />} />
-          <Route path="/main" element={<Index />} />
-          <Route path="/task-density" element={<TaskDensity />} />
-          <Route path="/prompt-checker" element={<PromptChecker />} />
-          <Route path="/prompt-generator" element={<PromptGenerator />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ViewModeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Intro />} />
+            <Route path="/main" element={<Index />} />
+            <Route path="/task-density" element={<TaskDensity />} />
+            <Route path="/prompt-checker" element={<PromptChecker />} />
+            <Route path="/prompt-generator" element={<PromptGenerator />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+        <ViewModeSwitcher />
+      </TooltipProvider>
+    </ViewModeProvider>
   </QueryClientProvider>
 );
 

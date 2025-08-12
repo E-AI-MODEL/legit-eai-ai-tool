@@ -1,0 +1,10 @@
+/*
+  Optional global styles for view-mode hooks. We keep this minimal and rely on
+  the viewport meta override. These classes are here if future fine‑tuning is needed.
+*/
+:root[data-view="mobile"] {
+  /* hook for potential CSS overrides */
+}
+:root[data-view="desktop"] {
+  /* hook for potential CSS overrides */
+}
