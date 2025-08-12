@@ -41,240 +41,151 @@ const PromptGenerator = () => {
   const phases: Phase[] = [
     {
       number: 1,
-      title: "Orientation & Knowledge Activation",
-      description: "Learners engage with legal concepts using AI-generated scenarios and questions.",
+      title: "Intake & Fact Gathering",
+      description: "Collect facts, clarify scope, and map evidence and stakeholders.",
       scenarios: [
         {
-          name: "Using AI to Generate Legal Case Scenarios",
-          goal: "Orient learners to a legal issue using an AI-generated case scenario.",
-          microSkills: [
-            "Identify legal structure",
-            "Recognize relevant legal domains",
-            "Pose clarifying questions"
-          ],
-          prompt: "Generate a short legal scenario about [topic]. Ensure the scenario raises 2–3 legal questions and leaves room for interpretation.",
-          output: "Case summary + Questions list: Scenario | Key Questions",
-          tips: "Ask students to annotate the scenario (who, what, where, legal issue).",
-          warnings: "AI-generated scenarios may contain stereotypes or lack legal nuance.",
-          example: [
-            {
-              scenario: "An AI system rejects job applicants using undisclosed algorithms. Is this legal under anti-discrimination law?",
-              key_questions: [
-                "Does this constitute discrimination?",
-                "What transparency requirements apply under GDPR?"
-              ]
-            }
-          ]
+          name: "Client Interview Planner",
+          goal: "Prepare a structured interview outline to surface facts, assumptions, and objectives.",
+          microSkills: ["Issue spotting", "Clarifying questions", "Goal alignment"],
+          prompt: "Draft a client interview outline for [matter/topic]. Include: (1) opening context, (2) key facts to confirm, (3) stakeholders and roles, (4) documents to request, (5) follow‑ups.",
+          output: "Bullet checklist with headings (no tables)",
+          tips: "Keep questions neutral; capture unknowns separately.",
+          warnings: "Do not infer facts; mark uncertainties for confirmation."
+        },
+        {
+          name: "Document & Evidence Request List",
+          goal: "Create a prioritized list of documents and data sources with purpose and owner.",
+          microSkills: ["Evidence mapping", "Relevance justification", "Prioritization"],
+          prompt: "Create a document/evidence request list for [matter/topic]. For each item, specify purpose, data owner, access constraints, and urgency.",
+          output: "Prioritized bullet list with purpose and owner per item",
+          tips: "Group by custodian or system; note privacy constraints.",
+          warnings: "Avoid collecting excessive personal data; flag sensitive items."
         }
       ]
     },
     {
       number: 2,
-      title: "Analysis & Application",
-      description: "AI is used to analyze legal clauses and support applied reasoning.",
+      title: "Clause Drafting & Redlining",
+      description: "Draft alternatives, spot ambiguity, and propose redlines with rationale.",
       scenarios: [
         {
-          name: "Clause Ambiguity Spotting with AI",
-          goal: "Train students to detect vagueness and legal risk in contract clauses with AI assistance.",
-          microSkills: [
-            "Detect ambiguity",
-            "Name legal risks", 
-            "Formulate clarifying questions"
-          ],
-          prompt: "Use AI to analyze an NDA clause for ambiguity or legal incompleteness. Return: (1) flagged phrase, (2) explanation of the risk, (3) suggested rewording.",
-          output: "Table: Clause | Ambiguity | Risk | Suggested Revision",
-          tips: "Let students compare their revision with the AI's suggestion.",
-          warnings: "AI might miss risks without legal context.",
-          example: [
-            {
-              clause: "The party shall keep the information confidential.",
-              ambiguity: "Unclear what 'confidential' specifically entails.",
-              risk: "Interpretation disputes",
-              revision: "Specify confidentiality: no sharing with third parties without written consent."
-            }
-          ]
+          name: "Ambiguity Spotting",
+          goal: "Detect vagueness and risk in a clause and propose revisions.",
+          microSkills: ["Ambiguity detection", "Risk articulation", "Precise drafting"],
+          prompt: "Analyze this clause for ambiguity: [paste clause]. Return: (1) flagged phrase, (2) risk explanation, (3) precise rewording with rationale.",
+          output: "Three-part bullet response per issue (flag, risk, revision)",
+          tips: "Prefer objective terms (who/what/when/how much).",
+          warnings: "Avoid expanding scope beyond the parties' intent."
+        },
+        {
+          name: "Alternative Clause Drafting",
+          goal: "Draft 2–3 clause options with pros/cons for negotiation.",
+          microSkills: ["Option generation", "Trade‑off analysis", "Negotiation positioning"],
+          prompt: "Draft 2–3 alternative phrasings for a clause about [topic]. For each, provide intended legal effect, key risks, and when to prefer it.",
+          output: "Side‑by‑side bullet options with effect, risks, and use‑case",
+          tips: "Vary strength and flexibility across options.",
+          warnings: "Do not state as legal advice; mark jurisdictional sensitivities."
         }
       ]
     },
     {
       number: 3,
-      title: "Evaluation & Reflection",
-      description: "Learners evaluate the correctness, consistency and completeness of AI-generated legal output.",
+      title: "Research & Authority Check",
+      description: "Frame questions, structure a memo, and check sources and jurisdictions.",
       scenarios: [
         {
-          name: "Critiquing AI Legal Advice",
-          goal: "Students reflect on and refine the reasoning behind AI-generated legal advice.",
-          microSkills: [
-            "Critique AI reasoning",
-            "Evaluate legal consistency",
-            "Propose additional arguments"
-          ],
-          prompt: "Have AI generate a legal opinion based on a case. Students should then: (1) review each reasoning step, (2) note gaps, (3) suggest improvements.",
-          output: "Review Sheet: Step | AI Reasoning | Evaluation | Student's Input",
-          tips: "Use a structured feedback model (e.g. Hattie & Timperley).",
-          warnings: "Students must take final responsibility—AI is support, not authority.",
-          example: [
-            {
-              step: "Apply GDPR Article 5",
-              ai: "Personal data was processed without consent.",
-              evaluation: "Incorrect: consent was implied through platform use.",
-              student_input: "Better: assess if legitimate interest under Article 6 applies."
-            }
-          ]
+          name: "Research Memo Skeleton",
+          goal: "Produce a memo outline with issues, rules, analysis steps, and open questions.",
+          microSkills: ["IRAC structuring", "Scope control", "Assumption tracking"],
+          prompt: "Create a research memo skeleton for [issue/jurisdiction]. Include issues, governing rules to verify, key tests, factors, and evidence needed.",
+          output: "Memo outline with bullet headings and tasks",
+          tips: "Separate holdings from dicta; list unknowns to confirm.",
+          warnings: "Do not fabricate citations; mark placeholder sources."
+        },
+        {
+          name: "Jurisdiction Comparison Plan",
+          goal: "Plan a quick comparison across 2–3 jurisdictions for a discrete issue.",
+          microSkills: ["Comparative analysis", "Scope limits", "Result logging"],
+          prompt: "Design a comparison plan for [issue] across [jurisdictions]. Specify key differences to check, thresholds/tests, and a consistent note‑taking format.",
+          output: "Comparison checklist with consistent note format",
+          tips: "Anchor on definitions and burden of proof.",
+          warnings: "Call out conflicts‑of‑law triggers explicitly."
         }
       ]
     },
     {
       number: 4,
-      title: "Collaboration & Document Drafting",
-      description: "Using AI to co-author legal texts and track contribution quality.",
+      title: "Risk Assessment & Compliance",
+      description: "Identify risks, assign levels, and propose mitigations and owners.",
       scenarios: [
         {
-          name: "Multi-user AI Legal Drafting",
-          goal: "Coordinate edits and contributions in a shared legal draft.",
-          microSkills: [
-            "Coordinate edits",
-            "Merge input",
-            "Resolve conflicts"
-          ],
-          prompt: "For a collaborative legal drafting project, track all edits from both human users and AI. Log the change, author (AI or human), and reasoning.",
-          output: "Log: Change | Author | Justification | Timestamp",
-          tips: "Use version control features and comment threading for clarity.",
-          warnings: "Ensure traceability and legal validity of final version.",
-          example: [
-            {
-              change: "Modified clause 3.1 for GDPR compliance",
-              author: "AI",
-              justification: "Original clause lacked explicit consent handling",
-              timestamp: "2025-06-09T13:32Z"
-            }
-          ]
+          name: "Matter Risk Register",
+          goal: "Build a concise risk register with level, impact, mitigation, and owner.",
+          microSkills: ["Risk taxonomy", "Mitigation design", "Ownership clarity"],
+          prompt: "List key legal risks for [context]. For each risk: describe, likelihood/impact (L/M/H), mitigation action, owner, and review date.",
+          output: "Risk register bullets grouped by category",
+          tips: "Tie mitigations to contract clauses or policies.",
+          warnings: "Avoid numerical scoring unless supported by data."
         },
         {
-          name: "Alternative Clause Drafting",
-          goal: "Draft and compare multiple legal clause options using AI.",
-          microSkills: [
-            "Adapt legal language",
-            "Compare formulations",
-            "Note implications"
-          ],
-          prompt: "Ask AI to draft 2–3 alternative phrasings of a specific clause in a contract. Summarize their legal implications.",
-          output: "Table: Version | Text | Legal Effect | Risk Note",
-          tips: "Discuss with peers or instructors before selecting final version.",
-          warnings: "AI-generated clauses may sound correct but lack nuance.",
-          example: [
-            {
-              version: "A",
-              text: "The parties shall not disclose any confidential info without prior written consent.",
-              legal_effect: "Strict mutual confidentiality",
-              risk_note: "Overly rigid; may block internal audits"
-            }
-          ]
+          name: "GDPR/DPA Readiness Checklist",
+          goal: "Outline a pragmatic checklist for data processing arrangements.",
+          microSkills: ["Compliance mapping", "Data inventory", "Gap spotting"],
+          prompt: "Create a checklist to assess DPA readiness for [processing activity]. Include roles, purposes, legal bases, transfers, subprocessors, security, and retention.",
+          output: "Sectioned bullet checklist with reviewer notes",
+          tips: "Flag items needing DPO input.",
+          warnings: "Do not store sensitive data without necessity."
         }
       ]
     },
     {
       number: 5,
-      title: "Legal Risk & Ethics",
-      description: "Use AI to identify risks, evaluate biases, and uphold professional responsibility.",
+      title: "Negotiation & Strategy",
+      description: "Prepare positions, concessions, and fallback terms.",
       scenarios: [
         {
-          name: "Bias Review of AI Output",
-          goal: "Check AI-generated content for inappropriate or biased suggestions.",
-          microSkills: [
-            "Detect stereotypes",
-            "Ensure inclusive language",
-            "Propose corrections"
-          ],
-          prompt: "Review this AI-generated legal output for signs of bias or exclusionary language. Suggest neutral alternatives.",
-          output: "Review Log: Phrase | Bias Risk | Neutral Alternative | Reviewer Judgment",
-          tips: "Use inclusive legal writing guidelines as reference.",
-          warnings: "Be aware of implicit biases in tone and structure.",
-          example: [
-            {
-              phrase: "The chairman must approve...",
-              bias_risk: "Gender-exclusive term",
-              neutral_alternative: "The chairperson must approve...",
-              judgment: "Needs correction"
-            }
-          ]
+          name: "Negotiation Playbook",
+          goal: "Define must‑haves, tradeables, and walk‑away points with reasons.",
+          microSkills: ["BATNA/WATNA", "Priority ranking", "Concession planning"],
+          prompt: "Draft a negotiation playbook for [agreement/topic]. Include objectives, prioritized terms, acceptable ranges, fallback options, and talking points.",
+          output: "Playbook bullets with priorities and ranges",
+          tips: "Link each stance to a business rationale.",
+          warnings: "Mark positions that require client approval."
         },
         {
-          name: "Legal Risk Assessment",
-          goal: "Identify and categorize legal risks in a transaction or policy using AI.",
-          microSkills: [
-            "Identify breaches",
-            "Assign risk levels", 
-            "Propose mitigations"
-          ],
-          prompt: "Use AI to list possible legal risks in [context]. Assign a human-assessed risk level and propose mitigations.",
-          output: "Matrix: Risk | Level | Mitigation | Approved by",
-          tips: "Review risks with a supervisor before implementation.",
-          warnings: "Don't rely on AI's level rating—human confirmation is needed.",
-          example: [
-            {
-              risk: "Lack of data processing agreement",
-              level: "High",
-              mitigation: "Draft and sign DPA with vendor",
-              approved_by: "Senior Legal Counsel"
-            }
-          ]
+          name: "Term Sheet Options",
+          goal: "Offer compact option sets to accelerate agreement on key terms.",
+          microSkills: ["Option framing", "Risk/benefit summary", "Client alignment"],
+          prompt: "Create 2–3 concise term‑sheet options for [deal/topic] covering pricing, liability, IP, data, and termination.",
+          output: "Option bullets per theme with short rationale",
+          tips: "Keep each option internally consistent.",
+          warnings: "Note dependencies between terms."
         }
       ]
     },
     {
       number: 6,
-      title: "Client Advisory & Communication",
-      description: "Translate AI-generated insights into client-ready communication.",
+      title: "Client Communication & Deliverables",
+      description: "Translate analysis into concise client‑ready outputs.",
       scenarios: [
         {
-          name: "Plain-Language Summary for Clients",
-          goal: "Make AI-generated legal output understandable to non-lawyers.",
-          microSkills: [
-            "Translate legal terms",
-            "Clarify AI logic",
-            "Ensure client understanding"
-          ],
-          prompt: "Summarize this AI-generated legal content in plain language. Include a short FAQ for the client.",
-          output: "Client Brief: Summary | Key Points | FAQ",
-          tips: "Avoid Latin terms and use client-relevant examples.",
-          warnings: "Ensure legal precision is preserved in simplification.",
-          example: [
-            {
-              summary: "You can terminate the agreement with 30 days' notice.",
-              key_points: [
-                "Termination possible",
-                "Notice period: 30 days"
-              ],
-              faq: [
-                "Can I cancel immediately? → No, a notice is needed."
-              ]
-            }
-          ]
+          name: "Client Email Summary",
+          goal: "Summarize the situation, options, and next steps in plain English.",
+          microSkills: ["Plain language", "Action orientation", "Expectation setting"],
+          prompt: "Draft a client email summarizing [matter]. Include brief context, 2–3 options with pros/cons, recommended next steps, and decisions required.",
+          output: "Email outline bullets with headings",
+          tips: "Lead with what the client needs to do next.",
+          warnings: "Avoid legalese; flag uncertainties clearly."
         },
         {
-          name: "Instructor Prompt for Case Workshop",
-          goal: "Provide AI-enhanced material for classroom use on a legal issue.",
-          microSkills: [
-            "Design prompts",
-            "Link to learning objectives",
-            "Embed AI insights"
-          ],
-          prompt: "Generate a realistic hypothetical scenario involving [legal topic]. Include discussion prompts and AI opinion for critique.",
-          output: "Case Handout: Scenario | Discussion Questions | AI Position | Reflection Section",
-          tips: "Use Bloom's taxonomy to structure your classroom questions.",
-          warnings: "Remind students to challenge the AI, not just accept it.",
-          example: [
-            {
-              scenario: "An employee is fired after criticizing a company algorithm online.",
-              discussion_questions: [
-                "Is free speech at issue?",
-                "Was due process followed?"
-              ],
-              ai_position: "Likely lawful termination",
-              reflection: "Do you agree? Why or why not?"
-            }
-          ]
+          name: "Executive Brief",
+          goal: "Produce a one‑page brief for senior stakeholders.",
+          microSkills: ["Synthesis", "Prioritization", "Risk framing"],
+          prompt: "Create a one‑page brief on [topic] with sections: Context, Key Issues, Options, Recommendation, Risks, Timeline, Owner.",
+          output: "One‑page bullet brief with fixed headings",
+          tips: "Keep each bullet actionable and measurable.",
+          warnings: "Do not include confidential details beyond need‑to‑know."
         }
       ]
     }
@@ -295,7 +206,7 @@ const PromptGenerator = () => {
     navigator.clipboard.writeText(fullPrompt);
     toast({
       title: "EAI Prompt Copied",
-      description: "Legal education prompt template copied to clipboard."
+      description: "Legal practice prompt template copied to clipboard."
     });
   };
 
@@ -325,15 +236,15 @@ const PromptGenerator = () => {
     const assembled = `# EAI ${phaseTitle} – ${scenario.name}
 
 Role
-You are a Legal AI Assistant for education. You assist but do not replace the professional. Respond in ENGLISH only and keep the human in control of key decisions.
+You are a Legal AI Copilot for practicing lawyers. You assist but do not replace legal judgment. Respond in ENGLISH only and keep the human in control of key decisions.
 
 Task
 ${scenario.prompt}
 
 Context
 - Goal: ${scenario.goal}
-- Audience: law students
-- Micro-skills focus: ${scenario.microSkills.join(", ")}
+- Audience: lawyers (in-house or law firm)
+- Focus areas: ${scenario.microSkills.join(", ")}
 - Micro details (optional): ${micro || "(none provided)"}
 
 Workflow
@@ -382,7 +293,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
       setPhasePrompt(null);
       setGeneratedPrompt(null);
       const { data, error } = await supabase.functions.invoke("eai-prompt-suggest", {
-        body: { mode: "generate", context: { topic: genTopic, audience: "law students", output: "Structured bullet-list sections with clear headings", constraints: "Respond in ENGLISH only." } },
+        body: { mode: "generate", context: { topic: genTopic, audience: "lawyers", output: "Structured bullet-list sections with clear headings", constraints: "Respond in ENGLISH only." } },
       });
       if (error) throw error;
       if (data?.prompt) {
@@ -420,7 +331,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
             <FileText className="w-6 h-6 text-[#0B3C5D]" />
             <h1 className="text-xl font-bold text-[#0B3C5D]">Prompt Generator (pGen)</h1>
           </div>
-          <p className="text-gray-600 mt-2">Structured scenarios for AI-assisted legal education.</p>
+          <p className="text-gray-600 mt-2">Structured scenarios for AI-assisted legal practice.</p>
         </div>
       </header>
 
@@ -432,7 +343,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
               <Lightbulb className="w-5 h-5 text-yellow-600" />
               AI-Optimized Prompt Generator
             </CardTitle>
-            <CardDescription>Describe your legal topic or task. We'll craft an EAI-compliant prompt template.</CardDescription>
+              <CardDescription>Describe your legal matter or task. We'll craft an EAI-compliant prompt for legal practice.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -440,7 +351,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                 value={genTopic}
                 onChange={(e) => setGenTopic(e.target.value)}
                 rows={3}
-                placeholder="e.g., Analyze an NDA clause for ambiguity and suggest revisions"
+                placeholder="e.g., Prepare a negotiation playbook for a SaaS MSA (limitation of liability focus)"
                 className="w-full border rounded-md p-3 text-sm"
               />
               <div className="flex items-center gap-2">
@@ -493,9 +404,9 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
-                Learning Phases
+                Legal Workflows
               </CardTitle>
-              <CardDescription>Select a learning phase to explore EAI-compliant scenarios</CardDescription>
+              <CardDescription>Select a workflow to explore EAI-compliant scenarios for legal practice</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">

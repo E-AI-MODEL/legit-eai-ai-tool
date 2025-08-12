@@ -173,7 +173,7 @@ Constraints: The "prompt" must be a single, complete, plain-text instructional p
     const tone = ctx.tone || "professional, neutral";
     const extra = ctx.constraints || "";
 
-    const systemGen = `You are an expert EAI prompt designer for legal education. Craft prompts that:
+    const systemGen = `You are an expert EAI prompt designer for legal practice. Craft prompts that:
 - Clearly assign roles (AI suggests, human reviews/approves)
 - Require visible reasoning, error checks, and audit logging
 - Specify unbiased language, alternatives, and reflection
