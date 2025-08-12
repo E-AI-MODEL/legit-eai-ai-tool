@@ -361,10 +361,11 @@ const PromptChecker = () => {
               onChange={(e) => setPrompt(e.target.value)}
               rows={8}
               className="w-full"
+              maxLength={5000}
             />
             <div className="flex justify-between items-center mt-4">
               <div className="flex items-center gap-4">
-                <p className="text-sm text-gray-600">{prompt.length} characters</p>
+                <p className="text-sm text-gray-600">{prompt.length}/5000 characters</p>
                 <div className="flex items-center gap-2">
                   <Switch id="strict-mode" checked={strictMode} onCheckedChange={setStrictMode} />
                   <label htmlFor="strict-mode" className="text-sm text-gray-700">Strict Mode</label>
