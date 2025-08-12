@@ -8,13 +8,15 @@ import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, CheckCircle, Copy, FileDown, AlertTriangle, XCircle, Clock, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-
+import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
 interface CheckResult {
   rubric: string;
   flag: string;
   check: string;
   advice: string;
   status: "pass" | "warning" | "fail";
+  score: number;
 }
 
 const PromptChecker = () => {
@@ -24,8 +26,9 @@ const PromptChecker = () => {
   const [hasResults, setHasResults] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [suggestedPrompt, setSuggestedPrompt] = useState<string | null>(null);
-
-  const checkRules: Omit<CheckResult, 'status'>[] = [
+  const [strictMode, setStrictMode] = useState(true);
+  const [overallScore, setOverallScore] = useState<number | null>(null);
+  const checkRules: Omit<CheckResult, 'status' | 'score'>[] = [
     {
       rubric: "Cognitive Ownership & Traceability",
       flag: "🟠 Traceability missing",
@@ -88,6 +91,99 @@ const PromptChecker = () => {
     }
   ];
 
+  // Scoring helpers
+  const rubricKeywords: Record<string, string[]> = {
+    "Cognitive Ownership & Traceability": ["justify", "explain", "reasoning", "trace", "annotate", "reconstruct"],
+    "Agency & Didactic Controllability": ["review", "approve", "decide", "human", "final decision", "handover"],
+    "Reverse Scaffolding/Task Density": ["plan", "draft", "reflect", "before", "after", "user"],
+    "Sycophancy & Drift Awareness": ["compare", "critique", "challenge", "disagree", "question"],
+    "Compliance, Audit & Logging": ["log", "record", "audit", "track", "document"],
+    "Bias, Inclusion & Professional Neutrality": ["consider", "alternative", "perspective", "viewpoint"],
+    "Output Specification & Structure": ["format", "table", "list", "structure", "memo", "checklist"],
+    "Problem Complexity & Visible Reasoning": ["step", "reasoning", "breakdown", "trace", "explain how"],
+    "Error & Failure Analysis": ["error", "mistake", "correct", "check", "verify"],
+    "Legal Learning Mode": ["reflection", "learn", "insight", "summary", "question"],
+  };
+
+  const coverageForRubric = (promptLower: string, rubric: string) => {
+    const keys = rubricKeywords[rubric] || [];
+    if (!keys.length) return 0;
+    const present = keys.reduce((acc, k) => acc + (promptLower.includes(k) ? 1 : 0), 0);
+    return present / keys.length; // 0..1
+  };
+
+  const statusWeight = (s: "pass" | "warning" | "fail") => ({ pass: 85, warning: 55, fail: 25 }[s]);
+
+  const withScores = (items: Omit<CheckResult, "score">[] | CheckResult[], promptText: string): CheckResult[] => {
+    const lower = promptText.toLowerCase();
+    return (items as any[]).map((r) => {
+      const status: "pass" | "warning" | "fail" = (r.status as any) ?? "warning";
+      const cov = coverageForRubric(lower, r.rubric);
+      const score = Math.round(statusWeight(status) * 0.6 + cov * 100 * 0.4);
+      return { ...(r as any), status, score } as CheckResult;
+    });
+  };
+
+  const severityRank = (s: "pass" | "warning" | "fail") => ({ pass: 0, warning: 1, fail: 2 }[s]);
+
+  const mergeWorst = (ai: CheckResult[], heur: CheckResult[]): CheckResult[] => {
+    const byRubricAI = new Map(ai.map((r) => [r.rubric, r]));
+    return heur.map((hr) => {
+      const ar = byRubricAI.get(hr.rubric);
+      const chosen = !ar || severityRank(hr.status) >= severityRank(ar.status) ? hr : ar;
+      const other = ar && chosen === ar ? hr : ar ?? hr;
+      const score = Math.min(chosen.score, other?.score ?? chosen.score);
+      return { ...chosen, score };
+    });
+  };
+
+  const computeHeuristicResults = (promptText: string): Omit<CheckResult, "score">[] => {
+    const promptLower = promptText.toLowerCase();
+    return checkRules.map(rule => {
+      let status: "pass" | "warning" | "fail" = "fail";
+
+      if (rule.rubric === "Cognitive Ownership & Traceability") {
+        const tracabilityKeywords = rubricKeywords[rule.rubric];
+        status = tracabilityKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Agency & Didactic Controllability") {
+        const agencyKeywords = rubricKeywords[rule.rubric];
+        status = agencyKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
+      } else if (rule.rubric === "Reverse Scaffolding/Task Density") {
+        const scaffoldingWords = rubricKeywords[rule.rubric];
+        const aiDominanceWords = ["ai will", "ai should", "ai must", "generate", "create"];
+        const hasScaffolding = scaffoldingWords.some(keyword => promptLower.includes(keyword));
+        const hasAiDominance = aiDominanceWords.some(keyword => promptLower.includes(keyword));
+        status = hasScaffolding && !hasAiDominance ? "pass" : hasScaffolding ? "warning" : "fail";
+      } else if (rule.rubric === "Sycophancy & Drift Awareness") {
+        const driftKeywords = rubricKeywords[rule.rubric];
+        status = driftKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Compliance, Audit & Logging") {
+        const auditKeywords = rubricKeywords[rule.rubric];
+        status = auditKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
+      } else if (rule.rubric === "Bias, Inclusion & Professional Neutrality") {
+        const biasedTerms = ["always", "never", "obviously", "clearly", "definitely"];
+        const neutralTerms = rubricKeywords[rule.rubric];
+        const hasBiasedTerms = biasedTerms.some(term => promptLower.includes(term));
+        const hasNeutralTerms = neutralTerms.some(term => promptLower.includes(term));
+        status = !hasBiasedTerms && hasNeutralTerms ? "pass" : !hasBiasedTerms ? "warning" : "fail";
+      } else if (rule.rubric === "Output Specification & Structure") {
+        const formatKeywords = rubricKeywords[rule.rubric];
+        status = formatKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Problem Complexity & Visible Reasoning") {
+        const reasoningKeywords = rubricKeywords[rule.rubric];
+        status = reasoningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Error & Failure Analysis") {
+        const errorKeywords = rubricKeywords[rule.rubric];
+        status = errorKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      } else if (rule.rubric === "Legal Learning Mode") {
+        const learningKeywords = rubricKeywords[rule.rubric];
+        status = learningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      }
+
+      return { ...rule, status } as Omit<CheckResult, "score">;
+    });
+  };
+
   const runPromptCheck = async () => {
     if (!prompt.trim()) {
       toast({
@@ -100,88 +196,49 @@ const PromptChecker = () => {
 
     setIsChecking(true);
 
-    // Try AI semantic check via Supabase Edge Function first
+    let aiResultsRaw: Omit<CheckResult, "score">[] | null = null;
+
     try {
       const { data, error } = await supabase.functions.invoke("eai-semantic-check", {
         body: { prompt },
       });
-
       if (error) throw error;
-
       if (data && Array.isArray(data.results) && data.results.length > 0) {
-        setResults(data.results as CheckResult[]);
-        setHasResults(true);
-        const failCount = data.results.filter((r: CheckResult) => r.status === "fail").length;
-        const warningCount = data.results.filter((r: CheckResult) => r.status === "warning").length;
-        const passCount = data.results.filter((r: CheckResult) => r.status === "pass").length;
-        toast({
-          title: "EAI Compliance Analysis Complete (AI)",
-          description: `${passCount} passed, ${warningCount} warnings, ${failCount} critical issues found.`
-        });
-        return;
+        aiResultsRaw = data.results as Omit<CheckResult, "score">[];
       }
     } catch (e) {
-      console.warn("AI check failed, falling back to heuristic:", e);
-    } finally {
-      setIsChecking(false);
+      console.warn("AI check failed, continuing with heuristic:", e);
     }
 
-    // Fallback: heuristic keyword-based check
-    setIsChecking(true);
     try {
-      const promptLower = prompt.toLowerCase();
-      const results: CheckResult[] = checkRules.map(rule => {
-        let status: "pass" | "warning" | "fail" = "fail";
+      const heurRaw = computeHeuristicResults(prompt);
+      const heur = withScores(heurRaw, prompt);
+      let finalResults: CheckResult[] = heur;
+      let mode = "Heuristic";
 
-        if (rule.rubric === "Cognitive Ownership & Traceability") {
-          const tracabilityKeywords = ["justify", "explain", "reasoning", "trace", "annotate", "reconstruct"];
-          status = tracabilityKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-        } else if (rule.rubric === "Agency & Didactic Controllability") {
-          const agencyKeywords = ["review", "approve", "decide", "human", "final decision", "handover"];
-          status = agencyKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
-        } else if (rule.rubric === "Reverse Scaffolding/Task Density") {
-          const scaffoldingWords = ["plan", "draft", "reflect", "before", "after", "user"];
-          const aiDominanceWords = ["ai will", "ai should", "ai must", "generate", "create"];
-          const hasScaffolding = scaffoldingWords.some(keyword => promptLower.includes(keyword));
-          const hasAiDominance = aiDominanceWords.some(keyword => promptLower.includes(keyword));
-          status = hasScaffolding && !hasAiDominance ? "pass" : hasScaffolding ? "warning" : "fail";
-        } else if (rule.rubric === "Sycophancy & Drift Awareness") {
-          const driftKeywords = ["compare", "critique", "challenge", "disagree", "question"];
-          status = driftKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-        } else if (rule.rubric === "Compliance, Audit & Logging") {
-          const auditKeywords = ["log", "record", "audit", "track", "document"];
-          status = auditKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "fail";
-        } else if (rule.rubric === "Bias, Inclusion & Professional Neutrality") {
-          const biasedTerms = ["always", "never", "obviously", "clearly", "definitely"];
-          const neutralTerms = ["consider", "alternative", "perspective", "viewpoint"];
-          const hasBiasedTerms = biasedTerms.some(term => promptLower.includes(term));
-          const hasNeutralTerms = neutralTerms.some(term => promptLower.includes(term));
-          status = !hasBiasedTerms && hasNeutralTerms ? "pass" : !hasBiasedTerms ? "warning" : "fail";
-        } else if (rule.rubric === "Output Specification & Structure") {
-          const formatKeywords = ["format", "table", "list", "structure", "memo", "checklist"];
-          status = formatKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-        } else if (rule.rubric === "Problem Complexity & Visible Reasoning") {
-          const reasoningKeywords = ["step", "reasoning", "breakdown", "trace", "explain how"];
-          status = reasoningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-        } else if (rule.rubric === "Error & Failure Analysis") {
-          const errorKeywords = ["error", "mistake", "correct", "check", "verify"];
-          status = errorKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
-        } else if (rule.rubric === "Legal Learning Mode") {
-          const learningKeywords = ["reflection", "learn", "insight", "summary", "question"];
-          status = learningKeywords.some(keyword => promptLower.includes(keyword)) ? "pass" : "warning";
+      if (aiResultsRaw) {
+        const ai = withScores(aiResultsRaw, prompt);
+        if (strictMode) {
+          finalResults = mergeWorst(ai, heur);
+          mode = "Strict Mode (AI ∩ Heuristic)";
+        } else {
+          finalResults = ai;
+          mode = "AI";
         }
+      }
 
-        return { ...rule, status };
-      });
-
-      setResults(results);
+      setResults(finalResults);
       setHasResults(true);
-      const failCount = results.filter(r => r.status === "fail").length;
-      const warningCount = results.filter(r => r.status === "warning").length;
-      const passCount = results.filter(r => r.status === "pass").length;
+
+      const failCount = finalResults.filter(r => r.status === "fail").length;
+      const warningCount = finalResults.filter(r => r.status === "warning").length;
+      const passCount = finalResults.filter(r => r.status === "pass").length;
+      const overall = Math.round(finalResults.reduce((a, b) => a + (b.score ?? 0), 0) / finalResults.length);
+      setOverallScore(overall);
+
       toast({
-        title: "EAI Compliance Analysis Complete (Heuristic)",
-        description: `${passCount} passed, ${warningCount} warnings, ${failCount} critical issues found.`
+        title: `EAI Compliance Analysis Complete (${mode})`,
+        description: `${passCount} passed, ${warningCount} warnings, ${failCount} critical issues. Overall ${overall}/100.`
       });
     } finally {
       setIsChecking(false);
@@ -306,7 +363,13 @@ const PromptChecker = () => {
               className="w-full"
             />
             <div className="flex justify-between items-center mt-4">
-              <p className="text-sm text-gray-600">{prompt.length} characters</p>
+              <div className="flex items-center gap-4">
+                <p className="text-sm text-gray-600">{prompt.length} characters</p>
+                <div className="flex items-center gap-2">
+                  <Switch id="strict-mode" checked={strictMode} onCheckedChange={setStrictMode} />
+                  <label htmlFor="strict-mode" className="text-sm text-gray-700">Strict Mode</label>
+                </div>
+              </div>
               <Button onClick={runPromptCheck} disabled={isChecking || !prompt.trim()} className="gap-2">
                 {isChecking ? (
                   <>
@@ -352,7 +415,7 @@ const PromptChecker = () => {
               </CardHeader>
               <CardContent>
                 {/* Summary */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-4 gap-4 mb-6">
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">
                       {results.filter(r => r.status === "pass").length}
@@ -370,6 +433,12 @@ const PromptChecker = () => {
                       {results.filter(r => r.status === "fail").length}
                     </div>
                     <div className="text-sm text-red-700">Critical Issues</div>
+                  </div>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {overallScore ?? 0}
+                    </div>
+                    <div className="text-sm text-blue-700">Overall Score</div>
                   </div>
                 </div>
 
@@ -392,7 +461,14 @@ const PromptChecker = () => {
                           </Badge>
                         </div>
                       </div>
-                      <div className="bg-blue-50 p-3 rounded-lg">
+                      <div className="mt-3">
+                        <div className="flex items-center justify-between text-sm mb-1">
+                          <span>Strength</span>
+                          <span>{Math.round(result.score)}%</span>
+                        </div>
+                        <Progress value={Math.round(result.score)} />
+                      </div>
+                      <div className="bg-blue-50 p-3 rounded-lg mt-3">
                         <p className="text-sm"><strong>EAI Recommendation:</strong> {result.advice}</p>
                       </div>
                     </div>
