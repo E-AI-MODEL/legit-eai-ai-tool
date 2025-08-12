@@ -26,10 +26,10 @@ function cleanText(input: unknown): string {
   let s = input.trim();
   // Strip fenced blocks
   s = s.replace(/```[\s\S]*?```/g, "");
-  // Remove stray JSON-looking leading/trailing braces if they wrap the whole text
+
+  // If the entire content is JSON, extract the prompt field
   const onlyJsonLike = /^\s*\{[\s\S]*\}\s*$/; // not strict JSON parse to avoid cost
   if (onlyJsonLike.test(s)) {
-    // If model mistakenly put a JSON object, try to extract common \"prompt\" field
     try {
       const obj = JSON.parse(s);
       if (obj && typeof obj.prompt === "string") {
@@ -39,9 +39,19 @@ function cleanText(input: unknown): string {
       // ignore JSON parse errors, keep original text
     }
   }
+
+  // Remove explicit Example sections (headers like "Example", "Examples", "Example Implementation")
+  s = s.replace(/(?:^|\n)#{1,6}\s*Example(?:s)?(?: Implementation)?[\s\S]*$/i, "");
+  // Remove standalone JSON example blocks that are not fenced
+  s = s.replace(/\n\{[\s\S]*?\n\}\s*/g, "\n");
+  // Remove markdown table rows and separators
+  s = s.replace(/^\|.*\|.*$/gm, "");
+  s = s.replace(/^\s*\|?\s*-{2,}.*$/gm, "");
+  // Remove stray helper lines
+  s = s.replace(/Copy Example:?/gi, "");
+
   // Normalize multiple blank lines
   s = s.replace(/\n{3,}/g, "\n\n");
-  // Ensure labeled sections are clearly separated
   return s.trim();
 }
 
@@ -79,11 +89,12 @@ serve(async (req) => {
 - Problem Complexity & Visible Reasoning
 - Error & Failure Analysis
 - Legal Learning Mode (reflection)
+Language: Respond in ENGLISH only.
 Return STRICT JSON with shape SuggestResponse = { prompt: string; notes?: string; rubric_status?: { rubric: string; status: "pass"|"warning"|"fail"; note: string }[] }.
-Constraints: The "prompt" must be a single, complete, plain-text instructional prompt with labeled sections (no JSON, no code fences, no markdown tables). Use clear headings and lists only.`;
+Constraints: The "prompt" must be a single, complete, plain-text instructional prompt with labeled sections (no JSON, no code fences, no markdown tables, no templates, no example data). Use clear headings and bullet lists only.`;
 
 
-      const user = `Original prompt to improve:\n"""${userPrompt}"""\n\nOptional constraints/context:\n${constraints}\n\nRequirements for the improved prompt:\n- Keep user's intent but add missing EAI compliance instructions\n- Specify output format\n- Include audit/logging and reflection steps\n- Explicit user vs AI roles\n- Neutral language with bias checks`;
+      const user = `Original prompt to improve:\n"""${userPrompt}"""\n\nOptional constraints/context:\n${constraints}\n\nRequirements for the improved prompt:\n- Keep user's intent but add missing EAI compliance instructions\n- Specify output format (bulleted sections, not tables)\n- Include audit/logging and reflection steps\n- Explicit user vs AI roles\n- Neutral language with bias checks\n- Respond in ENGLISH only (translate if needed)`;
 
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -158,7 +169,7 @@ Constraints: The "prompt" must be a single, complete, plain-text instructional p
     const ctx = body?.context || {};
     const topic = ctx.topic || ctx.goal || ctx.intent || "a legal education task";
     const audience = ctx.audience || "law students";
-    const output = ctx.output || "Table or checklist with clear sections";
+    const output = ctx.output || "Bullet-list sections with clear headings";
     const tone = ctx.tone || "professional, neutral";
     const extra = ctx.constraints || "";
 
@@ -167,11 +178,12 @@ Constraints: The "prompt" must be a single, complete, plain-text instructional p
 - Require visible reasoning, error checks, and audit logging
 - Specify unbiased language, alternatives, and reflection
 - Define explicit output format and review steps
+Language: Respond in ENGLISH only.
 Return STRICT JSON: { prompt: string; notes?: string }.
-Constraints: The "prompt" must be a single, complete, plain-text instructional prompt with labeled sections (no JSON, no code fences, no markdown tables). Use clear headings and lists only.`;
+Constraints: The "prompt" must be a single, complete, plain-text instructional prompt with labeled sections (no JSON, no code fences, no markdown tables, no templates, no example data). Use clear headings and bullet lists only.`;
 
 
-    const userGen = `Design a single, high-quality prompt for the following context:\nTopic/goal: ${topic}\nAudience: ${audience}\nDesired output: ${output}\nTone: ${tone}\nExtra constraints: ${extra}\n\nMake it fully EAI-compliant with labeled sections (Instructions, Inputs, Steps, Output Format, Audit/Logging, Bias Check, Reflection, Human Review).`;
+    const userGen = `Design a single, high-quality prompt for the following context:\nTopic/goal: ${topic}\nAudience: ${audience}\nDesired output: ${output}\nTone: ${tone}\nExtra constraints: ${extra}\n\nMake it fully EAI-compliant with labeled sections (Instructions, Inputs, Steps, Output Requirements, Audit/Logging, Bias Check, Reflection, Human Review). Respond in ENGLISH only.`;
 
     const responseGen = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",

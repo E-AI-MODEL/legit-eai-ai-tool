@@ -317,11 +317,19 @@ const PromptGenerator = () => {
       setIsGenerating(true);
       setGeneratedPrompt(null);
       const { data, error } = await supabase.functions.invoke("eai-prompt-suggest", {
-        body: { mode: "generate", context: { topic: genTopic, audience: "law students", output: "Structured checklist or table" } },
+        body: { mode: "generate", context: { topic: genTopic, audience: "law students", output: "Structured bullet-list sections with clear headings", constraints: "Respond in ENGLISH only." } },
       });
       if (error) throw error;
       if (data?.prompt) {
-        const cleaned = String(data.prompt).replace(/```[\s\S]*?```/g, "").trim();
+        const cleaned = String(data.prompt)
+          .replace(/```[\s\S]*?```/g, "")
+          .replace(/^\|.*\|.*$/gm, "")
+          .replace(/^\s*\|?\s*-{2,}.*$/gm, "")
+          .replace(/(?:^|\n)#{1,6}\s*Example(?:s)?(?: Implementation)?[\s\S]*$/i, "")
+          .replace(/Copy Example:?/gi, "")
+          .replace(/\n\{[\s\S]*?\n\}\s*/g, "\n")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
         setGeneratedPrompt(cleaned);
         toast({ title: "Prompt generated", description: "An AI-optimized prompt is ready." });
       } else {
