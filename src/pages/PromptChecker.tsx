@@ -405,14 +405,25 @@ const PromptChecker = () => {
                     <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D] whitespace-pre-wrap">
                       {suggestedPrompt}
                     </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => { navigator.clipboard.writeText(suggestedPrompt!); toast({ title: "Copied", description: "Suggested prompt copied to clipboard." }); }}
-                      className="mt-2 gap-2"
-                    >
-                      <Copy className="w-4 h-4" />
-                      Copy Suggested Prompt
-                    </Button>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <Button
+                        onClick={() => {
+                          setPrompt(suggestedPrompt);
+                          toast({ title: "Prompt replaced", description: "The editor now uses the adjusted prompt." });
+                        }}
+                        className="gap-2"
+                      >
+                        Use Adjusted Prompt
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => { navigator.clipboard.writeText(suggestedPrompt!); toast({ title: "Copied", description: "Suggested prompt copied to clipboard." }); }}
+                        className="gap-2"
+                      >
+                        <Copy className="w-4 h-4" />
+                        Copy Suggested Prompt
+                      </Button>
+                    </div>
                   </div>
                 )}
               </CardContent>
