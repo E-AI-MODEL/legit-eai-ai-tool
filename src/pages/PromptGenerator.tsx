@@ -33,6 +33,8 @@ const PromptGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
   const [microDetails, setMicroDetails] = useState("");
+  const [phasePrompt, setPhasePrompt] = useState<string | null>(null);
+  const [isQuickGen, setIsQuickGen] = useState(false);
 
   useEffect(() => { document.title = "Prompt Generator | EAI Legal Prompts"; }, []);
 
@@ -362,6 +364,8 @@ Human Review Hand‑off
 Start
 Begin with a brief professional greeting and a one-line plan, then proceed with the Workflow.`;
 
+    setPhasePrompt(assembled.trim());
+    setIsQuickGen(false);
     setGeneratedPrompt(assembled.trim());
     toast({ title: "Prompt assembled", description: "A phase-based prompt was built." });
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {}
@@ -374,6 +378,8 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
     }
     try {
       setIsGenerating(true);
+      setIsQuickGen(true);
+      setPhasePrompt(null);
       setGeneratedPrompt(null);
       const { data, error } = await supabase.functions.invoke("eai-prompt-suggest", {
         body: { mode: "generate", context: { topic: genTopic, audience: "law students", output: "Structured bullet-list sections with clear headings", constraints: "Respond in ENGLISH only." } },
@@ -451,7 +457,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                   </Button>
                 )}
               </div>
-              {generatedPrompt && (
+              {isQuickGen && generatedPrompt && (
                 <Card className="mt-4">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0">
                     <CardTitle>Your customized EAI prompt</CardTitle>
@@ -614,70 +620,103 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                                 </div>
                               </div>
 
-                              {/* Prompt */}
-                              <div>
-                                <h4 className="font-semibold mb-2">EAI-Compliant Prompt Template</h4>
-                                <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D] break-words whitespace-pre-wrap">
-                                  {scenario.prompt}
-                                </div>
-                              </div>
-
-                              {/* Expected Output */}
-                              <div>
-                                <h4 className="font-semibold mb-2">Expected Output Format</h4>
-                                <Badge variant="outline" className="font-mono break-words">
-                                  {scenario.output}
-                                </Badge>
-                              </div>
-
-                              {/* Example */}
-                              {scenario.example && scenario.example.length > 0 && (
-                                <div>
-                                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                    <Lightbulb className="w-4 h-4 text-yellow-600" />
-                                    Example Implementation
-                                  </h4>
-                                  <div className="bg-yellow-50 p-3 rounded-lg border">
-                                    <pre className="text-sm text-gray-700 whitespace-pre-wrap break-words overflow-x-auto">
-                                      {JSON.stringify(scenario.example[0], null, 2)}
-                                    </pre>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm" 
-                                      onClick={() => copyExample(scenario.example![0])}
-                                      className="mt-2 gap-1"
+                              {/* Phase Preview (after Build) */}
+                              {phasePrompt && (
+                                <Card className="mt-4">
+                                  <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                                    <CardTitle>Your customized EAI prompt</CardTitle>
+                                    <Button
+                                      variant="outline"
+                                      size="icon"
+                                      aria-label="Copy prompt"
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(phasePrompt!);
+                                        toast({ title: "Copied", description: "Prompt copied to clipboard." });
+                                      }}
                                     >
-                                      <Copy className="w-3 h-3" />
-                                      Copy Example
+                                      <Copy className="w-4 h-4" />
                                     </Button>
-                                  </div>
-                                </div>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <div className="border rounded-md p-4 bg-gray-50">
+                                      <pre className="font-mono text-sm whitespace-pre-wrap break-words">{phasePrompt}</pre>
+                                    </div>
+                                    <div className="mt-4 border rounded-md p-3 bg-yellow-50">
+                                      <p className="text-sm">Tip: Copy this prompt and paste it into ChatGPT, Claude, or your favorite AI tool. The AI assists while you keep ownership of the thinking.</p>
+                                    </div>
+                                  </CardContent>
+                                </Card>
                               )}
 
-                              {/* Tips */}
-                              {scenario.tips && (
-                                <div className="bg-blue-50 p-3 rounded-lg">
-                                  <div className="flex items-start gap-2">
-                                    <Users className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                                    <div className="min-w-0">
-                                      <h4 className="font-semibold text-blue-800 mb-1">Implementation Tips</h4>
-                                      <p className="text-sm text-blue-700 break-words">{scenario.tips}</p>
+                              {/* Template and guidance (shown until you build) */}
+                              {!phasePrompt && (
+                                <>
+                                  {/* Prompt */}
+                                  <div>
+                                    <h4 className="font-semibold mb-2">EAI-Compliant Prompt Template</h4>
+                                    <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D] break-words whitespace-pre-wrap">
+                                      {scenario.prompt}
                                     </div>
                                   </div>
-                                </div>
-                              )}
 
-                              {/* Warnings */}
-                              {scenario.warnings && (
-                                <div className="bg-yellow-50 p-3 rounded-lg">
-                                  <div className="flex items-start gap-2">
-                                    <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                                    <div className="min-w-0">
-                                      <h4 className="font-semibold text-yellow-800 mb-1">EAI Model Warnings</h4>
-                                      <p className="text-sm text-yellow-700 break-words">{scenario.warnings}</p>
-                                    </div>
+                                  {/* Expected Output */}
+                                  <div>
+                                    <h4 className="font-semibold mb-2">Expected Output Format</h4>
+                                    <Badge variant="outline" className="font-mono break-words">
+                                      {scenario.output}
+                                    </Badge>
                                   </div>
-                                </div>
+
+                                  {/* Example */}
+                                  {scenario.example && scenario.example.length > 0 && (
+                                    <div>
+                                      <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                        <Lightbulb className="w-4 h-4 text-yellow-600" />
+                                        Example Implementation
+                                      </h4>
+                                      <div className="bg-yellow-50 p-3 rounded-lg border">
+                                        <pre className="text-sm text-gray-700 whitespace-pre-wrap break-words overflow-x-auto">
+                                          {JSON.stringify(scenario.example[0], null, 2)}
+                                        </pre>
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm" 
+                                          onClick={() => copyExample(scenario.example![0])}
+                                          className="mt-2 gap-1"
+                                        >
+                                          <Copy className="w-3 h-3" />
+                                          Copy Example
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Tips */}
+                                  {scenario.tips && (
+                                    <div className="bg-blue-50 p-3 rounded-lg">
+                                      <div className="flex items-start gap-2">
+                                        <Users className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                        <div className="min-w-0">
+                                          <h4 className="font-semibold text-blue-800 mb-1">Implementation Tips</h4>
+                                          <p className="text-sm text-blue-700 break-words">{scenario.tips}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Warnings */}
+                                  {scenario.warnings && (
+                                    <div className="bg-yellow-50 p-3 rounded-lg">
+                                      <div className="flex items-start gap-2">
+                                        <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                                        <div className="min-w-0">
+                                          <h4 className="font-semibold text-yellow-800 mb-1">EAI Model Warnings</h4>
+                                          <p className="text-sm text-yellow-700 break-words">{scenario.warnings}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </>
                               )}
                             </CardContent>
                           </Card>
