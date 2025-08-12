@@ -187,7 +187,7 @@ const TaskDensity = () => {
                   <Label htmlFor="actors">Actors *</Label>
                   <Input 
                     id="actors"
-                    placeholder="e.g., Student, AI, Instructor"
+                    placeholder="e.g., Lawyer, Client, AI"
                     value={formData.actors}
                     onChange={(e) => handleInputChange('actors', e.target.value)}
                   />

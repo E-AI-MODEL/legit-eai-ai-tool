@@ -26,7 +26,7 @@ const Index = () => {
     {
       id: "prompt-generator",
       title: "Prompt Generator (pGen)",
-      description: "Structured scenarios for AI-assisted legal education.",
+      description: "Structured scenarios for AI-assisted legal practice.",
       icon: FileText,
       path: "/prompt-generator",
       color: "bg-purple-500"
@@ -134,10 +134,10 @@ const Index = () => {
               <div className="bg-gray-50 p-6 rounded">
                 <h4 className="font-normal text-base mb-3 text-black">Model Purpose</h4>
                 <p className="text-gray-700 mb-4 font-light text-sm leading-relaxed">
-                  Provide a transparent, didactically sound, and compliant framework for AI use in legal and educational contexts.
+                  Provide a transparent, didactically sound, and compliant framework for AI use in legal practice and operations.
                 </p>
                 <p className="text-xs text-gray-600 font-light leading-relaxed">
-                  The EAI Model ensures that human agency, ownership, and reasoning remain visible throughout AI-assisted workflows, 
+                  The EAI Model ensures that human agency, ownership, and reasoning remain visible throughout AI-assisted legal workflows,
                   maintaining compliance with emerging AI regulations while promoting responsible usage.
                 </p>
               </div>
@@ -151,7 +151,7 @@ const Index = () => {
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-xs text-gray-500 mb-4 md:mb-0 font-light">
-              © 2025 L.E.G.I.T. | SAGA Lawyers AI & EAI Model
+              © 2025 L.E.G.I.T. | Legal AI & EAI Model
             </div>
             <div className="flex gap-6">
               <Link to="/privacy" className="text-xs text-gray-500 hover:text-black font-light">Privacy</Link>

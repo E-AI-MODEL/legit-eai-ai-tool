@@ -434,10 +434,10 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
           <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle>
-                {selectedPhase ? `Phase ${selectedPhase}: ${phases.find(p => p.number === selectedPhase)?.title}` : "Select a Learning Phase"}
+                {selectedPhase ? `Phase ${selectedPhase}: ${phases.find(p => p.number === selectedPhase)?.title}` : "Select a Legal Workflow"}
               </CardTitle>
               <CardDescription>
-                {selectedPhase ? phases.find(p => p.number === selectedPhase)?.description : "Choose a learning phase to view EAI-compliant scenarios"}
+                {selectedPhase ? phases.find(p => p.number === selectedPhase)?.description : "Choose a workflow to view EAI-compliant scenarios"}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -639,8 +639,8 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
               ) : (
                 <div className="text-center py-12">
                   <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Phase Selected</h3>
-                  <p className="text-gray-600">Select a learning phase from the left to view EAI-compliant prompt scenarios.</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Workflow Selected</h3>
+                  <p className="text-gray-600">Select a workflow from the left to view EAI-compliant prompt scenarios.</p>
                 </div>
               )}
             </CardContent>
@@ -650,19 +650,18 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
         {/* Domain Info */}
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle>Domain: Legal Education / AI & Law</CardTitle>
-            <CardDescription>Target Roles: Students, Instructors | EAI Model Compliance: ✅</CardDescription>
+            <CardTitle>Domain: Legal Practice</CardTitle>
+            <CardDescription>Target Roles: Lawyers, In‑house Counsel | EAI Model Compliance: ✅</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-gray-700 mb-4 break-words">
-              These prompt templates are designed for legal education contexts where AI tools are used to enhance learning 
-              while maintaining human agency and critical thinking. Each scenario includes built-in reflection points and 
-              quality checks aligned with the EAI Model principles.
+              These prompt templates are designed for legal practice contexts where AI tools streamline analysis, drafting, and communication
+              while maintaining human agency and legal judgment. Each scenario embeds reflection points and quality checks aligned with the EAI Model.
             </p>
             <div className="bg-[#0B3C5D] bg-opacity-5 p-4 rounded-lg">
               <p className="text-sm text-[#0B3C5D] break-words">
-                <strong>Base Prompt Structure:</strong> Use this structure to create legal education scenarios supported by AI. 
-                Insert the case, clause, or topic where required. Output must be structured, legally sound, and include a section for human review or accountability.
+                <strong>Base Prompt Structure:</strong> Use this structure to create legal practice prompts supported by AI.
+                Insert the matter, clause, or topic where required. Output must be structured, defensible, and include a section for human review/approval.
               </p>
             </div>
           </CardContent>

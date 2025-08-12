@@ -30,7 +30,7 @@ const Intro = () => {
           L.E.G.I.T.
         </h1>
         <p className="text-xl md:text-2xl font-light text-gray-700 tracking-wider">
-          Legal & Educational Guidance for Integrity and Transparency
+          Legal Guidance for Integrity and Transparency
         </p>
         <div className="mt-8 text-sm text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           Click to enter
