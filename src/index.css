@@ -100,4 +100,22 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Mobile hardening: prevent horizontal overflow and ensure media scales */
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  img, video, canvas, svg, iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Wrap long words/URLs to keep text inside containers */
+  p, h1, h2, h3, h4, h5, h6, li, a, span, small, strong, em, blockquote {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+  }
 }
