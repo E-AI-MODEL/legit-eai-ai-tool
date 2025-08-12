@@ -124,6 +124,8 @@ Type CheckResult = { rubric: string; flag: string; check: string; advice: string
 Rules:
 - Use the exact rubric/flag/check/advice texts provided.
 - Decide status based on the user's prompt content.
+- Return results for ALL provided rubrics in the SAME ORDER as given.
+- If uncertain between two statuses, choose "warning" (deterministic policy).
 - No extra prose outside JSON.`;
 
     const rubricsText = JSON.stringify(RUBRICS);
@@ -146,7 +148,10 @@ Rules:
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages,
-        temperature: 0.2,
+        temperature: 0,
+        top_p: 0,
+        frequency_penalty: 0,
+        presence_penalty: 0,
       }),
     });
 
@@ -180,7 +185,15 @@ Rules:
       );
     }
 
-    return new Response(JSON.stringify(parsed), {
+    // Enforce rubric order and texts; fill missing statuses as "warning" for determinism
+    const byRubric = new Map(parsed.results.map((r: CheckResult) => [r.rubric, r]));
+    const ordered: CheckResult[] = RUBRICS.map((r) => {
+      const got = byRubric.get(r.rubric);
+      const status = got?.status ?? "warning";
+      return { ...r, status };
+    });
+
+    return new Response(JSON.stringify({ results: ordered }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
