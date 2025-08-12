@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,8 @@ const PromptGenerator = () => {
   const [genTopic, setGenTopic] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
+
+  useEffect(() => { document.title = "Prompt Generator | EAI Legal Prompts"; }, []);
 
   const phases: Phase[] = [
     {
@@ -393,9 +395,30 @@ const PromptGenerator = () => {
                 )}
               </div>
               {generatedPrompt && (
-                <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D] whitespace-pre-wrap">
-                  {generatedPrompt}
-                </div>
+                <Card className="mt-4">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                    <CardTitle>Your customized EAI prompt</CardTitle>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      aria-label="Copy prompt"
+                      onClick={() => {
+                        navigator.clipboard.writeText(generatedPrompt!);
+                        toast({ title: "Copied", description: "Prompt copied to clipboard." });
+                      }}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="border rounded-md p-4 bg-gray-50">
+                      <pre className="font-mono text-sm whitespace-pre-wrap break-words">{generatedPrompt}</pre>
+                    </div>
+                    <div className="mt-4 border rounded-md p-3 bg-yellow-50">
+                      <p className="text-sm">Tip: Copy this prompt and paste it into ChatGPT, Claude, or your favorite AI tool. The AI assists while you keep ownership of the thinking.</p>
+                    </div>
+                  </CardContent>
+                </Card>
               )}
             </div>
           </CardContent>
