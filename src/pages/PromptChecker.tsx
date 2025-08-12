@@ -197,7 +197,8 @@ const PromptChecker = () => {
       });
       if (error) throw error;
       if (data?.prompt) {
-        setSuggestedPrompt(data.prompt);
+        const cleaned = String(data.prompt).replace(/```[\s\S]*?```/g, "").trim();
+        setSuggestedPrompt(cleaned);
         toast({ title: "Suggestion ready", description: "An improved prompt was generated." });
       } else {
         toast({ title: "No suggestion", description: "The AI couldn't suggest a better prompt.", variant: "destructive" });

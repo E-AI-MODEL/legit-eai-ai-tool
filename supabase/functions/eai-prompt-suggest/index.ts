@@ -20,6 +20,31 @@ interface SuggestResponse {
   rubric_status?: RubricStatus[];
 }
 
+// Sanitize prompt text to ensure plain, complete, text-only output
+function cleanText(input: unknown): string {
+  if (typeof input !== "string") return "";
+  let s = input.trim();
+  // Strip fenced blocks
+  s = s.replace(/```[\s\S]*?```/g, "");
+  // Remove stray JSON-looking leading/trailing braces if they wrap the whole text
+  const onlyJsonLike = /^\s*\{[\s\S]*\}\s*$/; // not strict JSON parse to avoid cost
+  if (onlyJsonLike.test(s)) {
+    // If model mistakenly put a JSON object, try to extract common \"prompt\" field
+    try {
+      const obj = JSON.parse(s);
+      if (obj && typeof obj.prompt === "string") {
+        s = String(obj.prompt);
+      }
+    } catch (_) {
+      // ignore JSON parse errors, keep original text
+    }
+  }
+  // Normalize multiple blank lines
+  s = s.replace(/\n{3,}/g, "\n\n");
+  // Ensure labeled sections are clearly separated
+  return s.trim();
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -54,7 +79,9 @@ serve(async (req) => {
 - Problem Complexity & Visible Reasoning
 - Error & Failure Analysis
 - Legal Learning Mode (reflection)
-Return STRICT JSON with shape SuggestResponse = { prompt: string; notes?: string; rubric_status?: { rubric: string; status: "pass"|"warning"|"fail"; note: string }[] }.`;
+Return STRICT JSON with shape SuggestResponse = { prompt: string; notes?: string; rubric_status?: { rubric: string; status: "pass"|"warning"|"fail"; note: string }[] }.
+Constraints: The "prompt" must be a single, complete, plain-text instructional prompt with labeled sections (no JSON, no code fences, no markdown tables). Use clear headings and lists only.`;
+
 
       const user = `Original prompt to improve:\n"""${userPrompt}"""\n\nOptional constraints/context:\n${constraints}\n\nRequirements for the improved prompt:\n- Keep user's intent but add missing EAI compliance instructions\n- Specify output format\n- Include audit/logging and reflection steps\n- Explicit user vs AI roles\n- Neutral language with bias checks`;
 
@@ -118,6 +145,10 @@ Return STRICT JSON with shape SuggestResponse = { prompt: string; notes?: string
         }
       }
 
+      if (parsed && typeof parsed.prompt === "string") {
+        parsed.prompt = cleanText(parsed.prompt);
+      }
+
       return new Response(JSON.stringify(parsed), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -136,7 +167,9 @@ Return STRICT JSON with shape SuggestResponse = { prompt: string; notes?: string
 - Require visible reasoning, error checks, and audit logging
 - Specify unbiased language, alternatives, and reflection
 - Define explicit output format and review steps
-Return STRICT JSON: { prompt: string; notes?: string }`;
+Return STRICT JSON: { prompt: string; notes?: string }.
+Constraints: The "prompt" must be a single, complete, plain-text instructional prompt with labeled sections (no JSON, no code fences, no markdown tables). Use clear headings and lists only.`;
+
 
     const userGen = `Design a single, high-quality prompt for the following context:\nTopic/goal: ${topic}\nAudience: ${audience}\nDesired output: ${output}\nTone: ${tone}\nExtra constraints: ${extra}\n\nMake it fully EAI-compliant with labeled sections (Instructions, Inputs, Steps, Output Format, Audit/Logging, Bias Check, Reflection, Human Review).`;
 
@@ -198,6 +231,10 @@ Return STRICT JSON: { prompt: string; notes?: string }`;
           );
         }
       }
+    }
+
+    if (parsedGen && typeof parsedGen.prompt === "string") {
+      parsedGen.prompt = cleanText(parsedGen.prompt);
     }
 
     return new Response(JSON.stringify(parsedGen), {

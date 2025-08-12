@@ -321,7 +321,8 @@ const PromptGenerator = () => {
       });
       if (error) throw error;
       if (data?.prompt) {
-        setGeneratedPrompt(data.prompt);
+        const cleaned = String(data.prompt).replace(/```[\s\S]*?```/g, "").trim();
+        setGeneratedPrompt(cleaned);
         toast({ title: "Prompt generated", description: "An AI-optimized prompt is ready." });
       } else {
         toast({ title: "No prompt returned", description: "Try refining your topic.", variant: "destructive" });
