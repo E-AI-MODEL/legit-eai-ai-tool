@@ -32,6 +32,7 @@ const PromptGenerator = () => {
   const [genTopic, setGenTopic] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
+  const [microDetails, setMicroDetails] = useState("");
 
   useEffect(() => { document.title = "Prompt Generator | EAI Legal Prompts"; }, []);
 
@@ -310,6 +311,62 @@ const PromptGenerator = () => {
     setSelectedScenario(scenarioIndex);
   };
 
+  const buildPhasePrompt = () => {
+    const scenario = getSelectedScenario();
+    if (!scenario) {
+      toast({ title: "Select a scenario", description: "Choose a phase and scenario first.", variant: "destructive" });
+      return;
+    }
+    const phaseTitle = phases.find(p => p.number === selectedPhase)?.title || "Phase";
+
+    const micro = microDetails.trim();
+    const assembled = `# EAI ${phaseTitle} – ${scenario.name}
+
+Role
+You are a Legal AI Assistant for education. You assist but do not replace the professional. Respond in ENGLISH only and keep the human in control of key decisions.
+
+Task
+${scenario.prompt}
+
+Context
+- Goal: ${scenario.goal}
+- Audience: law students
+- Micro-skills focus: ${scenario.microSkills.join(", ")}
+- Micro details (optional): ${micro || "(none provided)"}
+
+Workflow
+1. Analyze the request and clarify assumptions; list any missing inputs.
+2. Produce the requested output step-by-step with visible reasoning.
+3. Offer 1–2 alternatives where relevant and explain trade-offs.
+4. Mark decision points that require human approval and pause before proceeding.
+
+Output Requirements
+- ${scenario.output}
+- Use clear headings and bullet lists (no JSON, no markdown tables, no code fences).
+
+Audit & Logging
+- Summarize key decisions, sources (if any), and rationale; provide a short audit log at the end.
+
+Bias & Neutrality Checks
+- Use neutral, inclusive language; provide alternative viewpoints where appropriate; note uncertainty.
+
+Error & Failure Checks
+- Identify possible errors or edge cases and how you mitigated them.
+
+Reflection
+- Provide 3 insights and 3 open questions for further study.
+
+Human Review Hand‑off
+- List items requiring human confirmation. Pause and ask for approval.
+
+Start
+Begin with a brief professional greeting and a one-line plan, then proceed with the Workflow.`;
+
+    setGeneratedPrompt(assembled.trim());
+    toast({ title: "Prompt assembled", description: "A phase-based prompt was built." });
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {}
+  };
+
   const handleGeneratePrompt = async () => {
     if (!genTopic.trim()) {
       toast({ title: "Enter a topic", description: "Describe your legal task or topic first.", variant: "destructive" });
@@ -538,6 +595,22 @@ const PromptGenerator = () => {
                                       {skill}
                                     </Badge>
                                   ))}
+                                </div>
+                              </div>
+
+                              {/* Micro details + Build */}
+                              <div>
+                                <h4 className="font-semibold mb-2">Micro details (optional)</h4>
+                                <textarea
+                                  value={microDetails}
+                                  onChange={(e) => setMicroDetails(e.target.value)}
+                                  rows={3}
+                                  placeholder="e.g., Contract: NDA; Jurisdiction: EU; Focus: data processing clause; Deadline: 7 days"
+                                  className="w-full border rounded-md p-3 text-sm"
+                                />
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Button onClick={buildPhasePrompt} className="gap-2">Build Perfect Prompt</Button>
+                                  <Button variant="outline" onClick={() => setMicroDetails("")}>Clear micro info</Button>
                                 </div>
                               </div>
 
