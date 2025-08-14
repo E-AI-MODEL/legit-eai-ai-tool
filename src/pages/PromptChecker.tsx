@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
+
 interface CheckResult {
   rubric: string;
   flag: string;
@@ -28,6 +28,7 @@ const PromptChecker = () => {
   const [suggestedPrompt, setSuggestedPrompt] = useState<string | null>(null);
   const [strictMode, setStrictMode] = useState(true);
   const [overallScore, setOverallScore] = useState<number | null>(null);
+
   const checkRules: Omit<CheckResult, 'status' | 'score'>[] = [
     {
       rubric: "Cognitive Ownership & Traceability",
@@ -36,7 +37,7 @@ const PromptChecker = () => {
       advice: "Add a step for user to annotate, explain, or justify acceptance/rejection of AI output."
     },
     {
-      rubric: "Agency & Didactic Controllability",
+      rubric: "Agency & Didactic Controllability", 
       flag: "🚨 Agency risk",
       check: "Unclear or missing specification of who decides (AI or human); no explicit review/approval workflow.",
       advice: "Define exact roles: when AI suggests, when human reviews/approves, and where handover occurs."
@@ -276,6 +277,14 @@ const PromptChecker = () => {
     }
   };
 
+  const clearPrompt = () => {
+    setPrompt("");
+    setResults([]);
+    setHasResults(false);
+    setSuggestedPrompt(null);
+    setOverallScore(null);
+  };
+
   const getStatusIcon = (status: "pass" | "warning" | "fail") => {
     switch (status) {
       case "pass": return <CheckCircle className="w-5 h-5 text-green-500" />;
@@ -371,19 +380,31 @@ const PromptChecker = () => {
                   <label htmlFor="strict-mode" className="text-sm text-gray-700">Strict Mode</label>
                 </div>
               </div>
-              <Button onClick={runPromptCheck} disabled={isChecking || !prompt.trim()} className="gap-2 w-full sm:w-auto">
-                {isChecking ? (
-                  <>
-                    <Clock className="w-4 h-4 animate-spin" />
-                    Analyzing EAI Compliance...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="w-4 h-4" />
-                    Check EAI Compliance
-                  </>
+              <div className="flex gap-2 w-full sm:w-auto">
+                {prompt.trim() && (
+                  <Button 
+                    variant="outline" 
+                    onClick={clearPrompt} 
+                    className="gap-2 w-full sm:w-auto"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    Clear
+                  </Button>
                 )}
-              </Button>
+                <Button onClick={runPromptCheck} disabled={isChecking || !prompt.trim()} className="gap-2 w-full sm:w-auto">
+                  {isChecking ? (
+                    <>
+                      <Clock className="w-4 h-4 animate-spin" />
+                      Analyzing EAI Compliance...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      Check EAI Compliance
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
