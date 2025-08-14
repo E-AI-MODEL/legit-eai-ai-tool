@@ -233,249 +233,251 @@ const Saga = () => {
         </div>
 
         <Tabs defaultValue="presets" className="mb-16">
-          <TabsList className="grid w-full grid-cols-4 bg-white/10">
-            <TabsTrigger value="presets" className="text-white data-[state=active]:bg-white/20">
+          <TabsList className="grid w-full grid-cols-4 bg-white/10 backdrop-blur-sm">
+            <TabsTrigger value="presets" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">
               Juridische Presets
             </TabsTrigger>
-            <TabsTrigger value="checker" className="text-white data-[state=active]:bg-white/20">
+            <TabsTrigger value="checker" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">
               Prompt Checker
             </TabsTrigger>
-            <TabsTrigger value="generator" className="text-white data-[state=active]:bg-white/20">
+            <TabsTrigger value="generator" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">
               Generator
             </TabsTrigger>
-            <TabsTrigger value="assets" className="text-white data-[state=active]:bg-white/20">
+            <TabsTrigger value="assets" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">
               Backend Assets
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="presets" className="space-y-8">
-            <div className="max-h-96 overflow-y-auto">
-              <SagaPromptPresets onSelectPreset={handleSelectPreset} />
-            </div>
-          </TabsContent>
+          <div className="mt-8">
+            <TabsContent value="presets" className="mt-0">
+              <div className="max-h-96 overflow-y-auto">
+                <SagaPromptPresets onSelectPreset={handleSelectPreset} />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="checker" className="space-y-8">
-            <SagaPromptChecker prompt={prompt} onPromptChange={setPrompt} />
-          </TabsContent>
+            <TabsContent value="checker" className="mt-0">
+              <SagaPromptChecker prompt={prompt} onPromptChange={setPrompt} />
+            </TabsContent>
 
-          <TabsContent value="generator" className="space-y-8">
-            {/* Custom Prompt Generator */}
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-xl text-white flex items-center gap-3">
-                  <Wand2 className="w-6 h-6" />
-                  Aangepaste Prompt Generator
-                </CardTitle>
-                <CardDescription className="text-slate-300">
-                  Genereer EAI-compliante prompts voor specifieke juridische taken
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <Input
-                    placeholder="Onderwerp/Doel"
-                    value={genContext.topic}
-                    onChange={(e) => setGenContext({...genContext, topic: e.target.value})}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
-                  />
-                  <Input
-                    placeholder="Doelgroep"
-                    value={genContext.audience}
-                    onChange={(e) => setGenContext({...genContext, audience: e.target.value})}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
-                  />
-                </div>
-                <Input
-                  placeholder="Output formaat"
-                  value={genContext.output}
-                  onChange={(e) => setGenContext({...genContext, output: e.target.value})}
-                  className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
-                />
-                <Input
-                  placeholder="Extra eisen"
-                  value={genContext.constraints}
-                  onChange={(e) => setGenContext({...genContext, constraints: e.target.value})}
-                  className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
-                />
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={handleGeneratePrompt}
-                    disabled={isGenerating || !genContext.topic.trim()}
-                    className="flex-1"
-                  >
-                    {isGenerating ? 'Genereren...' : 'Nieuwe Prompt'}
-                  </Button>
-                  <Button 
-                    onClick={handleImprovePrompt}
-                    disabled={isGenerating || !prompt.trim()}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    {isGenerating ? 'Verbeteren...' : 'Verbeter Huidige'}
-                  </Button>
-                </div>
-                
-                {generatedPrompt && (
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h4 className="text-white font-medium mb-3">Gegenereerde Prompt:</h4>
-                    <Textarea
-                      value={generatedPrompt}
-                      onChange={(e) => setGeneratedPrompt(e.target.value)}
-                      className="bg-white/10 border-white/20 text-white text-sm"
-                      rows={12}
+            <TabsContent value="generator" className="mt-0">
+              {/* Custom Prompt Generator */}
+              <Card className="bg-white/5 border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-xl text-white flex items-center gap-3">
+                    <Wand2 className="w-6 h-6" />
+                    Aangepaste Prompt Generator
+                  </CardTitle>
+                  <CardDescription className="text-slate-300">
+                    Genereer EAI-compliante prompts voor specifieke juridische taken
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      placeholder="Onderwerp/Doel"
+                      value={genContext.topic}
+                      onChange={(e) => setGenContext({...genContext, topic: e.target.value})}
+                      className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
                     />
-                    <Button
-                      onClick={() => setPrompt(generatedPrompt)}
-                      className="mt-3 w-full"
-                      size="sm"
+                    <Input
+                      placeholder="Doelgroep"
+                      value={genContext.audience}
+                      onChange={(e) => setGenContext({...genContext, audience: e.target.value})}
+                      className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+                    />
+                  </div>
+                  <Input
+                    placeholder="Output formaat"
+                    value={genContext.output}
+                    onChange={(e) => setGenContext({...genContext, output: e.target.value})}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+                  />
+                  <Input
+                    placeholder="Extra eisen"
+                    value={genContext.constraints}
+                    onChange={(e) => setGenContext({...genContext, constraints: e.target.value})}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+                  />
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={handleGeneratePrompt}
+                      disabled={isGenerating || !genContext.topic.trim()}
+                      className="flex-1"
                     >
-                      Gebruik Deze Prompt
+                      {isGenerating ? 'Genereren...' : 'Nieuwe Prompt'}
+                    </Button>
+                    <Button 
+                      onClick={handleImprovePrompt}
+                      disabled={isGenerating || !prompt.trim()}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      {isGenerating ? 'Verbeteren...' : 'Verbeter Huidige'}
                     </Button>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="assets" className="space-y-8">
-            {/* Backend Assets Grid */}
-            <div className="grid lg:grid-cols-2 gap-8">
-              {/* Advice Library */}
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-xl text-white flex items-center gap-3">
-                    <Database className="w-6 h-6" />
-                    Advies Bibliotheek
-                  </CardTitle>
-                  <CardDescription className="text-slate-300">
-                    Frontend-veilige tips gegroepeerd per label met backend rationale ankers
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4 max-h-80 overflow-y-auto">
-                    {Object.entries(adviceLibrary).map(([category, data]) => (
-                      <div key={category} className="border border-white/10 rounded-lg p-4">
-                        <h4 className="font-semibold text-white mb-2">{category}</h4>
-                        <div className="space-y-1">
-                          {data.chips.map((chip, index) => (
-                            <div key={index} className="text-sm text-slate-300 bg-white/5 rounded px-2 py-1">
-                              {chip}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  
+                  {generatedPrompt && (
+                    <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                      <h4 className="text-white font-medium mb-3">Gegenereerde Prompt:</h4>
+                      <Textarea
+                        value={generatedPrompt}
+                        onChange={(e) => setGeneratedPrompt(e.target.value)}
+                        className="bg-white/10 border-white/20 text-white text-sm"
+                        rows={12}
+                      />
+                      <Button
+                        onClick={() => setPrompt(generatedPrompt)}
+                        className="mt-3 w-full"
+                        size="sm"
+                      >
+                        Gebruik Deze Prompt
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
+            </TabsContent>
 
-              {/* Detector Rules */}
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-xl text-white flex items-center gap-3">
-                    <Brain className="w-6 h-6" />
-                    Detector Regels
-                  </CardTitle>
-                  <CardDescription className="text-slate-300">
-                    Backend regex/heuristieken gekoppeld aan gewone labels
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3 max-h-80 overflow-y-auto">
-                    {detectorRules.map((rule) => (
-                      <div key={rule.id} className="border border-white/10 rounded-lg p-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-white text-sm">{rule.label}</h4>
-                          <Badge 
-                            variant="outline" 
-                            className={`text-xs ${getSeverityColor(rule.severity)}`}
-                          >
-                            {rule.severity}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-slate-400">{rule.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Normalizer Section */}
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-xl text-white flex items-center gap-3">
-                  <Zap className="w-6 h-6" />
-                  Een-Klik Toepassing Normalizer
-                </CardTitle>
-                <CardDescription className="text-slate-300">
-                  Server-side prompt normalisatie met gestructureerde output
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold text-white mb-3">Verwerkingsvolgorde</h4>
-                    <div className="space-y-2 text-sm text-slate-300">
-                      {["Structuur", "Scope & criteria", "Bewijs", "Beslispunten", "Output format", "Toon", "Privacy", "Timing"].map((item, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <span className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center text-xs">
-                            {index + 1}
-                          </span>
-                          {item}
+            <TabsContent value="assets" className="mt-0">
+              {/* Backend Assets Grid */}
+              <div className="grid lg:grid-cols-2 gap-8">
+                {/* Advice Library */}
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-xl text-white flex items-center gap-3">
+                      <Database className="w-6 h-6" />
+                      Advies Bibliotheek
+                    </CardTitle>
+                    <CardDescription className="text-slate-300">
+                      Frontend-veilige tips gegroepeerd per label met backend rationale ankers
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4 max-h-80 overflow-y-auto">
+                      {Object.entries(adviceLibrary).map(([category, data]) => (
+                        <div key={category} className="border border-white/10 rounded-lg p-4">
+                          <h4 className="font-semibold text-white mb-2">{category}</h4>
+                          <div className="space-y-1">
+                            {data.chips.map((chip, index) => (
+                              <div key={index} className="text-sm text-slate-300 bg-white/5 rounded px-2 py-1">
+                                {chip}
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       ))}
                     </div>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-white mb-3">Standaard Headers</h4>
-                    <div className="space-y-1 text-sm text-slate-300">
-                      <div>• Feiten (Extractie)</div>
-                      <div>• Analyse (Interpretatie)</div>
-                      <div>• Beslispunten — Menselijke goedkeuring vereist</div>
-                      <div>• Bronnen & Actie Log</div>
-                      <div>• Menselijke Review Overdracht</div>
+                  </CardContent>
+                </Card>
+
+                {/* Detector Rules */}
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-xl text-white flex items-center gap-3">
+                      <Brain className="w-6 h-6" />
+                      Detector Regels
+                    </CardTitle>
+                    <CardDescription className="text-slate-300">
+                      Backend regex/heuristieken gekoppeld aan gewone labels
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3 max-h-80 overflow-y-auto">
+                      {detectorRules.map((rule) => (
+                        <div key={rule.id} className="border border-white/10 rounded-lg p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-white text-sm">{rule.label}</h4>
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${getSeverityColor(rule.severity)}`}
+                            >
+                              {rule.severity}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-slate-400">{rule.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Normalizer Section */}
+              <Card className="bg-white/5 border-white/10 mt-8">
+                <CardHeader>
+                  <CardTitle className="text-xl text-white flex items-center gap-3">
+                    <Zap className="w-6 h-6" />
+                    Een-Klik Toepassing Normalizer
+                  </CardTitle>
+                  <CardDescription className="text-slate-300">
+                    Server-side prompt normalisatie met gestructureerde output
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold text-white mb-3">Verwerkingsvolgorde</h4>
+                      <div className="space-y-2 text-sm text-slate-300">
+                        {["Structuur", "Scope & criteria", "Bewijs", "Beslispunten", "Output format", "Toon", "Privacy", "Timing"].map((item, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <span className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center text-xs">
+                              {index + 1}
+                            </span>
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white mb-3">Standaard Headers</h4>
+                      <div className="space-y-1 text-sm text-slate-300">
+                        <div>• Feiten (Extractie)</div>
+                        <div>• Analyse (Interpretatie)</div>
+                        <div>• Beslispunten — Menselijke goedkeuring vereist</div>
+                        <div>• Bronnen & Actie Log</div>
+                        <div>• Menselijke Review Overdracht</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Integration Info */}
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-xl text-white flex items-center gap-3">
-                  <Shield className="w-6 h-6" />
-                  Integratie Klaar
-                </CardTitle>
-                <CardDescription className="text-slate-300">
-                  Schone backend assets met EAI veiligheidsmaatregelen onder de motorkap
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6 text-sm">
-                  <div>
-                    <h4 className="font-semibold text-white mb-2">Backend Output</h4>
-                    <ul className="text-slate-400 space-y-1">
-                      <li>• Samenvatting met issue detectie</li>
-                      <li>• Gewone label uitleg</li>
-                      <li>• Advies chips per categorie</li>
-                      <li>• Genormaliseerde prompt klaar</li>
-                    </ul>
+              {/* Integration Info */}
+              <Card className="bg-white/5 border-white/10 mt-8">
+                <CardHeader>
+                  <CardTitle className="text-xl text-white flex items-center gap-3">
+                    <Shield className="w-6 h-6" />
+                    Integratie Klaar
+                  </CardTitle>
+                  <CardDescription className="text-slate-300">
+                    Schone backend assets met EAI veiligheidsmaatregelen onder de motorkap
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                      <h4 className="font-semibold text-white mb-2">Backend Output</h4>
+                      <ul className="text-slate-400 space-y-1">
+                        <li>• Samenvatting met issue detectie</li>
+                        <li>• Gewone label uitleg</li>
+                        <li>• Advies chips per categorie</li>
+                        <li>• Genormaliseerde prompt klaar</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white mb-2">Veiligheidsmaatregelen</h4>
+                      <ul className="text-slate-400 space-y-1">
+                        <li>• Geen rubric jargon zichtbaar</li>
+                        <li>• Interne metrics gelogd</li>
+                        <li>• Unit geteste regels</li>
+                        <li>• Audit trail onderhouden</li>
+                      </ul>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-white mb-2">Veiligheidsmaatregelen</h4>
-                    <ul className="text-slate-400 space-y-1">
-                      <li>• Geen rubric jargon zichtbaar</li>
-                      <li>• Interne metrics gelogd</li>
-                      <li>• Unit geteste regels</li>
-                      <li>• Audit trail onderhouden</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </div>
         </Tabs>
       </section>
     </div>
