@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +77,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
   const handleUsePrompt = async (preset: LegalPreset) => {
     try {
       // Copy to clipboard - using the correct property name
-      await navigator.clipboard.writeText(preset.system_prompt);
+      await navigator.clipboard.writeText(preset.template);
       
       // Screen buzz effect
       document.body.style.animation = 'buzz 0.2s ease-in-out';
