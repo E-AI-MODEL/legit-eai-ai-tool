@@ -75,16 +75,16 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
 
   const handleUsePrompt = async (preset: LegalPreset) => {
     try {
-      // Copy to clipboard - using the correct property name based on LegalPreset type
-      await navigator.clipboard.writeText(preset.system_prompt);
+      // Copy to clipboard - using the correct property name
+      await navigator.clipboard.writeText(preset.prompt_template);
       
-      // Screen buzz effect
-      document.body.style.animation = 'buzz 0.2s ease-in-out';
+      // Very gentle screen buzz effect - barely noticeable
+      document.body.style.animation = 'subtle-buzz 0.15s ease-in-out';
       setTimeout(() => {
         document.body.style.animation = '';
-      }, 200);
+      }, 150);
       
-      // Bleep sound effect
+      // Soft bleep sound effect
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -92,12 +92,12 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.03, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
       
       oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.1);
+      oscillator.stop(audioContext.currentTime + 0.08);
       
       // Call the original handler
       onSelectPreset(preset);
@@ -112,10 +112,9 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
   return (
     <>
       <style>{`
-        @keyframes buzz {
+        @keyframes subtle-buzz {
           0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-2px) rotate(-0.5deg); }
-          75% { transform: translateX(2px) rotate(0.5deg); }
+          50% { transform: translateX(0.5px); }
         }
       `}</style>
       
