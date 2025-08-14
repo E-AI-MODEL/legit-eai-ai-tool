@@ -48,9 +48,15 @@ const Main = () => {
                 <p className="text-sm text-gray-600">Legal Guidance for Integrity and Transparency</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <BookOpen className="w-4 h-4" />
-              <span>EAI & Legal Tools</span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <BookOpen className="w-4 h-4" />
+                <span>EAI & Legal Tools</span>
+              </div>
+              {/* Secret V1.0 Button */}
+              <Button asChild variant="ghost" size="sm" className="opacity-20 hover:opacity-100 transition-opacity">
+                <Link to="/saga">V1.0</Link>
+              </Button>
             </div>
           </div>
         </div>
