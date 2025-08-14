@@ -14,11 +14,42 @@ const Saga = () => {
   const [selectedPreset, setSelectedPreset] = useState<LegalPreset | null>(null);
   const [activeTab, setActiveTab] = useState("presets");
 
-  // Clear prompt and preset when component unmounts to prevent leaks
+  // Clear prompt and preset when component mounts AND unmounts
   useEffect(() => {
+    // Clear any existing state on mount
+    setPrompt("");
+    setSelectedPreset(null);
+    
     return () => {
+      // Clear state on unmount
       setPrompt("");
       setSelectedPreset(null);
+      
+      // Also clear any browser history state that might contain prompts
+      if (window.history.state && window.history.state.prompt) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    };
+  }, []);
+
+  // Additional cleanup when user navigates away
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      setPrompt("");
+      setSelectedPreset(null);
+    };
+
+    const handlePopState = () => {
+      setPrompt("");
+      setSelectedPreset(null);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
     };
   }, []);
 
@@ -37,6 +68,11 @@ const Saga = () => {
     setActiveTab("checker");
   };
 
+  // Ensure prompt is properly isolated and doesn't leak to other components
+  const handlePromptChange = (newPrompt: string) => {
+    setPrompt(newPrompt);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-blue-900">
       {/* Simplified Header */}
@@ -53,7 +89,7 @@ const Saga = () => {
               </div>
             </div>
             <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
-              <Link to="/">
+              <Link to="/" onClick={() => { setPrompt(""); setSelectedPreset(null); }}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Link>
@@ -137,7 +173,7 @@ const Saga = () => {
               </p>
             </div>
             
-            <SagaPromptChecker prompt={prompt} onPromptChange={setPrompt} />
+            <SagaPromptChecker prompt={prompt} onPromptChange={handlePromptChange} />
           </TabsContent>
         </Tabs>
       </section>
