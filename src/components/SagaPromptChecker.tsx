@@ -59,60 +59,60 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
           
           // Critical legal compliance enhancements
           if (criticalIssues.some((r: CheckResult) => r.rubric.includes('Agency'))) {
-            enhanced += '**Nederlandse Juridische Verantwoordelijkheid:**\n';
-            enhanced += '- Advocaat behoudt eindverantwoordelijkheid (art. 28 Advocatenwet)\n';
-            enhanced += '- AI ondersteunt, advocaat beslist en controleert\n';
-            enhanced += '- Duidelijke review momenten voor juridische kwaliteit\n';
-            enhanced += '- Client informed consent over AI-gebruik\n\n';
+            enhanced += '**Professional Legal Responsibility:**\n';
+            enhanced += '- Attorney maintains ultimate responsibility for all legal work\n';
+            enhanced += '- AI assists, attorney decides and controls all outputs\n';
+            enhanced += '- Clear review checkpoints for legal quality assurance\n';
+            enhanced += '- Client informed consent regarding AI assistance\n\n';
           }
           
           if (criticalIssues.some((r: CheckResult) => r.rubric.includes('Traceability'))) {
-            enhanced += '**Dossier Verantwoording & Audit Trail:**\n';
-            enhanced += '- Documenteer AI-input en menselijke beslissingen\n';
-            enhanced += '- Bewaar reasoning en motivatie per stap\n';
-            enhanced += '- Voldoe aan Advocatenwet art. 33 (dossierplicht)\n';
-            enhanced += '- Maak keuzes traceerbaar voor tuchtrecht\n\n';
+            enhanced += '**Documentation & Audit Trail:**\n';
+            enhanced += '- Document AI input and human decision points\n';
+            enhanced += '- Preserve reasoning and justification for each step\n';
+            enhanced += '- Maintain professional file management standards\n';
+            enhanced += '- Ensure choices are traceable for professional review\n\n';
           }
           
           if (criticalIssues.some((r: CheckResult) => r.rubric.includes('Scaffolding'))) {
-            enhanced += '**Juridische Expertise Verdeling:**\n';
-            enhanced += '- Advocaat voert juridische analyse uit\n';
-            enhanced += '- AI ondersteunt met research en structuur\n';
-            enhanced += '- Advocaat controleert en valideert alle output\n';
-            enhanced += '- Behoud professionele oordeelsvorming\n\n';
+            enhanced += '**Legal Expertise Distribution:**\n';
+            enhanced += '- Attorney performs legal analysis and judgment\n';
+            enhanced += '- AI supports with research and structure\n';
+            enhanced += '- Attorney controls and validates all outputs\n';
+            enhanced += '- Maintain professional decision-making authority\n\n';
           }
           
           // Professional legal enhancements for warnings
           if (warnings.some((r: CheckResult) => r.rubric.includes('Bias'))) {
-            enhanced += '**Nederlandse Rechtspraak Neutraliteit:**\n';
-            enhanced += '- Overweeg meerdere juridische invalshoeken\n';
-            enhanced += '- Respecteer tegengestelde rechtsleer\n';
-            enhanced += '- Gebruik neutrale, professionele taal\n';
-            enhanced += '- Vermijd vooringenomenheid richting cliënt\n\n';
+            enhanced += '**Professional Legal Neutrality:**\n';
+            enhanced += '- Consider multiple legal perspectives\n';
+            enhanced += '- Respect opposing legal doctrine\n';
+            enhanced += '- Use neutral, professional language\n';
+            enhanced += '- Avoid bias toward client position\n\n';
           }
           
           if (warnings.some((r: CheckResult) => r.rubric.includes('Compliance'))) {
-            enhanced += '**Compliance & Beroepsregels:**\n';
-            enhanced += '- Naleving Nederlandse Advocatenwet\n';
-            enhanced += '- Respecteer geheimhoudingsplicht (art. 29)\n';
-            enhanced += '- Documenteer conform NOvA richtlijnen\n';
-            enhanced += '- Behoud onafhankelijkheid (art. 8)\n\n';
+            enhanced += '**Compliance & Professional Rules:**\n';
+            enhanced += '- Adherence to applicable bar regulations\n';
+            enhanced += '- Respect attorney-client privilege\n';
+            enhanced += '- Document according to professional guidelines\n';
+            enhanced += '- Maintain professional independence\n\n';
           }
           
           if (warnings.some((r: CheckResult) => r.rubric.includes('Output'))) {
-            enhanced += '**Professionele Output Kwaliteit:**\n';
-            enhanced += '- Juridisch correcte terminologie\n';
-            enhanced += '- Bronvermelding naar relevante rechtspraak\n';
-            enhanced += '- Duidelijke structuur en argumentatie\n';
-            enhanced += '- Review proces door senior advocaat\n\n';
+            enhanced += '**Professional Output Quality:**\n';
+            enhanced += '- Legally correct terminology\n';
+            enhanced += '- Citations to relevant case law\n';
+            enhanced += '- Clear structure and argumentation\n';
+            enhanced += '- Senior attorney review process\n\n';
           }
           
-          enhanced += '**SAGA Legal AI Kwaliteitsborging:**\n';
-          enhanced += '- AI fungeert als intelligente assistent\n';
-          enhanced += '- Advocaat behoudt professionele autonomie\n';
-          enhanced += '- Alle output voldoet aan Nederlandse beroepsstandaarden\n';
-          enhanced += '- Transparantie naar cliënt over AI-rol\n';
-          enhanced += '- Continue kwaliteitsmonitoring en -verbetering';
+          enhanced += '**SAGA Legal AI Quality Assurance:**\n';
+          enhanced += '- AI functions as intelligent legal assistant\n';
+          enhanced += '- Attorney retains professional autonomy\n';
+          enhanced += '- All output meets professional standards\n';
+          enhanced += '- Transparency to client about AI role\n';
+          enhanced += '- Continuous quality monitoring and improvement';
           
           setEnhancedPrompt(enhanced);
         }
@@ -122,8 +122,8 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
       setCheckResults([{
         rubric: "SAGA System Status",
         flag: "🔌 Connection Error",
-        check: "Verbinding met SAGA Legal AI backend onderbroken",
-        advice: "Probeer opnieuw of controleer je internetverbinding",
+        check: "Connection to SAGA Legal AI backend interrupted",
+        advice: "Please try again or check your internet connection",
         status: "fail"
       }]);
     } finally {
@@ -178,15 +178,15 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
         <CardHeader>
           <CardTitle className="text-xl text-white flex items-center gap-2">
             <Scale className="w-5 h-5" />
-            Juridische AI Prompt
+            Legal AI Prompt
           </CardTitle>
           <CardDescription className="text-slate-300">
-            Voer je juridische prompt in voor diepgaande SAGA Legal AI analyse
+            Enter your legal prompt for comprehensive SAGA Legal AI analysis
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
-            placeholder="Voer hier je juridische AI prompt in voor uitgebreide Nederlandse EAI compliance analyse volgens de hoogste professionele standaarden..."
+            placeholder="Enter your legal AI prompt here for comprehensive EAI compliance analysis according to the highest professional standards..."
             value={prompt}
             onChange={(e) => onPromptChange(e.target.value)}
             className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 font-mono text-sm min-h-[300px] resize-none"
@@ -202,7 +202,7 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                 disabled={isChecking}
               >
                 <XCircle className="w-4 h-4" />
-                Wissen
+                Clear
               </Button>
             )}
             <Button 
@@ -213,12 +213,12 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
               {isChecking ? (
                 <>
                   <Loader className="w-4 h-4 mr-2 animate-spin" />
-                  SAGA Legal AI Analyse...
+                  SAGA Legal AI Analysis...
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 mr-2" />
-                  SAGA Legal AI Analyse
+                  SAGA Legal AI Analysis
                 </>
               )}
             </Button>
@@ -239,14 +239,14 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                 </Badge>
                 {criticalIssues > 0 && (
                   <Badge variant="outline" className="text-xs text-red-400 border-red-400/50">
-                    ⚠ {criticalIssues} kritiek
+                    ⚠ {criticalIssues} critical
                   </Badge>
                 )}
               </div>
             )}
           </CardTitle>
           <CardDescription className="text-slate-300">
-            Professionele Nederlandse juridische AI analyse met 10 EAI compliance rubrics
+            Professional legal AI analysis with 10 EAI compliance rubrics
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -256,12 +256,12 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                 <Scale className="w-12 h-12 text-blue-400 mx-auto mb-4 animate-pulse" />
                 <Sparkles className="w-6 h-6 text-purple-400 absolute top-0 right-1/2 animate-bounce" />
               </div>
-              <p className="text-white mb-2 font-medium">SAGA Legal AI aan het werk...</p>
+              <p className="text-white mb-2 font-medium">SAGA Legal AI at work...</p>
               <p className="text-slate-400 text-sm mb-1">
-                Diepgaande analyse volgens Nederlandse juridische standaarden
+                Comprehensive analysis according to professional legal standards
               </p>
               <p className="text-slate-500 text-xs">
-                10 EAI compliance rubrics • Advocatenwet conformiteit • NOvA richtlijnen
+                10 EAI compliance rubrics • Professional bar compliance • Legal AI best practices
               </p>
             </div>
           ) : checkResults.length > 0 ? (
@@ -290,11 +290,11 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                 <div className="border-t border-white/10 pt-4 space-y-3">
                   <div className="flex items-center gap-2 text-sm text-white font-medium">
                     <Scale className="w-4 h-4 text-blue-400" />
-                    <span>Nederlandse Juridische Enhancement Klaar</span>
+                    <span>Legal Enhancement Ready</span>
                     <Sparkles className="w-4 h-4 text-purple-400" />
                   </div>
                   <p className="text-xs text-slate-400">
-                    SAGA heeft je prompt uitgebreid met Nederlandse juridische compliance en EAI best practices
+                    SAGA has enhanced your prompt with professional legal compliance and EAI best practices
                   </p>
                   <div className="flex gap-2">
                     <Button
@@ -302,7 +302,7 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                       className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
                     >
                       <Scale className="w-4 h-4 mr-2" />
-                      Juridische Enhancement Toepassen
+                      Apply Legal Enhancement
                     </Button>
                     <ClipboardNotification text={enhancedPrompt}>
                       <Button variant="outline" size="sm">
@@ -319,15 +319,15 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                 <Scale className="w-16 h-16 text-slate-600 mx-auto" />
                 <Sparkles className="w-6 h-6 text-blue-400 absolute -top-1 -right-2 animate-pulse" />
               </div>
-              <p className="text-slate-400 mb-2 font-medium">SAGA Legal AI Gereed</p>
+              <p className="text-slate-400 mb-2 font-medium">SAGA Legal AI Ready</p>
               <p className="text-slate-500 text-sm mb-2">
-                Geavanceerde Nederlandse juridische AI analyse
+                Advanced professional legal AI analysis
               </p>
               <div className="text-xs text-slate-600 space-y-1">
-                <p>✓ EAI Compliance volgens internationale standaarden</p>
-                <p>✓ Nederlandse Advocatenwet conformiteit</p>
-                <p>✓ NOvA richtlijnen integratie</p>
-                <p>✓ Professionele juridische enhancement</p>
+                <p>✓ EAI compliance according to international standards</p>
+                <p>✓ Professional bar regulation conformity</p>
+                <p>✓ Legal professional guidelines integration</p>
+                <p>✓ Professional legal enhancement</p>
               </div>
             </div>
           )}
