@@ -76,8 +76,8 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
 
   const handleUsePrompt = async (preset: LegalPreset) => {
     try {
-      // Copy to clipboard
-      await navigator.clipboard.writeText(preset.system_prompt);
+      // Copy to clipboard - using the correct property name
+      await navigator.clipboard.writeText(preset.prompt);
       
       // Screen buzz effect
       document.body.style.animation = 'buzz 0.2s ease-in-out';
