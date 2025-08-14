@@ -78,11 +78,11 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
       // Copy to clipboard - using the correct property name
       await navigator.clipboard.writeText(preset.prompt_template);
       
-      // Gentle but noticeable screen buzz effect
-      document.body.style.animation = 'gentle-buzz 0.25s ease-in-out';
+      // Gentle but noticeable screen buzz effect with connection lost flash
+      document.body.style.animation = 'gentle-buzz 0.25s ease-in-out, connection-flash 0.3s ease-in-out';
       setTimeout(() => {
         document.body.style.animation = '';
-      }, 250);
+      }, 300);
       
       // Pleasant bleep sound effect
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -116,6 +116,11 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
           0%, 100% { transform: translateX(0); }
           25% { transform: translateX(-1px); }
           75% { transform: translateX(1px); }
+        }
+        @keyframes connection-flash {
+          0% { filter: brightness(1); }
+          50% { filter: brightness(0.95); }
+          100% { filter: brightness(1); }
         }
       `}</style>
       
