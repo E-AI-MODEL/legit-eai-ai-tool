@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -119,7 +120,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
         }
         @keyframes connection-flash {
           0% { filter: brightness(1); }
-          50% { filter: brightness(0.95); }
+          50% { filter: brightness(0.8); }
           100% { filter: brightness(1); }
         }
       `}</style>
