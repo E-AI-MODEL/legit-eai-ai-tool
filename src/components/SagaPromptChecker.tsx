@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle, AlertTriangle, XCircle, RefreshCw, Copy, Loader, Scale, Sparkles, Wand2 } from "lucide-react";
+import { CheckCircle, AlertTriangle, XCircle, Loader, Scale, Sparkles, Copy } from "lucide-react";
 import { useState } from "react";
 import ClipboardNotification from "@/components/ClipboardNotification";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,103 +23,74 @@ interface SagaPromptCheckerProps {
 
 const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) => {
   const [checkResults, setCheckResults] = useState<CheckResult[]>([]);
-  const [isChecking, setIsChecking] = useState(false);
-  const [isEnhancing, setIsEnhancing] = useState(false);
-  const [enhancedPrompt, setEnhancedPrompt] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [improvedPrompt, setImprovedPrompt] = useState("");
 
-  const performPromptAnalysis = async (text: string) => {
-    if (!text.trim()) return;
+  const processPrompt = async () => {
+    if (!prompt.trim()) return;
     
-    setIsChecking(true);
+    setIsProcessing(true);
     setCheckResults([]);
-    setEnhancedPrompt("");
+    setImprovedPrompt("");
     
     try {
-      console.log('Starting SAGA Legal AI Analysis for prompt:', text.substring(0, 100) + '...');
+      console.log('SAGA: Processing legal prompt:', prompt.substring(0, 100) + '...');
       
-      const { data, error } = await supabase.functions.invoke('eai-semantic-check', {
-        body: { prompt: text }
+      // First analyze the prompt
+      const { data: analysisData, error: analysisError } = await supabase.functions.invoke('eai-semantic-check', {
+        body: { prompt }
       });
 
-      if (error) {
-        console.error('SAGA Analysis Error:', error);
-        throw error;
+      if (analysisError) {
+        console.error('SAGA Analysis Error:', analysisError);
+        throw analysisError;
       }
 
-      console.log('SAGA Analysis Results:', data);
+      console.log('SAGA Analysis Complete:', analysisData);
+      
+      if (analysisData?.results) {
+        setCheckResults(analysisData.results);
+      }
 
-      if (data?.results) {
-        setCheckResults(data.results);
+      // Then enhance the prompt based on analysis
+      const { data: enhanceData, error: enhanceError } = await supabase.functions.invoke('eai-prompt-suggest', {
+        body: { 
+          mode: 'improve',
+          prompt: prompt,
+          constraints: 'Legal professional context with EAI compliance standards - deliver ready-to-use professional prompt'
+        }
+      });
+
+      if (enhanceError) {
+        console.error('SAGA Enhancement Error:', enhanceError);
+        throw enhanceError;
+      }
+
+      console.log('SAGA Enhancement Complete:', enhanceData);
+
+      if (enhanceData?.prompt) {
+        setImprovedPrompt(enhanceData.prompt);
+        // Automatically apply the improved prompt
+        onPromptChange(enhanceData.prompt);
       }
     } catch (error) {
-      console.error('SAGA Legal AI Analysis Failed:', error);
+      console.error('SAGA Processing Failed:', error);
       setCheckResults([{
         rubric: "SAGA System Status",
-        flag: "🔌 Connection Error",
-        check: "Unable to analyze your specific prompt content",
+        flag: "🔌 Processing Error",
+        check: "Unable to analyze and improve your prompt",
         advice: "Please check your connection and try again",
         status: "fail"
       }]);
     } finally {
-      setIsChecking(false);
+      setIsProcessing(false);
     }
   };
 
-  const enhancePrompt = async (text: string) => {
-    if (!text.trim()) return;
-    
-    setIsEnhancing(true);
-    setEnhancedPrompt("");
-    
-    try {
-      console.log('Starting SAGA Prompt Enhancement for:', text.substring(0, 100) + '...');
-      
-      const { data, error } = await supabase.functions.invoke('eai-prompt-suggest', {
-        body: { 
-          mode: 'improve',
-          prompt: text,
-          constraints: 'Legal professional context with EAI compliance standards'
-        }
-      });
-
-      if (error) {
-        console.error('SAGA Enhancement Error:', error);
-        throw error;
-      }
-
-      console.log('SAGA Enhancement Results:', data);
-
-      if (data?.prompt) {
-        setEnhancedPrompt(data.prompt);
-      }
-    } catch (error) {
-      console.error('SAGA Enhancement Failed:', error);
-      setEnhancedPrompt("Error: Unable to enhance your prompt. Please try again.");
-    } finally {
-      setIsEnhancing(false);
-    }
-  };
-
-  const runAnalysis = () => {
-    performPromptAnalysis(prompt);
-  };
-
-  const runEnhancement = () => {
-    enhancePrompt(prompt);
-  };
-
-  const applyEnhancement = () => {
-    if (enhancedPrompt) {
-      onPromptChange(enhancedPrompt);
-      setEnhancedPrompt("");
-      setCheckResults([]);
-    }
-  };
-
-  const clearPrompt = () => {
+  const clearAll = () => {
     onPromptChange("");
     setCheckResults([]);
-    setEnhancedPrompt("");
+    setImprovedPrompt("");
   };
 
   const getStatusIcon = (status: string) => {
@@ -154,12 +125,12 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
             Legal AI Prompt
           </CardTitle>
           <CardDescription className="text-slate-300">
-            Enter your legal prompt for comprehensive analysis and enhancement
+            Enter your legal prompt for professional analysis and improvement
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
-            placeholder="Enter your legal AI prompt here for specific analysis and enhancement..."
+            placeholder="Enter your legal AI prompt here for professional analysis and improvement..."
             value={prompt}
             onChange={(e) => onPromptChange(e.target.value)}
             className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 font-mono text-sm min-h-[300px] resize-none"
@@ -170,45 +141,28 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
             {prompt.trim() && (
               <Button 
                 variant="outline" 
-                onClick={clearPrompt}
+                onClick={clearAll}
                 className="gap-2"
-                disabled={isChecking || isEnhancing}
+                disabled={isProcessing}
               >
                 <XCircle className="w-4 h-4" />
                 Clear
               </Button>
             )}
             <Button 
-              onClick={runAnalysis}
-              disabled={isChecking || isEnhancing || !prompt.trim()}
+              onClick={processPrompt}
+              disabled={isProcessing || !prompt.trim()}
               className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
-              {isChecking ? (
+              {isProcessing ? (
                 <>
                   <Loader className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing Your Prompt...
+                  Processing Legal Prompt...
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Analyze Prompt
-                </>
-              )}
-            </Button>
-            <Button 
-              onClick={runEnhancement}
-              disabled={isChecking || isEnhancing || !prompt.trim()}
-              className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-            >
-              {isEnhancing ? (
-                <>
-                  <Loader className="w-4 h-4 mr-2 animate-spin" />
-                  Enhancing...
-                </>
-              ) : (
-                <>
-                  <Wand2 className="w-4 h-4 mr-2" />
-                  Enhance Prompt
+                  Analyze & Improve
                 </>
               )}
             </Button>
@@ -221,7 +175,7 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
         <CardHeader>
           <CardTitle className="text-xl text-white flex items-center gap-2">
             <Scale className="w-5 h-5" />
-            Analysis Results
+            Legal Analysis Results
             {totalChecks > 0 && (
               <div className="flex gap-2">
                 <Badge variant="outline" className="text-xs text-green-400 border-green-400/50">
@@ -240,36 +194,40 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isChecking ? (
+          {isProcessing ? (
             <div className="text-center py-12">
               <div className="relative">
                 <Scale className="w-12 h-12 text-blue-400 mx-auto mb-4 animate-pulse" />
                 <Sparkles className="w-6 h-6 text-purple-400 absolute top-0 right-1/2 animate-bounce" />
               </div>
-              <p className="text-white mb-2 font-medium">Analyzing your specific prompt...</p>
+              <p className="text-white mb-2 font-medium">Analyzing and improving your legal prompt...</p>
               <p className="text-slate-400 text-sm mb-1">
-                Reading content and checking compliance
+                Reading content and applying professional standards
               </p>
               <p className="text-slate-500 text-xs">
-                10 EAI rubrics • Professional standards • Legal compliance
-              </p>
-            </div>
-          ) : isEnhancing ? (
-            <div className="text-center py-12">
-              <div className="relative">
-                <Wand2 className="w-12 h-12 text-green-400 mx-auto mb-4 animate-pulse" />
-                <Sparkles className="w-6 h-6 text-purple-400 absolute top-0 right-1/2 animate-bounce" />
-              </div>
-              <p className="text-white mb-2 font-medium">Enhancing your prompt...</p>
-              <p className="text-slate-400 text-sm mb-1">
-                Improving structure and compliance
-              </p>
-              <p className="text-slate-500 text-xs">
-                Professional standards • EAI best practices • Legal enhancement
+                EAI compliance • Legal analysis • Professional enhancement
               </p>
             </div>
           ) : checkResults.length > 0 ? (
             <div className="space-y-4">
+              {improvedPrompt && (
+                <div className="bg-green-900/20 border border-green-400/30 rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    <span className="text-green-300 font-medium">Professional Legal Prompt Ready</span>
+                  </div>
+                  <p className="text-green-200 text-sm mb-2">
+                    Your prompt has been automatically improved and applied above
+                  </p>
+                  <ClipboardNotification text={improvedPrompt}>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Copy className="w-4 h-4" />
+                      Copy Improved Prompt
+                    </Button>
+                  </ClipboardNotification>
+                </div>
+              )}
+              
               <div className="space-y-3 max-h-60 overflow-y-auto">
                 {checkResults.map((result, index) => (
                   <div key={index} className={`bg-white/5 rounded-lg p-3 border ${getStatusColor(result.status).split(' ')[0]}`}>
@@ -288,36 +246,6 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                 ))}
               </div>
             </div>
-          ) : enhancedPrompt ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm text-white font-medium">
-                <Wand2 className="w-4 h-4 text-green-400" />
-                <span>Enhanced Prompt Ready</span>
-                <Sparkles className="w-4 h-4 text-purple-400" />
-              </div>
-              <p className="text-xs text-slate-400">
-                Your prompt has been enhanced with professional legal standards and EAI compliance
-              </p>
-              <div className="bg-white/5 rounded-lg p-4 max-h-60 overflow-y-auto">
-                <pre className="text-sm text-slate-300 whitespace-pre-wrap font-mono leading-relaxed">
-                  {enhancedPrompt}
-                </pre>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={applyEnhancement}
-                  className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-                >
-                  <Scale className="w-4 h-4 mr-2" />
-                  Apply Enhancement
-                </Button>
-                <ClipboardNotification text={enhancedPrompt}>
-                  <Button variant="outline" size="sm">
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                </ClipboardNotification>
-              </div>
-            </div>
           ) : (
             <div className="text-center py-12">
               <div className="relative mb-6">
@@ -326,13 +254,13 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
               </div>
               <p className="text-slate-400 mb-2 font-medium">SAGA Legal AI Ready</p>
               <p className="text-slate-500 text-sm mb-2">
-                Enter your prompt above to get specific analysis and enhancement
+                Enter your prompt above for professional analysis and automatic improvement
               </p>
               <div className="text-xs text-slate-600 space-y-1">
-                <p>✓ Reads and analyzes your specific content</p>
-                <p>✓ EAI compliance according to professional standards</p>
-                <p>✓ Professional legal enhancement suggestions</p>
-                <p>✓ Tailored feedback for your prompt</p>
+                <p>✓ Analyzes your specific legal content</p>
+                <p>✓ Applies EAI compliance standards</p>
+                <p>✓ Delivers improved professional prompt</p>
+                <p>✓ Automatic application of enhancements</p>
               </div>
             </div>
           )}
