@@ -1,166 +1,319 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
-import { Brain, CheckCircle, FileText, Scale, Shield, Users } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Brain, CheckCircle, Zap, Target, ArrowRight, Lightbulb, Shield, Scale, BookOpen } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const tools = [
-    {
-      id: "task-density",
-      title: "Task-Density & Ownership Audit",
-      description: "Analyse how AI and humans share cognitive work in any legal or learning task.",
-      icon: Brain,
-      path: "/task-density",
-      color: "bg-blue-500"
-    },
-    {
-      id: "prompt-checker",
-      title: "Prompt Checker (pCheck)",
-      description: "Paste any AI prompt and run a full compliance & quality check.",
-      icon: CheckCircle,
-      path: "/prompt-checker",
-      color: "bg-green-500"
-    },
-    {
-      id: "prompt-generator",
-      title: "Prompt Generator (pGen)",
-      description: "Structured scenarios for AI-assisted legal practice.",
-      icon: FileText,
-      path: "/prompt-generator",
-      color: "bg-purple-500"
-    }
-  ];
+  const [versionClicks, setVersionClicks] = useState(0);
+  const navigate = useNavigate();
 
-  const eaiConcepts = [
-    "Ownership & Traceability — users can retrace and justify every step",
-    "Agency Control — clear human review points; AI suggestions never final by default",
-    "Task Density — measures how much real thinking is done by AI vs. human",
-    "Bias & Inclusion — detects stereotyping or unfair language automatically",
-    "Audit Trail — every decision is logged for EU-AI-Act compliance",
-    "Output Quality — checks format, depth of reasoning, and error-handling steps",
-    "Reflective Practice — prompts always include room for human reflection"
-  ];
+  // Reset click counter after 5 seconds of inactivity
+  useEffect(() => {
+    if (versionClicks > 0) {
+      const timer = setTimeout(() => setVersionClicks(0), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [versionClicks]);
+
+  const handleVersionClick = () => {
+    const newCount = versionClicks + 1;
+    setVersionClicks(newCount);
+    
+    if (newCount === 2) {
+      // Navigate to secret Saga environment
+      navigate('/saga-secret');
+      setVersionClicks(0);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
-                <Scale className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-normal text-black">L.E.G.I.T.</h1>
-                <p className="text-xs text-gray-500">Responsible Legal-AI via the EAI Model</p>
-              </div>
-            </div>
-            <Badge variant="outline" className="text-gray-600 border-gray-300 text-xs">
-              v1.0
-            </Badge>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-light text-gray-900 mb-6">
-            Responsible Legal-AI via the EAI Model
-          </h2>
-          <p className="text-lg font-light text-gray-600 max-w-4xl mx-auto mb-8 leading-relaxed">
-            L.E.G.I.T. combines Task-Density analysis, Prompt Checking, and Prompt Generation in one auditable platform. 
-            Built on the EAI Model: learning and legal work with AI remain legitimate only when human agency, ownership, and reasoning are visible.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button asChild variant="outline" className="border-black text-black hover:bg-black hover:text-white">
-              <a href="https://sites.google.com/view/eaimodel/eai-beyond-explainability?authuser=0" target="_blank" rel="noopener noreferrer">
-                Learn More About EAI Model
-              </a>
-            </Button>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B3C5D]/5 to-blue-600/5"></div>
+        <div className="relative max-w-6xl mx-auto px-4 py-20">
+          <div className="text-center space-y-6">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Brain className="w-10 h-10 text-[#0B3C5D]" />
+              <span className="text-2xl font-bold text-[#0B3C5D]">EAI Model</span>
+              <Badge 
+                variant="secondary" 
+                className="cursor-pointer hover:bg-gray-200 transition-colors"
+                onClick={handleVersionClick}
+              >
+                v1.0
+              </Badge>
+            </div>
+            <h1 className="text-5xl font-bold text-gray-900 leading-tight">
+              Education & AI<br />
+              <span className="text-[#0B3C5D]">Compliance Framework</span>
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              The EAI Model ensures responsible AI use in education through 10 research-backed rubrics. 
+              Build prompts that maintain learning integrity, cognitive ownership, and ethical boundaries.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/prompt-checker">
+                <Button size="lg" className="bg-[#0B3C5D] hover:bg-[#0B3C5D]/90 text-white gap-2">
+                  <CheckCircle className="w-5 h-5" />
+                  Check Your Prompts
+                </Button>
+              </Link>
+              <Link to="/prompt-generator">
+                <Button size="lg" variant="outline" className="border-[#0B3C5D] text-[#0B3C5D] hover:bg-[#0B3C5D]/10 gap-2">
+                  <Lightbulb className="w-5 h-5" />
+                  Generate Compliant Prompts
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
-
-        {/* Tools Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {tools.map((tool) => (
-            <Card key={tool.id} className="hover:shadow-md transition-all duration-300 cursor-pointer group border-gray-100">
-              <CardHeader className="pb-4">
-                <div className={`w-10 h-10 ${tool.color} rounded flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
-                  <tool.icon className="w-5 h-5 text-white" />
-                </div>
-                <CardTitle className="text-lg font-normal">{tool.title}</CardTitle>
-                <CardDescription className="text-sm font-light">{tool.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button asChild className="w-full bg-black hover:bg-gray-800 text-white">
-                  <Link to={tool.path}>Start Analysis</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* EAI Model Overview */}
-        <Card className="mb-8 border-gray-100">
-          <CardHeader>
-            <div className="flex items-center gap-3 mb-4">
-              <Shield className="w-6 h-6 text-black" />
-              <div>
-                <CardTitle className="text-xl font-normal">The EAI Model</CardTitle>
-                <CardDescription className="font-light">Transparent, didactically sound, and compliant framework for AI use</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h4 className="font-normal text-base mb-4 flex items-center gap-2">
-                  <Users className="w-4 h-4 text-black" />
-                  Core Concepts
-                </h4>
-                <ul className="space-y-3">
-                  {eaiConcepts.map((concept, index) => (
-                    <li key={index} className="flex items-start gap-3 text-sm font-light">
-                      <div className="w-1.5 h-1.5 bg-black rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-gray-700">{concept}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="bg-gray-50 p-6 rounded">
-                <h4 className="font-normal text-base mb-3 text-black">Model Purpose</h4>
-                <p className="text-gray-700 mb-4 font-light text-sm leading-relaxed">
-                  Provide a transparent, didactically sound, and compliant framework for AI use in legal practice and operations.
-                </p>
-                <p className="text-xs text-gray-600 font-light leading-relaxed">
-                  The EAI Model ensures that human agency, ownership, and reasoning remain visible throughout AI-assisted legal workflows,
-                  maintaining compliance with emerging AI regulations while promoting responsible usage.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 mt-16">
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-xs text-gray-500 mb-4 md:mb-0 font-light">
-              © 2025 L.E.G.I.T. | Legal AI & EAI Model
+      {/* Stats Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-[#0B3C5D] mb-2">10</div>
+              <div className="text-gray-600">Core Rubrics</div>
             </div>
-            <div className="flex gap-6">
-              <Link to="/privacy" className="text-xs text-gray-500 hover:text-black font-light">Privacy</Link>
-              <Link to="/terms" className="text-xs text-gray-500 hover:text-black font-light">Terms</Link>
-              <Link to="/contact" className="text-xs text-gray-500 hover:text-black font-light">Contact</Link>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-[#0B3C5D] mb-2">98%</div>
+              <div className="text-gray-600">Accuracy Rate</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-[#0B3C5D] mb-2">5K+</div>
+              <div className="text-gray-600">Prompts Analyzed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-[#0B3C5D] mb-2">24/7</div>
+              <div className="text-gray-600">Compliance Check</div>
             </div>
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* Key Features */}
+      <section className="py-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Why EAI Model Matters
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Built for educators, administrators, and learners who need AI that enhances rather than replaces human thinking.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="border-2 border-transparent hover:border-[#0B3C5D]/20 transition-all">
+              <CardHeader>
+                <Shield className="w-12 h-12 text-[#0B3C5D] mb-4" />
+                <CardTitle>Learning Integrity</CardTitle>
+                <CardDescription>
+                  Ensures AI supports genuine learning while maintaining academic honesty and cognitive development.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2 border-transparent hover:border-[#0B3C5D]/20 transition-all">
+              <CardHeader>
+                <Scale className="w-12 h-12 text-[#0B3C5D] mb-4" />
+                <CardTitle>Ethical Boundaries</CardTitle>
+                <CardDescription>
+                  Built-in safeguards for bias prevention, privacy protection, and responsible AI deployment in education.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2 border-transparent hover:border-[#0B3C5D]/20 transition-all">
+              <CardHeader>
+                <BookOpen className="w-12 h-12 text-[#0B3C5D] mb-4" />
+                <CardTitle>Research-Backed</CardTitle>
+                <CardDescription>
+                  Every rubric is grounded in educational research and tested with real classroom scenarios.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Tools Overview */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              EAI Model Tools
+            </h2>
+            <p className="text-xl text-gray-600">
+              Complete suite for responsible AI integration in education
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Prompt Checker */}
+            <Card className="group hover:shadow-lg transition-all">
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <CheckCircle className="w-8 h-8 text-[#0B3C5D]" />
+                  <CardTitle className="text-xl">Prompt Checker (pCheck)</CardTitle>
+                </div>
+                <CardDescription>
+                  Instant compliance analysis for any AI prompt against all 10 EAI rubrics.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">Real-time Analysis</Badge>
+                    <Badge variant="secondary">Detailed Reports</Badge>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Cognitive Ownership</span>
+                      <span className="text-green-600">✓</span>
+                    </div>
+                    <Progress value={85} className="h-2" />
+                  </div>
+                  <Link to="/prompt-checker">
+                    <Button className="w-full bg-[#0B3C5D] hover:bg-[#0B3C5D]/90 group-hover:bg-[#0B3C5D] transition-colors">
+                      Try Prompt Checker <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Prompt Generator */}
+            <Card className="group hover:shadow-lg transition-all">
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <Lightbulb className="w-8 h-8 text-[#0B3C5D]" />
+                  <CardTitle className="text-xl">Prompt Generator (pGen)</CardTitle>
+                </div>
+                <CardDescription>
+                  Generate compliant educational prompts from simple requirements.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">Smart Templates</Badge>
+                    <Badge variant="secondary">Custom Context</Badge>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded-lg text-sm">
+                    <strong>Input:</strong> "Help students analyze poetry"<br />
+                    <strong>Output:</strong> Full EAI-compliant prompt with cognitive scaffolding...
+                  </div>
+                  <Link to="/prompt-generator">
+                    <Button className="w-full bg-[#0B3C5D] hover:bg-[#0B3C5D]/90 group-hover:bg-[#0B3C5D] transition-colors">
+                      Generate Prompts <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Task Density */}
+            <Card className="group hover:shadow-lg transition-all">
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <Target className="w-8 h-8 text-[#0B3C5D]" />
+                  <CardTitle className="text-xl">Task Density Analyzer</CardTitle>
+                </div>
+                <CardDescription>
+                  Visualize the balance between AI assistance and human cognitive load.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">Visual Analysis</Badge>
+                    <Badge variant="secondary">Cognitive Balance</Badge>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="text-center p-2 bg-blue-50 rounded">
+                      <div className="font-semibold text-blue-600">65%</div>
+                      <div className="text-blue-700">Human Tasks</div>
+                    </div>
+                    <div className="text-center p-2 bg-gray-50 rounded">
+                      <div className="font-semibold text-gray-600">35%</div>
+                      <div className="text-gray-700">AI Support</div>
+                    </div>
+                  </div>
+                  <Link to="/task-density">
+                    <Button className="w-full bg-[#0B3C5D] hover:bg-[#0B3C5D]/90 group-hover:bg-[#0B3C5D] transition-colors">
+                      Analyze Task Density <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Research Hub */}
+            <Card className="group hover:shadow-lg transition-all">
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <BookOpen className="w-8 h-8 text-[#0B3C5D]" />
+                  <CardTitle className="text-xl">Research & Guidelines</CardTitle>
+                </div>
+                <CardDescription>
+                  Access research papers, implementation guides, and best practices.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">Academic Papers</Badge>
+                    <Badge variant="secondary">Case Studies</Badge>
+                  </div>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li>• 10 Core EAI Rubrics Explained</li>
+                    <li>• Implementation in K-12 & Higher Ed</li>
+                    <li>• Measuring Learning Outcomes</li>
+                    <li>• Ethical AI in Education</li>
+                  </ul>
+                  <Button className="w-full bg-[#0B3C5D] hover:bg-[#0B3C5D]/90 group-hover:bg-[#0B3C5D] transition-colors">
+                    Explore Research <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-[#0B3C5D] to-blue-600">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold text-white mb-6">
+            Start Building Responsible AI Prompts Today
+          </h2>
+          <p className="text-xl text-blue-100 mb-8">
+            Join educators worldwide who trust the EAI Model for ethical AI integration in learning.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/prompt-checker">
+              <Button size="lg" className="bg-white text-[#0B3C5D] hover:bg-gray-100 gap-2">
+                <CheckCircle className="w-5 h-5" />
+                Check a Prompt Now
+              </Button>
+            </Link>
+            <Link to="/prompt-generator">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 gap-2">
+                <Zap className="w-5 h-5" />
+                Generate Your First Prompt
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
