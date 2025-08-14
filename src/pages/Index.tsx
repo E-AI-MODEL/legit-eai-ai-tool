@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +7,8 @@ import { useState, useRef } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [clickCount, setClickCount] = useState(0);
-  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showTapHint, setShowTapHint] = useState(false);
+  const lastClickTimeRef = useRef<number>(0);
 
   const tools = [
     {
@@ -39,21 +38,27 @@ const Index = () => {
   ];
 
   const handleVersionClick = () => {
-    setClickCount(prev => prev + 1);
+    const now = Date.now();
+    const timeSinceLastClick = now - lastClickTimeRef.current;
     
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
-    }
+    console.log('Click detected, time since last:', timeSinceLastClick); // Debug logging
     
-    if (clickCount === 1) {
-      // Second click - navigate to saga
+    if (timeSinceLastClick < 600 && timeSinceLastClick > 50) {
+      // Double-tap detected (within 600ms but not too fast to avoid accidental triggers)
+      console.log('Double-tap detected, navigating to saga'); // Debug logging
       navigate('/saga');
-      setClickCount(0);
+      setShowTapHint(false);
+      lastClickTimeRef.current = 0; // Reset
     } else {
-      // First click - wait for potential second click
-      clickTimeoutRef.current = setTimeout(() => {
-        setClickCount(0);
-      }, 500); // Reset after 500ms if no second click
+      // First tap - show hint and record timestamp
+      console.log('First tap detected'); // Debug logging
+      setShowTapHint(true);
+      lastClickTimeRef.current = now;
+      
+      // Clear hint after 1 second if no second tap
+      setTimeout(() => {
+        setShowTapHint(false);
+      }, 1000);
     }
   };
 
@@ -72,13 +77,22 @@ const Index = () => {
                 <p className="text-xs text-slate-500">Ethical AI Integration</p>
               </div>
             </div>
-            <Badge 
-              variant="outline" 
-              className="text-slate-600 border-slate-300 hover:bg-slate-100 cursor-pointer transition-colors"
-              onClick={handleVersionClick}
-            >
-              v1.0
-            </Badge>
+            <div className="relative">
+              <Badge 
+                variant="outline" 
+                className={`text-slate-600 border-slate-300 hover:bg-slate-100 cursor-pointer transition-all duration-200 ${
+                  showTapHint ? 'ring-2 ring-blue-300 bg-blue-50' : ''
+                }`}
+                onClick={handleVersionClick}
+              >
+                v1.0
+              </Badge>
+              {showTapHint && (
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-slate-500 whitespace-nowrap animate-pulse">
+                  Tap again!
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
