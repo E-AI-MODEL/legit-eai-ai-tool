@@ -2,9 +2,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { Scale, ArrowLeft, Shield, Brain, Database, Zap } from "lucide-react";
+import { Scale, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SagaPresetGrid from "@/components/SagaPresetGrid";
@@ -36,16 +35,16 @@ const Saga = () => {
                 <Scale className="w-4 h-4 text-slate-900" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-white">SAGA</h1>
-                <p className="text-xs text-slate-300">Advanced Legal AI Platform</p>
+                <h1 className="text-xl font-semibold text-white">SAGA Legal AI</h1>
+                <p className="text-xs text-slate-300">Professional Legal Prompt Platform</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Badge variant="outline" className="text-white border-white/30">
-                30 Legal Presets
+                Professional Presets
               </Badge>
               <Badge variant="outline" className="text-white border-white/30">
-                Quality Gates
+                Quality Enhancement
               </Badge>
               <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
                 <Link to="/">
@@ -62,24 +61,21 @@ const Saga = () => {
       <section className="max-w-7xl mx-auto px-6 py-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Saga Legal AI Toolkit
+            Professional Legal AI Prompts
           </h2>
           <p className="text-xl text-slate-300 max-w-4xl mx-auto mb-8 leading-relaxed">
-            Professionele juridische AI-toolkit met 30 praktische presets, geavanceerde kwaliteitscontroles 
-            en EAI-compliance voor Nederlandse advocatenpraktijk.
+            Transform legal work with comprehensive, professional prompts designed for Dutch and EU practice.
+            Select ready-to-use presets or enhance your own prompts with quality standards.
           </p>
         </div>
 
         <Tabs defaultValue="presets" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-3 bg-white/10 backdrop-blur-sm max-w-md mx-auto">
+          <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-sm max-w-md mx-auto">
             <TabsTrigger value="presets" className="text-white data-[state=active]:bg-white/20">
-              Legal Presets
+              Professional Presets
             </TabsTrigger>
             <TabsTrigger value="checker" className="text-white data-[state=active]:bg-white/20">
-              Prompt Checker
-            </TabsTrigger>
-            <TabsTrigger value="backend" className="text-white data-[state=active]:bg-white/20">
-              Backend Info
+              Prompt Enhancer
             </TabsTrigger>
           </TabsList>
 
@@ -93,13 +89,25 @@ const Saga = () => {
                       <CardTitle className="text-white">{selectedPreset.label}</CardTitle>
                       <CardDescription className="text-slate-300">
                         {selectedPreset.category} • {selectedPreset.jurisdiction} • {selectedPreset.output_format}
+                        {selectedPreset.complexity && ` • ${selectedPreset.complexity}`}
                       </CardDescription>
                     </div>
                     <Button onClick={clearPrompt} variant="outline" size="sm">
-                      Wis Selectie
+                      Clear Selection
                     </Button>
                   </div>
                 </CardHeader>
+                <CardContent>
+                  <div className="bg-white/5 rounded-lg p-4 max-h-64 overflow-y-auto">
+                    <pre className="text-sm text-slate-300 whitespace-pre-wrap font-mono">
+                      {selectedPreset.prompt_template.substring(0, 500)}
+                      {selectedPreset.prompt_template.length > 500 && '...'}
+                    </pre>
+                  </div>
+                  <div className="mt-4 text-sm text-slate-400">
+                    Full prompt loaded in editor above. Ready to use or customize as needed.
+                  </div>
+                </CardContent>
               </Card>
             )}
 
@@ -107,158 +115,17 @@ const Saga = () => {
           </TabsContent>
 
           <TabsContent value="checker" className="space-y-6">
-            <SagaPromptChecker prompt={prompt} onPromptChange={setPrompt} />
-          </TabsContent>
-
-          <TabsContent value="backend" className="space-y-6">
-            {/* Quality Gates Info */}
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-xl text-white flex items-center gap-3">
-                  <Shield className="w-6 h-6" />
-                  Kwaliteitscontroles
-                </CardTitle>
-                <CardDescription className="text-slate-300">
-                  Zes kwaliteitspoorten die elke prompt verbeteren
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {[
-                    {
-                      gate: "Structuur",
-                      description: "Zorgt voor 'Facts (Extract)' + 'Analysis (Interpretation)' secties",
-                      priority: "Hoog"
-                    },
-                    {
-                      gate: "Bewijs",
-                      description: "Vereist bronnenlijst en actie-logging voor traceerbaarheid", 
-                      priority: "Hoog"
-                    },
-                    {
-                      gate: "Menselijke Controle",
-                      description: "Voegt verplichte beslispunten en goedkeuring toe",
-                      priority: "Hoog"
-                    },
-                    {
-                      gate: "Toon & Privacy",
-                      description: "Verwijdert zekerheids-taal, voegt privacy-bescherming toe",
-                      priority: "Medium"
-                    },
-                    {
-                      gate: "Output Helderheid",
-                      description: "Specificeert exact output formaat en structuur",
-                      priority: "Medium"
-                    },
-                    {
-                      gate: "Reflectie",
-                      description: "Vereist inzichten, vragen en overdracht-checklijst",
-                      priority: "Medium"
-                    }
-                  ].map((gate, index) => (
-                    <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-white text-sm">Poort {index + 1}: {gate.gate}</h4>
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs ${gate.priority === 'Hoog' ? 'text-red-400 border-red-400/50' : 'text-yellow-400 border-yellow-400/50'}`}
-                        >
-                          {gate.priority}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-slate-400">{gate.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Integration Assets */}
-            <div className="grid lg:grid-cols-2 gap-6">
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-xl text-white flex items-center gap-3">
-                    <Database className="w-6 h-6" />
-                    Preset Categorieën
-                  </CardTitle>
-                  <CardDescription className="text-slate-300">
-                    15 categorieën juridische templates
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    {[
-                      "Contracts", "Transactions", "Disputes", "Investigations", 
-                      "Privacy", "Employment", "IP", "Commercial",
-                      "ESG", "Compliance", "Client Comms", "Research",
-                      "Regulatory", "Risk", "Policy"
-                    ].map((category) => (
-                      <div key={category} className="text-slate-300 bg-white/5 rounded px-2 py-1">
-                        {category}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-xl text-white flex items-center gap-3">
-                    <Brain className="w-6 h-6" />
-                    EAI Compliance
-                  </CardTitle>
-                  <CardDescription className="text-slate-300">
-                    Ingebouwde ethische AI-waarborgen
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm text-slate-300">
-                    <div>• Helderheid: jargon-vrije communicatie</div>
-                    <div>• Keuzebewustzijn: altijd alternatieven</div>
-                    <div>• Technische integriteit: gestructureerd</div>
-                    <div>• Menselijke controle: beslispunten</div>
-                    <div>• Privacy: PII-bescherming</div>
-                    <div>• Traceerbaarheid: bronnen + logging</div>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-white mb-4">
+                Professional Prompt Enhancement
+              </h3>
+              <p className="text-slate-300 max-w-2xl mx-auto">
+                Transform basic prompts into comprehensive, professional legal work instructions 
+                that meet quality standards and reduce liability risk.
+              </p>
             </div>
-
-            {/* Backend Endpoints */}
-            <Card className="bg-white/5 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-xl text-white flex items-center gap-3">
-                  <Zap className="w-6 h-6" />
-                  Backend Endpoints
-                </CardTitle>
-                <CardDescription className="text-slate-300">
-                  Ready-to-use API integraties
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h4 className="font-semibold text-white mb-2">POST /functions/v1/eai-prompt-suggest</h4>
-                    <p className="text-sm text-slate-400 mb-2">
-                      Genereert geoptimaliseerde prompts op basis van context
-                    </p>
-                    <div className="text-xs text-slate-500">
-                      Input: {`{ mode: 'generate'|'improve', context: {...} }`}
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h4 className="font-semibold text-white mb-2">POST /functions/v1/eai-semantic-check</h4>
-                    <p className="text-sm text-slate-400 mb-2">
-                      Analyseert en verbetert prompts met kwaliteitscontroles
-                    </p>
-                    <div className="text-xs text-slate-500">
-                      Output: {`{ summary, issues[], normalized_prompt }`}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            
+            <SagaPromptChecker prompt={prompt} onPromptChange={setPrompt} />
           </TabsContent>
         </Tabs>
       </section>
