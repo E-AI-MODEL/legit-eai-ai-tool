@@ -307,7 +307,7 @@ Human Review Hand-off
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8" style={{ backgroundColor: "#0066cc" }} className="rounded flex items-center justify-center">
+              <div className="w-8 h-8 rounded flex items-center justify-center" style={{ backgroundColor: "#0066cc" }}>
                 <span className="text-white font-bold text-sm">S</span>
               </div>
               <div>
