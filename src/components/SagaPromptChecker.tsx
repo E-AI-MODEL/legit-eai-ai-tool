@@ -1,10 +1,10 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle, AlertTriangle, XCircle, RefreshCw, Copy, Check } from "lucide-react";
 import { useState } from "react";
+import ClipboardNotification from "@/components/ClipboardNotification";
 
 interface CheckResult {
   category: string;
@@ -23,7 +23,6 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
   const [checkResults, setCheckResults] = useState<CheckResult[]>([]);
   const [isChecking, setIsChecking] = useState(false);
   const [enhancedPrompt, setEnhancedPrompt] = useState("");
-  const [copied, setCopied] = useState(false);
 
   const performQualityCheck = (text: string): { results: CheckResult[], enhanced: string } => {
     const results: CheckResult[] = [];
@@ -132,8 +131,6 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
     }
@@ -241,13 +238,11 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                     >
                       Apply Enhancement
                     </Button>
-                    <Button
-                      onClick={() => copyToClipboard(enhancedPrompt)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
+                    <ClipboardNotification text={enhancedPrompt}>
+                      <Button variant="outline" size="sm">
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </ClipboardNotification>
                   </div>
                 </div>
               )}

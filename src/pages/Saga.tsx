@@ -1,18 +1,26 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Scale, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SagaPresetGrid from "@/components/SagaPresetGrid";
 import SagaPromptChecker from "@/components/SagaPromptChecker";
 import { LegalPreset } from "@/data/sagaPresets";
+import ClipboardNotification from "@/components/ClipboardNotification";
 
 const Saga = () => {
   const [prompt, setPrompt] = useState("");
   const [selectedPreset, setSelectedPreset] = useState<LegalPreset | null>(null);
   const [activeTab, setActiveTab] = useState("presets");
+
+  // Clear prompt and preset when component unmounts to prevent leaks
+  useEffect(() => {
+    return () => {
+      setPrompt("");
+      setSelectedPreset(null);
+    };
+  }, []);
 
   const handleSelectPreset = (preset: LegalPreset) => {
     setPrompt(preset.prompt_template);
@@ -87,13 +95,11 @@ const Saga = () => {
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button 
-                        onClick={() => navigator.clipboard.writeText(selectedPreset.prompt_template)}
-                        variant="outline" 
-                        size="sm"
-                      >
-                        Copy Prompt
-                      </Button>
+                      <ClipboardNotification text={selectedPreset.prompt_template}>
+                        <Button variant="outline" size="sm">
+                          Copy Prompt
+                        </Button>
+                      </ClipboardNotification>
                       <Button 
                         onClick={clearPrompt} 
                         variant="ghost" 
