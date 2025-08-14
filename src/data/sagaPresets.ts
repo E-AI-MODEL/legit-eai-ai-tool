@@ -1,4 +1,3 @@
-
 export interface LegalPreset {
   id: string;
   label: string;
@@ -7,9 +6,27 @@ export interface LegalPreset {
   output_format: string;
   criteria_refs?: string[];
   prompt_template: string;
-  complexity?: 'basic' | 'intermediate' | 'advanced';
   tags?: string[];
+  complexity?: string;
 }
+
+export const presetCategories = [
+  { id: "Contracts", name: "Contracts", icon: "FileText", description: "Contract review and drafting" },
+  { id: "Transactions", name: "M&A", icon: "Briefcase", description: "Mergers and acquisitions" },
+  { id: "Disputes", name: "Disputes", icon: "Scale", description: "Litigation and dispute resolution" },
+  { id: "Investigations", name: "Investigations", icon: "Search", description: "Internal investigations" },
+  { id: "Privacy", name: "Privacy", icon: "Shield", description: "GDPR and privacy compliance" },
+  { id: "Employment", name: "Employment", icon: "Users", description: "Employment law matters" },
+  { id: "IP", name: "IP", icon: "Lightbulb", description: "Intellectual property" },
+  { id: "Commercial", name: "Commercial", icon: "Building", description: "Commercial transactions" },
+  { id: "ESG", name: "ESG", icon: "Leaf", description: "ESG and sustainability" },
+  { id: "Compliance", name: "Compliance", icon: "CheckCircle", description: "Regulatory compliance" },
+  { id: "Client Comms", name: "Client Comms", icon: "MessageSquare", description: "Client communications" },
+  { id: "Research", name: "Research", icon: "BookOpen", description: "Legal research" },
+  { id: "Risk", name: "Risk", icon: "AlertTriangle", description: "Risk management" },
+  { id: "Policy", name: "Policy", icon: "FileCheck", description: "Policy development" },
+  { id: "Assist", name: "Assist", icon: "AlertCircle", description: "General assistance" }
+];
 
 export const sagaPresets: LegalPreset[] = [
   {
@@ -19,653 +36,2089 @@ export const sagaPresets: LegalPreset[] = [
     jurisdiction: "NL",
     output_format: "bullets",
     criteria_refs: ["Firm Guideline: NDA-v3"],
+    tags: ["contracts", "confidentiality", "review"],
     complexity: "intermediate",
-    tags: ["review", "confidentiality", "analysis"],
-    prompt_template: `Hi — I need you to create a comprehensive NDA review that extracts key facts and provides clear analysis with proper decision points.
+    prompt_template: `Hi — I need a systematic NDA review for this matter. I'll extract key facts, analyze against our guidelines, flag decision points, and provide complete documentation.
 
-**Your Role & Approach**
-You are a legal analyst reviewing this NDA. Extract facts systematically, analyze against our guidelines, and flag decision points that require human approval. Use neutral language and provide alternatives where relevant.
-
-**Facts (Extract) — Required Fields**
-For each field below, quote the exact clause and provide pinpoint citation:
+**Facts (Extract)**
+Please identify and extract:
 - Contract term (start/end dates in ISO format)
 - Termination window (number of days notice required)
-- Mutual vs one-way confidentiality (boolean: mutual/one-way)
-- Governing law and jurisdiction/venue
-- Definition of confidential information (scope and boundaries)
-- Carve-outs (standard exceptions: public domain, independently developed, etc.)
-- Non-solicitation clauses (if any)
-- Intellectual property provisions
-- Return/destruction obligations
-- Remedies (injunctive relief, damages)
+- Structure: mutual or one-way confidentiality (specify which party is disclosing)
+- Governing law and jurisdiction/venue clauses
+- Confidentiality scope (what information is covered)
+- Carve-outs and exceptions (public information, independently developed, etc.)
+- Non-solicitation or non-compete provisions
+- Intellectual property treatment and ownership
 
-**Analysis (Interpretation) — Compare Against Firm Guideline NDA-v3**
-- List deviations from our standard terms (max 5 bullet points)
-- Plain-English impact of each deviation
-- Risk level for each deviation (low/medium/high)
-- Note any ambiguous language or unclear terms
-- Provide 1-2 alternative approaches with trade-offs for high-risk items
+For each item, quote the exact clause language and provide pinpoint citations (section/page numbers).
 
-**Decision Points — Human Approval Required**
-Pause and seek approval before proceeding if you encounter:
-- One-way NDAs (we prefer mutual)
-- Venue outside Netherlands
-- Carve-outs that exceed our standard exceptions
-- Unlimited duration or unreasonable terms
-- Broad definition of confidential information
-
-**Output Requirements**
-- Format: Bulleted sections with clear headings
-- Style: Professional but accessible, suitable for email to client
-- Length: Concise analysis, avoid legal jargon
-- Include uncertainty notes where interpretation is unclear
-
-**Sources & Action Log**
-- List all sources with pinpoint citations (clause numbers, page references)
-- Summarize analysis steps and tools used
-- Note any assumptions made during review
-
-**Privacy & Tone Guidelines**
-- Use neutral, professional language
-- Avoid certainty words (guaranteed, always, never)
-- Request redacted excerpts only, avoid PII in examples
-- Use "appears," "suggests," "likely" for interpretations
-
-**Reflection & Next Steps**
-Before finalizing, provide:
-- 3 key insights from this review
-- 3 open questions that need clarification
-- Items requiring client confirmation before advice is final
-
-**Human Review Hand-off**
-List specific items that need partner review and approval before sending to client.`
-  },
-  {
-    id: "litigation_strategy_memo",
-    label: "Litigation — Strategy Memo",
-    category: "Disputes", 
-    jurisdiction: "NL",
-    output_format: "headings",
-    complexity: "advanced",
-    tags: ["litigation", "strategy", "analysis"],
-    prompt_template: `Hi — I need you to prepare a comprehensive litigation strategy memo that analyzes our position and outlines tactical options.
-
-**Your Role & Approach**
-You are a litigation strategist analyzing this case. Extract key facts systematically, identify legal issues, analyze strengths/weaknesses, and propose strategic options with clear trade-offs.
-
-**Case Facts (Extract) — Key Elements**
-Document with pinpoint citations:
-- Parties (full legal names, roles, relationships)
-- Timeline of key events (ISO dates)
-- Claims asserted by each party
-- Legal bases for claims (statutes, contracts, case law)
-- Defenses available
-- Key evidence and exhibits
-- Witness information (without PII)
-- Procedural posture and deadlines
-
-**Legal Issues & Applicable Law**
-- Primary legal questions to be resolved
-- Governing statutes and regulations with citations
-- Relevant case law and precedents
-- Jurisdictional considerations
-- Statute of limitations analysis
-- Note areas of legal uncertainty
-
-**Strengths & Weaknesses Analysis**
-For our position:
-- Strong factual arguments (with evidence support)
-- Favorable legal precedents
-- Credible witnesses and documentation
-- Potential weaknesses and opponent's likely challenges
-
-For opponent's position:
-- Their strongest arguments
-- Evidence they likely possess
-- Legal theories they may advance
-- Vulnerabilities we can exploit
-
-**Strategic Options & Trade-offs**
-Present 2-3 strategic approaches:
-
-Option 1: [Aggressive/Settlement/Defensive]
-- Tactical steps and timeline
-- Resource requirements (time, cost, personnel)
-- Likelihood of success
-- Risks and potential downsides
-- Client impact considerations
-
-Option 2: [Alternative approach]
-- [Same analysis framework]
+**Analysis (Interpretation)**
+Compare all terms against our Firm Guideline: NDA-v3 standard positions:
+- List any deviations from guideline in 5 bullets or fewer
+- Explain impact of each deviation in plain English
+- Note any unclear or ambiguous language that creates uncertainty
+- Provide 1-2 alternative approaches with trade-offs for problematic terms
 
 **Decision Points — Human Approval Required**
-Seek approval before:
-- Filing any motions or pleadings
-- Settlement discussions above/below specified thresholds
-- Discovery scope decisions
-- Expert witness retention
-- Media or public relations strategy
+Pause and seek approval before proceeding if:
+- One-way NDA heavily favors counterparty
+- Venue/jurisdiction differs from our standard preferences
+- Confidentiality carve-outs exceed guideline parameters
+- Term length exceeds our standard maximums
 
-**Resource Planning**
-- Estimated timeline for key phases
-- Budget considerations and cost projections
-- Staffing recommendations
-- External resources needed (experts, consultants)
-
-**Risk Assessment**
-- Best case scenario outcomes
-- Worst case scenario outcomes
-- Most likely scenario outcomes
-- Factors that could change our assessment
-
-**Privacy & Communication Guidelines**
-- Maintain attorney-client privilege
-- Avoid PII in written communications
-- Use secure channels for sensitive information
-- Clear protocols for client updates
+**Outputs**
+Deliver analysis in themed bullet points suitable for email or memo format.
 
 **Sources & Action Log**
-- Document review completed
-- Legal research conducted
-- Consultations held
-- Analysis assumptions and limitations
+- List all source documents with pinpoint citations
+- Document analysis steps and any tools used
+- Note assumptions made and information limitations
 
-**Reflection & Strategic Insights**
-- 3 key strategic insights
-- 3 critical questions needing answers
-- Factors that could shift our recommendation
+**Communication & Privacy Standards**
+- Use neutral, professional language with appropriate qualifiers
+- Apply terms like "appears," "suggests," "likely" rather than absolute statements
+- Protect PII by requesting redacted document excerpts only
+- Maintain attorney-client privilege throughout
+
+**Reflection & Quality Control**
+Provide:
+- 3 key insights from this analysis
+- 3 critical questions requiring clarification
+- Recommendations for next steps
 
 **Human Review Hand-off**
-Items requiring partner approval:
-- Strategic direction recommendation
-- Budget and resource allocation
-- Settlement authority parameters
-- Public relations considerations`
+List specific items requiring partner confirmation before client communication and any approvals needed before proceeding.`
   },
   {
-    id: "contract_redline_comprehensive",
-    label: "MSA — Professional Redline + Comments",
+    id: "dpa_review_grid",
+    label: "DPA — GDPR Essentials",
     category: "Contracts",
     jurisdiction: "EU",
-    output_format: "tracked_changes", 
+    output_format: "bullets",
+    criteria_refs: ["GDPR Arts. 28–32", "EDPB guidance"],
+    tags: ["privacy", "GDPR", "data processing"],
     complexity: "advanced",
-    tags: ["redline", "MSA", "negotiation"],
-    prompt_template: `Hi — I need you to produce comprehensive tracked changes and comments for this MSA that align with our firm playbook and protect client interests.
+    prompt_template: `Hi — I need a comprehensive GDPR compliance review of this Data Processing Agreement. I'll systematically check all essential requirements and flag any gaps.
 
-**Your Role & Approach**
-You are a commercial contracts specialist. Review this MSA systematically, apply our standard positions from the Firm Playbook MSA-2025, and provide clear redlines with strategic comments.
+**Facts (Extract)**
+Please identify and extract with exact quotes and pinpoint citations:
+- Data controller vs processor roles and responsibilities
+- Sub-processing arrangements and approval mechanisms
+- International transfer mechanisms (SCCs, adequacy decisions, TIA requirements)
+- Security measures and technical/organizational safeguards
+- Data breach notification SLAs and procedures
+- Audit rights and inspection procedures
+- Data deletion and return obligations
+- Processing purposes and data categories
 
-**Pre-Review Assessment**
-First, identify and note:
-- Missing key terms (pricing model, liability caps, service levels)
-- Document structure and organization issues
-- Immediate red flags or unusual provisions
-- Applicable law and jurisdiction
+**Analysis (Interpretation)**
+Compare against GDPR Articles 28-32 and current EDPB guidance:
+- Identify gaps in mandatory Article 28 requirements
+- Assess security measures against Article 32 standards
+- Evaluate transfer mechanisms for Chapter V compliance
+- Risk level assessment (low/medium/high) for each gap
+- Note areas of regulatory uncertainty
+- Provide 1-2 remediation options for each significant gap
 
-**Redline Strategy — Apply Firm Playbook MSA-2025**
+**Decision Points — Human Approval Required**
+Pause for approval if:
+- International transfers lack adequate safeguards (SCCs/TIA missing)
+- No meaningful audit rights provided
+- Breach notification SLA exceeds regulatory timelines
+- Sub-processing approval mechanisms inadequate
 
-**CRITICAL PROVISIONS (Must-Fix Priority)**
-For each provision below, provide tracked changes with rationale:
+**Outputs**
+Professional bullet-point analysis ready for client communication.
 
-1. **Liability & Indemnification**
-   - Cap overall liability at appropriate level
-   - Carve out uncapped liability for breach of confidentiality, IP infringement, gross negligence
-   - Ensure mutual indemnification structure
-   - Comment: [Risk level and negotiation approach]
+**Sources & Action Log**
+- GDPR articles and EDPB guidance consulted with specific references
+- Document analysis methodology and tools used
+- Assumptions and limitations noted
 
-2. **Intellectual Property**
-   - Clarify IP ownership (pre-existing vs. developed)
-   - Include appropriate IP indemnification
-   - Address derivative works and improvements
-   - Comment: [Client IP protection strategy]
+**Communication & Privacy Standards**
+- Neutral, measured language avoiding absolute compliance guarantees
+- Request redacted excerpts only to protect confidential information
+- Maintain privilege and work product protections
 
-3. **Service Levels & Performance**
-   - Define measurable service level requirements
-   - Include remedies for SLA failures
-   - Address service credits and termination rights
-   - Comment: [Business continuity implications]
+**Reflection & Quality Control**
+- 3 insights on DPA adequacy and risk profile
+- 3 open questions requiring legal/business clarification
+- Recommended remediation priority sequence
 
-4. **Data Protection & Security**
-   - GDPR compliance provisions
-   - Data processing terms and safeguards
-   - Breach notification requirements
-   - Comment: [Regulatory compliance approach]
+**Human Review Hand-off**
+Items requiring partner sign-off and client consultation before implementation.`
+  },
+  {
+    id: "msa_redline_draft",
+    label: "MSA — Tracked Changes + Comments",
+    category: "Contracts",
+    jurisdiction: "NL",
+    output_format: "tracked_changes",
+    criteria_refs: ["Firm Playbook: MSA-2025"],
+    tags: ["contracts", "services", "redlines"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to prepare tracked changes and comments for this Master Service Agreement to align with our 2025 playbook standards.
 
-5. **Termination & Transition**
-   - Include termination for convenience rights
-   - Define reasonable notice periods
-   - Address data return/deletion obligations
-   - Include transition assistance provisions
-   - Comment: [Exit strategy considerations]
+**Assumptions & Missing Information**
+Document any missing critical inputs:
+- Pricing model and fee structure details
+- Liability cap amounts and calculation basis
+- Service level agreements and performance metrics
+- Specific deliverables and acceptance criteria
 
-**STANDARD PROVISIONS (Optional but Recommended)**
-- Payment terms and invoice procedures
-- Change management process
-- Dispute resolution mechanisms
-- Force majeure provisions
-- Amendment procedures
+**Draft — Tracked Changes**
+Apply changes aligned with Firm Playbook: MSA-2025:
+- Label each change as [MUST-FIX] or [OPTIONAL]
+- Provide brief rationale for each modification
+- Focus on: liability allocation, indemnification, IP ownership, termination rights, governing law, dispute resolution
+- Ensure compliance with our risk tolerance and client protection standards
 
-**Alternative Approaches**
-For each must-fix item, provide:
-- Primary recommendation with rationale
-- 1-2 fallback positions if primary is rejected
-- Trade-offs and business implications of each approach
+**Alternatives & Trade-offs**
+For each [MUST-FIX] item, provide:
+- 1-2 fallback clause options if counterparty resists
+- Business and legal trade-offs for each alternative
+- Risk assessment for compromise positions
 
-**Comments Strategy**
-For each redline, include:
-- Brief rationale (1-2 sentences)
-- Risk level (low/medium/high)
-- Negotiation approach ("standard position" vs "willing to discuss")
-- Business impact explanation
+**Decision Points — Human Approval Required**
+Pause and seek approval before finalizing positions on:
+- Liability cap amounts and scope
+- Mutual vs one-way indemnification provisions
+- Governing law and jurisdiction selection
+- Termination for convenience rights and notice periods
+
+**Outputs**
+Word-compatible tracked changes document with comprehensive comment explanations ready for negotiation.
+
+**Sources & Action Log**
+- Firm Playbook: MSA-2025 sections referenced
+- Analysis methodology and comparison tools used
+- Client-specific modifications noted
+
+**Communication & Privacy Standards**
+- Professional, negotiation-ready language
+- Avoid absolute positions that eliminate flexibility
+- Protect confidential terms through appropriate redactions
+
+**Quality Control & Reflection**
+- 3 key insights on agreement risk profile
+- 3 critical questions for business stakeholder input
+- Negotiation strategy recommendations
+
+**Human Review Hand-off**
+Partner approval requirements and client consultation points before commencing negotiations.`
+  },
+  {
+    id: "sow_scope_check",
+    label: "SOW — Scope & Deliverables Check",
+    category: "Contracts",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    criteria_refs: ["Firm Playbook: SOW-2025"],
+    tags: ["scope", "deliverables", "projects"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need a thorough scope and deliverables analysis of this Statement of Work to identify risks and ambiguities.
+
+**Facts (Extract)**
+Please extract with specific citations:
+- Detailed deliverables list and specifications
+- Acceptance testing criteria and procedures
+- Change control and scope modification processes
+- Payment milestones tied to deliverable completion
+- Intellectual property creation and ownership terms
+- Dependencies on client-provided resources or third parties
+- Timeline and critical path requirements
+
+**Analysis (Interpretation)**
+Assess against SOW best practices:
+- Identify scope ambiguities that could lead to disputes
+- Evaluate scope creep risk factors and vulnerabilities
+- Assess adequacy of acceptance criteria coverage
+- Review change control mechanism effectiveness
+- Analyze IP allocation fairness and clarity
+- Note dependency risks and mitigation gaps
+
+Provide alternative approaches for problematic areas with trade-off analysis.
+
+**Decision Points — Human Approval Required**
+Pause for approval if:
+- Acceptance criteria are undefined or overly subjective
+- IP ownership terms are ambiguous or unfavorable
+- Dependencies create significant delivery risks
+- Change control processes inadequate for scope protection
+
+**Outputs**
+Professional bullet-point analysis suitable for project stakeholder review.
+
+**Sources & Action Log**
+- SOW playbook standards referenced
+- Risk assessment methodology documented
+- Client industry benchmarks considered
+
+**Communication & Privacy Standards**
+- Clear, project-management friendly language
+- Balanced risk assessment avoiding alarmist tone
+- Protect proprietary information through appropriate handling
+
+**Quality Control & Reflection**
+- 3 insights on project delivery risks and opportunities
+- 3 questions requiring clarification from business stakeholders
+- Recommended SOW improvements and risk mitigations
+
+**Human Review Hand-off**
+Items requiring project management and legal approval before SOW execution.`
+  },
+  {
+    id: "litigation_case_memo",
+    label: "Litigation — Case Assessment Memo",
+    category: "Disputes",
+    jurisdiction: "NL",
+    output_format: "headings",
+    tags: ["litigation", "assessment", "strategy"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to prepare a comprehensive case assessment memo analyzing our litigation position and strategic options.
+
+**Case Overview & Parties**
+Document with precise citations:
+- All parties and their legal status/capacity
+- Complete timeline of relevant events (ISO date format)
+- Factual allegations and disputed issues
+- Key exhibits and evidence available (with pinpoint references)
+- Procedural posture and pending motions
+
+**Legal Issues & Applicable Law**
+- Primary legal claims and potential defenses
+- Governing statutes, regulations, and case law precedents
+- Jurisdictional and venue considerations
+- Statute of limitations and procedural deadline analysis
+- Areas of legal uncertainty requiring research
+
+**Strengths & Weaknesses Analysis**
+Provide balanced assessment:
+- Arguments supporting our position with supporting authority
+- Potential counterarguments and opposing counsel likely strategies
+- Evidence gaps and discovery needs
+- Witness availability and credibility factors
+- Settlement leverage and alternatives
+
+**Strategic Options & Recommendations**
+Present 1-2 strategic pathways:
+- Litigation approach and key decision points
+- Discovery scope and timeline considerations
+- Motion practice strategy and timing
+- Settlement posture and negotiation leverage
+- Resource requirements and budget implications
+- Risk-reward analysis for each option
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Overall case strategy and resource allocation
+- Settlement authority and negotiation parameters
+- Discovery scope and expert witness retention
+- Motion filing strategy and timing
+
+**Sources & Action Log**
+- Legal authorities researched and cited
+- Factual investigation completed
+- Consultation with client and witnesses documented
+
+**Communication & Privacy Standards**
+- Measured legal analysis avoiding outcome guarantees
+- Protect attorney-client privilege and work product
+- Client-ready professional presentation
+
+**Quality Control & Reflection**
+- 3 key strategic insights and case themes
+- 3 critical questions requiring additional investigation
+- Risk mitigation priorities and next steps
+
+**Human Review Hand-off**
+Partner consultation requirements and client decision points before proceeding with litigation strategy.`
+  },
+  {
+    id: "dora_it_contract",
+    label: "DORA — IT Services Contract Scan",
+    category: "Regulatory",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    criteria_refs: ["DORA 2025 checklist"],
+    tags: ["regulatory", "financial services", "IT"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to scan this IT services contract for DORA (Digital Operational Resilience Act) compliance requirements that apply to financial institutions in the EU.
+
+**Facts (Extract)**
+Please identify and extract with pinpoint citations:
+- ICT third-party risk management provisions
+- Incident reporting windows and notification procedures
+- Business continuity and disaster recovery requirements
+- Testing obligations and penetration testing rights
+- Operational resilience measures and SLAs
+- Data location and processing restrictions
+- Audit rights and regulatory access provisions
+- Termination and exit planning requirements
+
+**Analysis (Interpretation)**
+Compare against DORA requirements effective from January 2025:
+- Assess gaps versus mandatory ICT risk management framework
+- Evaluate incident reporting compliance with regulatory timelines
+- Review testing and audit provisions for adequacy
+- Analyze operational resilience and continuity measures
+- Check data localization and processing restrictions
+- Identify areas where regulatory guidance is still developing
+
+For each gap, provide 1-2 remediation options with trade-offs.
+
+**Decision Points — Human Approval Required**
+Pause for approval if:
+- Incident notification windows exceed DORA requirements
+- Testing and audit regime insufficient for regulatory compliance
+- Operational resilience measures inadequate for critical services
+- Data processing locations create regulatory risk
+
+**Outputs**
+Professional bullet-point analysis highlighting DORA compliance gaps and remediation priorities.
+
+**Sources & Action Log**
+- DORA articles and technical standards referenced
+- Industry guidance and regulatory pronouncements consulted
+- Client risk classification and materiality thresholds applied
+
+**Communication & Privacy Standards**
+- Regulatory-focused language appropriate for compliance teams
+- Balanced risk assessment avoiding unnecessary alarm
+- Protect confidential contract terms and client information
+
+**Quality Control & Reflection**
+- 3 insights on DORA readiness and implementation priorities
+- 3 questions requiring regulatory affairs input
+- Recommended compliance timeline and next steps
+
+**Human Review Hand-off**
+Items requiring regulatory counsel approval and client risk committee consultation.`
+  },
+  {
+    id: "mipa_assets",
+    label: "M&A — Purchase Agreement (Assets)",
+    category: "Transactions",
+    jurisdiction: "NL",
+    output_format: "bullets",
+    criteria_refs: ["Firm M&A Playbook"],
+    tags: ["M&A", "acquisitions", "assets"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to review this Dutch asset purchase agreement against our M&A playbook standards and identify key risks and negotiation points.
+
+**Facts (Extract)**
+Please extract with specific citations:
+- Assets included in transaction scope and excluded assets list
+- Purchase price structure and adjustment mechanisms
+- Representations and warranties scope and materiality thresholds
+- Indemnification provisions (caps, baskets, survival periods)
+- Pre-closing and post-closing covenants
+- Closing conditions and termination rights
+- Employee transfer arrangements under Dutch law
+- Regulatory approvals and third-party consents required
+
+**Analysis (Interpretation)**
+Compare against Firm M&A Playbook standards:
+- Assess asset definition completeness and transfer risks
+- Evaluate purchase price adjustment fairness and mechanics
+- Review representations scope for gaps in seller coverage
+- Analyze indemnification terms for buyer protection adequacy
+- Check covenant restrictions for operational flexibility
+- Identify closing condition risks and mitigation strategies
+
+Provide alternative approaches for problematic terms with trade-off analysis.
 
 **Decision Points — Human Approval Required**
 Pause for approval on:
-- Liability cap levels above/below firm guidelines
-- Indemnification scope and carve-outs
-- Governing law selection
-- Termination for convenience inclusion/exclusion
-- Any provisions marked "business decision required"
+- Uncapped indemnification exposure or unusual survival periods
+- Purchase price adjustments with undefined calculation methods
+- Material adverse change definitions and carve-outs
+- Key employee retention and non-compete arrangements
 
-**Deliverables Format**
-- Word document with tracked changes enabled
-- Comment bubbles for each change with rationale
-- Summary memo highlighting key negotiation points
-- Redline comparison table for critical terms
+**Outputs**
+Professional bullet-point analysis suitable for client deal team review.
 
-**Negotiation Intelligence**
-- Anticipate counterparty likely objections
-- Prepare fallback positions for high-priority items
-- Identify provisions where we can show flexibility
-- Note industry-standard approaches for benchmarking
+**Sources & Action Log**
+- M&A Playbook sections and precedent provisions referenced
+- Dutch law requirements and transfer procedures considered
+- Market terms and client transaction history benchmarked
 
-**Sources & Documentation**
-- Reference Firm Playbook MSA-2025 sections
-- Cite relevant legal requirements (GDPR, etc.)
-- Note industry best practices applied
-- Document assumptions about client business needs
+**Communication & Privacy Standards**
+- Deal-focused language appropriate for business stakeholders
+- Balanced risk assessment supporting informed decision-making
+- Protect transaction confidentiality and sensitive terms
 
-**Privacy & Confidentiality**
-- Remove or redact PII from examples
-- Use placeholders for confidential business terms
-- Maintain privilege over strategy discussions
-- Follow secure document handling procedures
-
-**Quality Control Checklist**
-Before finalizing:
-- All must-fix items addressed
-- Comments are clear and actionable
-- Document formatting is professional
-- Legal citations are accurate
+**Quality Control & Reflection**
+- 3 insights on deal structure and risk allocation
+- 3 questions requiring business and tax input
+- Recommended negotiation priorities and fallback positions
 
 **Human Review Hand-off**
-Items requiring partner sign-off:
-- Overall negotiation strategy
-- Liability cap recommendations
-- Any deviations from standard playbook
-- Client-specific business considerations
-
-**Reflection & Strategy**
-- 3 key negotiation insights
-- 3 potential deal risks to monitor
-- Recommended approach for initial discussion with counterparty`
+Partner approval requirements and client consultation points before negotiation commencement.`
   },
   {
-    id: "client_advisory_memo",
-    label: "Client Advisory — Comprehensive Memo",
-    category: "Client Comms",
+    id: "mshare_spa",
+    label: "M&A — SPA Redline Hints",
+    category: "Transactions",
+    jurisdiction: "EU",
+    output_format: "tracked_changes",
+    criteria_refs: ["Firm M&A Clauses 2025"],
+    tags: ["M&A", "share purchase", "redlines"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to prepare strategic redlines and negotiation comments for the most commonly negotiated clauses in this share purchase agreement.
+
+**Priority Redline Areas**
+Focus tracked changes and comments on:
+- Representations and warranties materiality qualifiers and knowledge standards
+- Sandbagging provisions and buyer's pre-closing knowledge
+- Escrow arrangements and indemnification mechanics
+- Material adverse change definitions and carve-outs
+- Earn-out provisions and post-closing adjustments
+- Break-up fees and reverse break-up fee provisions
+
+**Draft — Tracked Changes**
+For each provision, provide:
+- [MUST-HAVE] vs [NEGOTIABLE] designation
+- Specific redline language aligned with Firm M&A Clauses 2025
+- Brief rationale for each modification
+- Cross-references to related provisions requiring conforming changes
+
+**Alternatives & Trade-offs**
+For contentious provisions, offer 2 alternative approaches:
+- Market-standard fallback positions
+- Business and legal implications of each alternative
+- Negotiation leverage and timing considerations
+
+**Decision Points — Human Approval Required**
+Pause for approval before finalizing positions on:
+- Material adverse change thresholds and disproportionality tests
+- Indemnification baskets, caps, and survival periods
+- Specific indemnification carve-outs (tax, environmental, employment)
+- Earn-out calculation methodology and dispute resolution
+
+**Outputs**
+Word-compatible tracked changes with comprehensive comment explanations ready for counterparty exchange.
+
+**Sources & Action Log**
+- Firm M&A Clauses 2025 playbook provisions
+- Recent market precedents and negotiation outcomes
+- Client deal history and risk tolerance factors
+
+**Communication & Privacy Standards**
+- Professional negotiation language maintaining relationship focus
+- Strategic positioning without revealing all fallback options
+- Protect deal confidentiality and sensitive valuation information
+
+**Quality Control & Reflection**
+- 3 key insights on deal dynamics and negotiation leverage
+- 3 critical questions for business team input
+- Recommended negotiation sequence and timing strategy
+
+**Human Review Hand-off**
+Partner approval on negotiation strategy and client consultation on key business terms.`
+  },
+  {
+    id: "pre_mediation_brief",
+    label: "Disputes — Pre-Mediation Brief",
+    category: "Disputes",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    tags: ["mediation", "settlement", "ADR"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to prepare a strategic pre-mediation brief to guide our settlement discussions and maximize negotiation effectiveness.
+
+**Background & Dispute Overview**
+Provide neutral summary:
+- Parties and their business relationship history
+- Core disputed issues and legal claims
+- Timeline of key events leading to mediation (ISO dates)
+- Previous settlement discussions and positions taken
+- Mediation format, mediator background, and scheduled timeline
+
+**Position Analysis**
+Document each party's stated positions:
+- Our client's primary demands and minimum acceptable terms
+- Counterparty's stated position and likely underlying interests
+- Legal strengths and weaknesses for each side
+- Factual disputes and areas of agreement
+- Expert opinions and key evidence supporting each position
+
+**Interest-Based Assessment**
+Identify underlying business interests:
+- Our client's core business needs and relationship priorities
+- Counterparty's likely business drivers and constraints
+- Shared interests and potential value-creation opportunities
+- Non-monetary terms that could provide value to both sides
+- Future business relationship considerations
+
+**BATNA/WATNA Analysis**
+Assess alternatives to settlement:
+- Best Alternative to Negotiated Agreement (our strongest litigation outcome)
+- Worst Alternative to Negotiated Agreement (our weakest litigation scenario)
+- Counterparty's likely BATNA/WATNA assessment
+- Litigation costs, timing, and business disruption factors
+- Reputational and relationship impact of continued dispute
+
+**Settlement Strategy & Ranges**
+Develop negotiation approach:
+- Opening position and supporting rationale
+- Target settlement range with supporting analysis
+- Minimum acceptable terms and walk-away points
+- Concession strategy and timing considerations
+- Package deal options and creative settlement structures
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Settlement authority limits and approval requirements
+- Confidential information sharing boundaries
+- Key business terms requiring client input during mediation
+
+**Outputs**
+Professional bullet-point brief suitable for mediation team preparation.
+
+**Sources & Action Log**
+- Case files and evidence reviewed
+- Precedent settlements and market comparables researched
+- Client consultation and business impact assessment completed
+
+**Communication & Privacy Standards**
+- Balanced assessment supporting effective negotiation
+- Protect mediation confidentiality and settlement privilege
+- Maintain professional relationship focus throughout process
+
+**Quality Control & Reflection**
+- 3 insights on settlement dynamics and opportunities
+- 3 questions requiring client input before mediation
+- Recommended mediation tactics and relationship management
+
+**Human Review Hand-off**
+Partner consultation on settlement authority and client approval for negotiation parameters.`
+  },
+  {
+    id: "investigation_plan",
+    label: "Internal Investigation — Plan",
+    category: "Investigations",
     jurisdiction: "EU",
     output_format: "headings",
-    complexity: "intermediate", 
-    tags: ["client", "advisory", "communication"],
-    prompt_template: `Hi — I need you to prepare a comprehensive client advisory memo that clearly explains the legal situation and provides actionable recommendations.
+    tags: ["investigation", "compliance", "internal"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to develop a comprehensive internal investigation plan that ensures thorough fact-finding while managing legal and business risks.
 
-**Your Role & Approach**
-You are a client advisor preparing a memo for business executives. Translate complex legal issues into clear business guidance with practical next steps and risk assessment.
+**Investigation Scope & Objectives**
+Define investigation parameters:
+- Specific allegations or concerns requiring investigation
+- Key legal and compliance questions to be answered
+- Timeline of events requiring examination (ISO date ranges)
+- Geographic scope and business units involved
+- Regulatory or legal obligations driving investigation timing
+- Success criteria and deliverables expected
 
-**Executive Summary**
-Lead with a 3-4 sentence summary covering:
-- The key legal issue or question
-- Our bottom-line recommendation
-- Critical timeline or action items
-- Material risks to highlight
+**Information Sources & Collection Strategy**
+Identify evidence gathering approach:
+- Documents and electronic records requiring review
+- Key witnesses and interview priorities
+- Third-party information sources and external records
+- Expert analysis or forensic review requirements
+- Preservation obligations and litigation hold considerations
+- Data privacy and cross-border transfer restrictions
 
-**Background & Context**
-- Relevant business context and timeline
-- Key stakeholders and their interests
-- Previous legal advice or decisions
-- Current regulatory or market environment
-- Why this issue needs attention now
+**Legal Constraints & Compliance Requirements**
+Address regulatory framework:
+- Applicable privilege protections and common interest considerations
+- Employee rights and works council consultation requirements (EU)
+- Data protection obligations under GDPR
+- Regulatory reporting obligations and timing requirements
+- Potential conflicts of interest and management participation
+- External counsel engagement and independence requirements
 
-**Legal Analysis**
+**Investigation Timeline & Milestones**
+Develop project plan:
+- Phase 1: Document preservation and initial witness interviews
+- Phase 2: Detailed fact development and expert analysis
+- Phase 3: Findings analysis and remediation planning
+- Key decision points and progress reporting schedule
+- Resource allocation and team assignments
+- Contingency planning for scope expansion or complications
 
-**Applicable Law & Regulations**
-- Governing legal framework with citations
-- Recent regulatory changes or guidance
-- Relevant industry standards or best practices
-- Jurisdictional considerations (multi-country if applicable)
+**Risk Management & Mitigation**
+Address investigation risks:
+- Privilege waiver and disclosure risks
+- Employee relations and retention concerns
+- Business disruption and operational impact
+- Regulatory and enforcement exposure
+- Reputational and public relations considerations
+- Insurance coverage and cost management
 
-**Key Legal Issues**
-For each main issue:
-- Clear statement of the legal question
-- Analysis of how law applies to client's situation
-- Relevant precedents or regulatory guidance
-- Areas of legal uncertainty or gray areas
-- Potential changes in legal landscape
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Investigation scope boundaries and resource allocation
+- External counsel selection and engagement terms
+- Employee suspension or administrative leave decisions
+- Regulatory notification timing and content
+- Public disclosure and stakeholder communication
 
-**Risk Assessment**
+**Reporting & Communication Plan**
+Structure information flow:
+- Internal reporting format and frequency
+- Board or committee briefing requirements
+- Regulatory communication strategy and timing
+- Employee communication and change management
+- External stakeholder and media response planning
 
-**High Priority Risks**
-- Most significant legal/business risks
-- Likelihood and potential impact
-- Timeline for when risks might materialize
-- Factors that could increase/decrease risk
+**Outputs & Deliverables**
+Define investigation products:
+- Factual findings report with supporting evidence
+- Legal analysis and compliance assessment
+- Remediation recommendations and implementation plan
+- Process improvements and control enhancements
+- Regulatory response strategy and submissions
 
-**Medium Priority Considerations**
-- Secondary risks and considerations
-- Operational or reputational implications
-- Cost/benefit analysis of different approaches
+**Sources & Action Log**
+- Investigation planning resources and precedents consulted
+- Regulatory guidance and best practices reviewed
+- Client consultation and stakeholder input documented
 
-**Recommendations & Next Steps**
+**Communication & Privacy Standards**
+- Maintain investigation confidentiality and work product protection
+- Balance thoroughness with efficiency and cost management
+- Protect employee privacy and rights throughout process
 
-**Immediate Actions (Next 30 Days)**
-1. [Specific action with owner and deadline]
-2. [Specific action with owner and deadline]
-3. [Specific action with owner and deadline]
+**Quality Control & Reflection**
+- 3 insights on investigation risks and success factors
+- 3 questions requiring immediate stakeholder input
+- Recommended investigation team structure and governance
 
-**Medium-term Strategy (30-90 Days)**
-- Strategic initiatives to address core issues
-- Process improvements or policy changes
-- Stakeholder engagement requirements
-
-**Long-term Considerations (90+ Days)**
-- Ongoing monitoring requirements
-- Future legal developments to track
-- Strategic planning implications
-
-**Implementation Support**
-- Legal team involvement and oversight
-- External resources needed (consultants, etc.)
-- Budget considerations and approvals required
-- Timeline and milestone tracking
-
-**Decision Points Requiring Business Input**
-Present options where business judgment is needed:
-
-**Option 1: [Conservative Approach]**
-- Description and rationale
-- Legal/business benefits
-- Costs and limitations
-- Implementation timeline
-
-**Option 2: [Balanced Approach]** 
-- [Same analysis framework]
-
-**Option 3: [Aggressive Approach]**
-- [Same analysis framework]
-
-**Monitoring & Compliance Framework**
-- Key metrics or indicators to track
-- Reporting requirements and frequency
-- Review and update procedures
-- Escalation triggers and procedures
-
-**Communication Strategy**
-- Internal stakeholder communication plan
-- External communication considerations
-- Regulatory notification requirements
-- Public relations or investor considerations
-
-**Budget & Resource Planning**
-- Legal fees and external costs
-- Internal resource requirements
-- Technology or system investments
-- Timeline for expenditures
-
-**Sources & Authority**
-- Statutes, regulations, and case law cited
-- Industry guidance and best practices
-- Expert consultations conducted
-- Assumptions and limitations of analysis
-
-**Confidentiality & Privilege**
-- Maintain attorney-client privilege
-- Handle confidential business information appropriately
-- Use secure communication channels
-- Follow document retention policies
-
-**Quality Assurance**
-- Legal accuracy verification
-- Business impact assessment
-- Practical implementation review
-- Client communication effectiveness
-
-**Human Review Requirements**
-Items needing partner approval:
-- Significant legal positions or interpretations
-- High-risk recommendations
-- Material cost or resource commitments
-- Regulatory reporting or filing decisions
-
-**Follow-up & Accountability**
-- Next review meeting scheduled
-- Action item tracking system
-- Success metrics and evaluation criteria
-- Contingency planning for changed circumstances
-
-This memo provides comprehensive guidance while maintaining clear business focus and actionable recommendations for executive decision-making.`
+**Human Review Hand-off**
+Partner approval on investigation scope, budget, and external counsel engagement strategy.`
   },
   {
-    id: "due_diligence_comprehensive",
-    label: "M&A — Comprehensive Due Diligence Review",
+    id: "whistle_review",
+    label: "Whistleblower Intake — First Pass",
+    category: "Investigations",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    criteria_refs: ["EU Whistleblower Directive"],
+    tags: ["whistleblower", "compliance", "reporting"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to conduct an initial assessment of this whistleblower report in compliance with EU Whistleblower Directive requirements and determine appropriate next steps.
+
+**Facts (Extract)**
+Document with precise details:
+- Nature of allegations and specific misconduct claimed
+- Timeline of reported events (ISO dates) and ongoing conduct
+- Persons allegedly involved and their organizational roles
+- Evidence provided by reporter and additional evidence referenced
+- Reporter's identity (if disclosed) and relationship to organization
+- Previous internal reports or external complaints on same issues
+- Potential harm to organization, employees, or public interest
+
+**Initial Risk Assessment**
+Evaluate urgency and materiality:
+- Potential legal, regulatory, or compliance violations implicated
+- Immediate risks requiring urgent intervention or safeguards
+- Scope of potential organizational or public harm
+- Regulatory reporting obligations and timing requirements
+- Reputational and business impact considerations
+- Criminal conduct implications requiring law enforcement referral
+
+**Confidentiality & Protection Measures**
+Address whistleblower protections:
+- Reporter anonymity preservation and identity protection
+- Secure communication channels and document handling
+- Potential retaliation risks and protective measures needed
+- Conflict of interest assessment for investigation team
+- Information sharing limitations and need-to-know restrictions
+- GDPR compliance for personal data processing
+
+**Preliminary Investigation Planning**
+Outline initial response:
+- Immediate fact-finding priorities and information gathering
+- Key witnesses and document sources requiring review
+- External expertise or forensic analysis requirements
+- Investigation timeline and resource allocation needs
+- Regulatory notification requirements and timing
+- Business continuity and operational risk mitigation
+
+**Decision Points — Human Approval Required**
+Seek immediate guidance on:
+- Investigation scope and external counsel engagement
+- Employee suspension or administrative action decisions
+- Regulatory notification timing and content
+- Board or management reporting requirements
+- Law enforcement referral considerations
+
+**Outputs**
+Professional bullet-point assessment suitable for senior management and board briefing.
+
+**Sources & Action Log**
+- EU Whistleblower Directive requirements and national implementing legislation
+- Organization's whistleblower policy and procedures
+- Initial evidence review and preliminary interviews conducted
+
+**Communication & Privacy Standards**
+- Strict confidentiality maintenance protecting reporter identity
+- Balanced assessment avoiding premature conclusions
+- Protect investigation integrity and legal privilege
+
+**Quality Control & Reflection**
+- 3 insights on allegations credibility and investigation priorities
+- 3 critical questions requiring immediate senior management input
+- Recommended protective measures and investigation next steps
+
+**Human Review Hand-off**
+Immediate partner consultation on investigation strategy and senior management notification requirements.`
+  },
+  {
+    id: "privacy_tia",
+    label: "Privacy — TIA Outline",
+    category: "Privacy",
+    jurisdiction: "EU",
+    output_format: "headings",
+    criteria_refs: ["EDPB TIA factors"],
+    tags: ["privacy", "data transfers", "TIA"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to create a comprehensive Transfer Impact Assessment (TIA) outline for international data transfers to assess and document adequacy of protection measures.
+
+**Transfer Overview & Context**
+Document transfer details:
+- Data categories and volume of personal data involved
+- Data subjects affected and their reasonable expectations
+- Purpose and legal basis for international transfer
+- Third country destinations and onward transfer arrangements
+- Transfer duration and frequency (one-time vs ongoing)
+- Technical transfer methods and security measures employed
+
+**Third Country Assessment**
+Evaluate destination country protection:
+- Legal framework for data protection and individual rights
+- Government access laws and surveillance programs
+- Independence and effectiveness of supervisory authorities
+- Available legal remedies for data subjects
+- Rule of law and respect for fundamental rights
+- Practical enforceability of protection measures
+
+**Supplementary Measures Analysis**
+Assess additional safeguards:
+- Technical measures: encryption, pseudonymization, key management
+- Organizational measures: access controls, staff training, audit procedures
+- Contractual measures: Standard Contractual Clauses, additional commitments
+- Certification schemes and codes of conduct applicability
+- Effectiveness assessment of combined protection measures
+
+**Residual Risk Evaluation**
+Identify remaining concerns:
+- Gaps in legal protection despite supplementary measures
+- Practical enforceability limitations in third country
+- Risk likelihood and potential impact on data subjects
+- Specific vulnerabilities related to data categories or use cases
+- Mitigation strategies for identified residual risks
+
+**Alternative Transfer Options**
+Consider available alternatives:
+- Adequacy decision jurisdictions for data processing
+- Different technical implementation reducing transfer risks
+- Data minimization opportunities and local processing options
+- Derogation availability under GDPR Article 49
+- Business impact assessment of alternative approaches
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Acceptable risk tolerance levels for international transfers
+- Business necessity assessment and alternative evaluation
+- Additional safeguards implementation and cost implications
+- Regulatory consultation strategy for complex cases
+
+**Implementation & Monitoring Plan**
+Structure ongoing compliance:
+- Supplementary measures implementation timeline
+- Regular review and assessment schedule
+- Monitoring procedures for effectiveness verification
+- Documentation and record-keeping requirements
+- Incident response procedures for transfer-related breaches
+- Training and awareness programs for transfer stakeholders
+
+**Outputs & Documentation**
+Provide structured deliverables:
+- Complete TIA report with risk assessment and conclusions
+- Implementation checklist for supplementary measures
+- Contractual provisions and technical specifications
+- Monitoring and review procedures documentation
+- Regulatory filing materials if consultation required
+
+**Sources & Action Log**
+- EDPB TIA guidelines and case-specific guidance
+- Third country legal analysis and government access laws
+- Technical security standards and industry best practices
+- Client business requirements and risk tolerance assessment
+
+**Communication & Privacy Standards**
+- Technical accuracy balanced with business accessibility
+- Conservative risk assessment protecting data subject rights
+- Clear documentation supporting transfer decision rationale
+
+**Quality Control & Reflection**
+- 3 insights on transfer risks and protection adequacy
+- 3 questions requiring technical or business input
+- Recommended supplementary measures and implementation priorities
+
+**Human Review Hand-off**
+Privacy counsel approval on risk assessment conclusions and regulatory consultation strategy.`
+  },
+  {
+    id: "cookie_policy_review",
+    label: "Privacy — Cookie Policy Review",
+    category: "Privacy",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    criteria_refs: ["ePrivacy", "GDPR"],
+    tags: ["cookies", "ePrivacy", "consent"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to review this cookie policy and consent implementation for compliance with EU ePrivacy Directive and GDPR requirements.
+
+**Facts (Extract)**
+Please identify and document:
+- Cookie categories used (strictly necessary, performance, functional, targeting)
+- Specific purposes for each cookie type and data processing activities
+- Data retention periods for each cookie category
+- Third-party cookies and external service providers involved
+- Consent mechanism implementation and user interface design
+- Cookie information provided to users and withdrawal options
+- Cross-border data transfers through cookie implementations
+
+**Compliance Assessment**
+Evaluate against ePrivacy and GDPR requirements:
+- Consent requirement compliance for non-essential cookies
+- Information transparency and user notification adequacy
+- Consent mechanism validity (specific, informed, freely given, unambiguous)
+- Withdrawal mechanism effectiveness and accessibility
+- Data minimization and purpose limitation compliance
+- Legitimate interest assessments where applicable
+
+**Consent Design Review**
+Assess user experience and legal compliance:
+- Cookie banner design and information presentation
+- Granular consent options and category selection
+- Pre-ticked boxes and default settings compliance
+- Consent refresh and re-consent mechanisms
+- Mobile and cross-device consent synchronization
+- Impact of consent withdrawal on website functionality
+
+**Third-Party Integration Issues**
+Review external service compliance:
+- Third-party cookie policies and privacy practices
+- Data processing agreements with service providers
+- Cross-border transfer adequacy for analytics and advertising services
+- Vendor management and compliance monitoring procedures
+- Consent passing and signal transmission to third parties
+
+**Gap Analysis & Recommendations**
+Identify compliance improvements:
+- Policy language updates and technical corrections
+- Consent mechanism enhancements and user interface improvements
+- Documentation and record-keeping improvements
+- Staff training and compliance procedures
+- Regular review and update schedules
+
+Provide 1-2 implementation alternatives with trade-offs for major gaps.
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Non-essential cookie business necessity and elimination options
+- Consent mechanism design changes and development costs
+- Third-party service replacements for compliance improvements
+- Risk tolerance for transitional compliance measures
+
+**Outputs**
+Professional bullet-point analysis with prioritized recommendations suitable for privacy and IT teams.
+
+**Sources & Action Log**
+- ePrivacy Directive and national implementing legislation
+- GDPR provisions and supervisory authority guidance
+- Industry best practices and regulatory enforcement examples
+- Technical implementation review and user testing results
+
+**Communication & Privacy Standards**
+- Clear technical guidance accessible to non-legal stakeholders
+- Balanced compliance assessment supporting business operations
+- Protect user privacy while maintaining website functionality
+
+**Quality Control & Reflection**
+- 3 insights on compliance risks and improvement opportunities
+- 3 questions requiring IT and business stakeholder input
+- Recommended implementation timeline and resource requirements
+
+**Human Review Hand-off**
+Privacy counsel approval on compliance assessment and IT team consultation on technical implementation feasibility.`
+  },
+  {
+    id: "employment_settlement",
+    label: "Employment — Settlement Agreement Scan",
+    category: "Employment",
+    jurisdiction: "NL",
+    output_format: "bullets",
+    criteria_refs: ["Dutch employment law checklist"],
+    tags: ["employment", "settlement", "termination"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to review this Dutch employment settlement agreement for legal compliance and risk assessment before finalization.
+
+**Facts (Extract)**
+Please identify and extract with citations:
+- Termination date and notice period compliance
+- Severance consideration amount and calculation basis
+- Confidentiality and non-disclosure provisions scope
+- Non-disparagement clauses affecting both parties
+- Reference and recommendation letter arrangements
+- Tax treatment clauses and withholding procedures
+- General release scope and excluded claims
+- Non-compete and non-solicitation restrictions (if any)
+
+**Dutch Law Compliance Check**
+Assess against mandatory requirements:
+- Dismissal law compliance and UWV notification if required
+- Minimum notice periods and severance calculation accuracy
+- Works council consultation requirements (if applicable)
+- Discrimination law compliance and equal treatment considerations
+- Non-compete restrictions enforceability under Dutch law
+- Tax optimization opportunities and withholding obligations
+- Pension and benefits continuation or settlement
+- Immigration status implications for foreign employees
+
+**Risk Assessment**
+Evaluate potential issues:
+- Enforceability of restrictive covenants under Dutch law
+- Tax treatment disputes and additional liability exposure
+- Confidentiality scope and trade secret protection adequacy
+- Reference letter commitments and potential defamation risks
+- Excluded claims and potential future disputes
+- Settlement payment structure and installment risks
+
+Provide 1-2 alternative approaches for problematic terms with trade-offs.
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Tax treatment confirmation and optimization strategies
+- General release scope and excluded statutory claims
+- Non-compete enforceability and business necessity
+- Settlement amount and payment structure approval
+
+**Outputs**
+Professional bullet-point analysis highlighting compliance issues and recommended modifications.
+
+**Sources & Action Log**
+- Dutch employment law statutory requirements
+- Recent case law and enforcement trends
+- Tax regulations and withholding obligations
+- Client employment policies and precedent settlements
+
+**Communication & Privacy Standards**
+- Confidential handling of employee personal information
+- Balanced risk assessment supporting informed decision-making
+- Professional language appropriate for HR and business stakeholders
+
+**Quality Control & Reflection**
+- 3 insights on settlement terms and enforceability
+- 3 questions requiring HR and tax input
+- Recommended modifications and risk mitigation measures
+
+**Human Review Hand-off**
+Employment counsel approval on compliance assessment and tax advisor consultation on optimization opportunities.`
+  },
+  {
+    id: "employment_policy",
+    label: "Employment — Policy Update Note",
+    category: "Employment",
+    jurisdiction: "EU",
+    output_format: "headings",
+    tags: ["employment", "policy", "compliance"],
+    complexity: "basic",
+    prompt_template: `Hi — I need to prepare a comprehensive policy update communication explaining recent employment law changes and their practical implications.
+
+**Policy Changes Overview**
+Summarize key modifications:
+- Specific legal or regulatory requirements driving updates
+- Effective dates and implementation timeline
+- Previous policy provisions being modified or replaced
+- New obligations and requirements being introduced
+- Scope of coverage (employee categories, geographic regions)
+
+**Business Impact Analysis**
+Assess practical implications:
+- Operational changes required for compliance
+- Cost implications and resource requirements
+- Training and communication needs for managers and employees
+- Technology or process modifications necessary
+- Risk mitigation benefits and compliance improvements
+
+**Affected Stakeholders**
+Identify impact on different groups:
+- Employee categories subject to new requirements
+- Management responsibilities and decision-making changes
+- HR team implementation and administration duties
+- Works council consultation requirements (where applicable)
+- External service provider or vendor implications
+
+**Implementation Requirements**
+Detail compliance steps:
+- Manager training and awareness programs needed
+- Employee communication and acknowledgment procedures
+- System updates and documentation changes required
+- Monitoring and compliance verification processes
+- Timeline for full implementation and effectiveness
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Resource allocation and implementation budget approval
+- Training program scope and delivery methodology
+- Employee communication strategy and messaging
+- Compliance monitoring and audit procedures
+
+**Communication Strategy**
+Structure stakeholder engagement:
+- Management briefing materials and talking points
+- Employee communication plan and FAQ development
+- Works council presentation and consultation process
+- External communication needs (if any)
+- Ongoing support and question handling procedures
+
+**Outputs & Next Steps**
+Define deliverables and timeline:
+- Policy documentation updates and distribution
+- Training materials development and delivery schedule
+- Compliance monitoring and reporting procedures
+- Regular review and update schedule establishment
+- Success metrics and effectiveness measurement
+
+**Sources & Action Log**
+- Legal and regulatory developments driving changes
+- Industry best practices and peer organization approaches
+- Client business requirements and operational constraints
+- Consultation with employment counsel and HR leadership
+
+**Communication & Privacy Standards**
+- Clear, accessible language for all stakeholder levels
+- Consistent messaging across all communication channels
+- Protect confidential business information and employee data
+
+**Quality Control & Reflection**
+- 3 insights on implementation challenges and success factors
+- 3 questions requiring HR and business leadership input
+- Recommended timeline and resource allocation priorities
+
+**Human Review Hand-off**
+HR leadership approval on communication strategy and training program development.`
+  },
+  {
+    id: "ip_license_check",
+    label: "IP — License Agreement Scan",
+    category: "IP",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    criteria_refs: ["IP Playbook 2025"],
+    tags: ["IP", "licensing", "agreements"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to review this intellectual property license agreement against our IP playbook standards and identify key risks and opportunities.
+
+**Facts (Extract)**
+Please identify and extract with citations:
+- Licensed IP scope and specific rights granted
+- Field of use restrictions and permitted applications
+- Territory limitations and geographic scope
+- Exclusivity arrangements (exclusive, non-exclusive, sole license)
+- Sublicensing rights and approval requirements
+- Royalty structure and payment terms
+- Performance milestones and diligence obligations
+- Improvement rights and derivative work ownership
+- Term duration and renewal provisions
+- Termination rights and consequences
+
+**IP Playbook Compliance**
+Compare against IP Playbook 2025 standards:
+- License scope adequacy for intended business use
+- Field of use restrictions alignment with business strategy
+- Royalty rates and structure competitiveness
+- Exclusivity justification and market impact
+- Sublicensing flexibility for business development
+- Performance obligations feasibility and enforcement
+- Improvement ownership allocation fairness
+- Termination protection and transition rights
+
+**Risk Assessment**
+Evaluate potential concerns:
+- IP validity and enforceability risks
+- Competitive restrictions and market foreclosure
+- Performance milestone achievability and penalty exposure
+- Royalty calculation disputes and audit rights
+- Termination triggers and business continuity risks
+- Sublicensing limitations affecting partnerships
+- Improvement ownership creating future conflicts
+
+Provide alternative approaches for problematic terms with trade-offs.
+
+**Decision Points — Human Approval Required**
+Pause for approval on:
+- Exclusivity grants affecting market strategy
+- Sublicensing restrictions limiting business flexibility
+- Performance milestones with significant penalty exposure
+- Improvement ownership allocations affecting R&D strategy
+
+**Outputs**
+Professional bullet-point analysis suitable for business and R&D team review.
+
+**Sources & Action Log**
+- IP Playbook 2025 standards and precedent provisions
+- Market licensing terms and industry benchmarks
+- Client IP portfolio and business strategy alignment
+- Technical and commercial feasibility assessment
+
+**Communication & Privacy Standards**
+- Technical accuracy balanced with business accessibility
+- Competitive intelligence protection and confidentiality
+- Clear guidance supporting informed business decisions
+
+**Quality Control & Reflection**
+- 3 insights on licensing strategy and market positioning
+- 3 questions requiring business development and R&D input
+- Recommended negotiation priorities and alternative structures
+
+**Human Review Hand-off**
+IP counsel approval on licensing strategy and business team consultation on commercial terms.`
+  },
+  {
+    id: "trademark_clearance",
+    label: "IP — Trademark Clearance Memo",
+    category: "IP",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    tags: ["trademark", "clearance", "IP"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to prepare a trademark clearance analysis assessing potential conflicts and registration risks for this proposed mark.
+
+**Facts (Extract)**
+Document search and analysis details:
+- Proposed trademark and specific design elements
+- Goods and services classification (Nice classes) for intended use
+- Geographic scope for protection and use (EU, national, Madrid Protocol)
+- Prior trademark search results and identified conflicting marks
+- Common law usage and unregistered rights research
+- Domain name availability and social media handle status
+- Client's intended use timeline and market launch plans
+
+**Conflict Analysis**
+Assess identified prior rights:
+- Identical or highly similar registered trademarks
+- Likelihood of confusion analysis for each potential conflict
+- Different goods/services classes and cross-class protection scope
+- Well-known mark status and broader protection implications
+- Pending trademark applications and potential conflicts
+- Opposition and cancellation proceeding risks
+- Enforcement history and trademark owner activity levels
+
+**Clearance Assessment**
+Provide risk evaluation:
+- Overall clearance recommendation (clear, caution, high risk)
+- Specific conflict areas requiring attention or avoidance
+- Filing strategy recommendations and class selection
+- Geographic filing priorities and budget optimization
+- Timeline considerations and expedited examination options
+- Monitoring and watch service recommendations
+
+**Alternative Options**
+If conflicts identified, provide alternatives:
+- Trademark modification options reducing conflict risk
+- Alternative brand names or mark variations for consideration
+- Narrowed goods/services descriptions limiting exposure
+- Geographic limitations or staged expansion approach
+- Coexistence agreement potential with conflicting mark owners
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Risk tolerance levels for identified potential conflicts
+- Filing strategy and geographic scope priorities
+- Budget allocation for trademark prosecution and maintenance
+- Brand modification acceptance if conflicts cannot be resolved
+
+**Outputs**
+Professional bullet-point clearance memo suitable for brand and marketing team review.
+
+**Sources & Action Log**
+- EU and national trademark database searches conducted
+- Professional trademark search services and tools used
+- Common law research and industry publication review
+- Domain name and digital presence availability check
+
+**Communication & Privacy Standards**
+- Clear risk communication avoiding absolute guarantees
+- Protect confidential brand strategy and launch timing
+- Accessible guidance for non-legal brand stakeholders
+
+**Quality Control & Reflection**
+- 3 insights on trademark landscape and competitive positioning
+- 3 questions requiring brand strategy and marketing input
+- Recommended filing timeline and budget allocation
+
+**Human Review Hand-off**
+IP counsel approval on clearance assessment and brand team consultation on alternative options.`
+  },
+  {
+    id: "gdpr_breach_note",
+    label: "Breach — Initial Note to Client",
+    category: "Privacy",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    criteria_refs: ["GDPR Arts. 33–34"],
+    tags: ["data breach", "GDPR", "incident"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to prepare an initial data breach assessment and client communication addressing immediate response requirements and regulatory obligations.
+
+**Incident Overview**
+Document breach details with precision:
+- Date and time of breach discovery and estimated occurrence
+- Nature of security incident and attack vectors involved
+- Personal data categories affected and number of data subjects
+- Geographic scope and cross-border implications
+- Current containment status and ongoing risks
+- Preliminary root cause analysis and vulnerability assessment
+- Business operations impact and service disruption extent
+
+**GDPR Notification Assessment**
+Evaluate regulatory reporting obligations:
+- Likelihood of high risk to rights and freedoms of data subjects
+- Data categories sensitivity and potential harm assessment
+- Technical and organizational measures in place pre-breach
+- Residual risks after containment and mitigation efforts
+- 72-hour supervisory authority notification timeline compliance
+- Individual notification requirements under Article 34
+- Documentation and evidence preservation for regulatory submissions
+
+**Immediate Response Actions**
+Detail containment and mitigation steps:
+- Security incident containment and system isolation measures
+- Forensic investigation planning and evidence preservation
+- Affected data subject identification and impact assessment
+- Communication strategy for internal stakeholders and customers
+- Business continuity planning and service restoration priorities
+- Legal counsel engagement and privilege protection measures
+
+**Risk Assessment & Implications**
+Analyze potential consequences:
+- Regulatory enforcement risk and potential administrative fines
+- Individual compensation claims and class action exposure
+- Business interruption and customer relationship impact
+- Reputational damage and competitive implications
+- Insurance coverage activation and claims procedures
+- Third-party vendor liability and recovery options
+
+**Decision Points — Human Approval Required**
+Seek immediate guidance on:
+- Supervisory authority notification timing and content strategy
+- Individual notification approach and communication messaging
+- Public disclosure requirements and media response planning
+- Law enforcement reporting for criminal activity investigation
+- Insurance carrier notification and claims initiation
+
+**Regulatory Compliance Timeline**
+Structure immediate obligations:
+- 72-hour DPA notification deadline and submission preparation
+- Individual notification timing if high-risk threshold met
+- Internal breach register documentation requirements
+- Board and senior management reporting obligations
+- Ongoing cooperation with supervisory authority investigation
+
+**Outputs**
+Professional bullet-point assessment suitable for senior management and board briefing.
+
+**Sources & Action Log**
+- GDPR Articles 33-34 and supervisory authority guidance
+- Incident response procedures and forensic investigation findings
+- Insurance policy review and coverage assessment
+- Legal precedents and regulatory enforcement trends
+
+**Communication & Privacy Standards**
+- Factual accuracy while acknowledging ongoing investigation
+- Protect incident response privilege and work product
+- Balance transparency with legal strategy considerations
+
+**Quality Control & Reflection**
+- 3 insights on breach severity and response effectiveness
+- 3 critical questions requiring immediate stakeholder input
+- Recommended next steps and resource allocation priorities
+
+**Human Review Hand-off**
+Immediate privacy counsel consultation and senior management approval for regulatory notification strategy.`
+  },
+  {
+    id: "procurement_rfp_review",
+    label: "Procurement — RFP Legal Scan",
+    category: "Commercial",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    tags: ["procurement", "RFP", "commercial"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to scan this Request for Proposal for legal constraints and risks before we submit our response and pricing.
+
+**Facts (Extract)**
+Please identify and document with citations:
+- Mandatory contract terms and non-negotiable provisions
+- Liability caps, limitations, and indemnification requirements
+- Intellectual property ownership and licensing terms
+- Data protection and privacy requirements (GDPR compliance)
+- Security standards and audit rights provisions
+- Payment terms, milestone structure, and penalty clauses
+- Termination rights and early exit provisions
+- Governing law, jurisdiction, and dispute resolution requirements
+
+**Legal Risk Assessment**
+Evaluate proposal requirements:
+- Terms conflicting with our standard contracting positions
+- Unlimited liability exposure or inadequate risk allocation
+- IP terms affecting our proprietary technology or client work
+- Data processing obligations creating regulatory compliance risks
+- Security requirements exceeding our current capabilities
+- Performance guarantees or service level commitments
+- Penalty structures and financial exposure assessment
+
+**Commercial Terms Analysis**
+Review business and financial provisions:
+- Payment structure and cash flow implications
+- Performance bonds, guarantees, or security requirements
+- Change control mechanisms and scope expansion risks
+- Resource commitment obligations and exclusivity provisions
+- Subcontracting restrictions and approved vendor requirements
+- Insurance coverage requirements and cost implications
+
+**Negotiation Strategy**
+Identify leverage points and alternatives:
+- Terms likely to be negotiable based on market standards
+- Alternative language proposals for problematic provisions
+- Risk mitigation strategies through operational measures
+- Pricing adjustments reflecting increased risk or compliance costs
+- Qualification language protecting our position during proposal
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Risk tolerance for non-negotiable terms exceeding our standards
+- Pricing adjustments reflecting legal and compliance costs
+- Resource allocation for enhanced security or compliance measures
+- Subcontracting strategy and approved vendor partnerships
+
+**Outputs**
+Professional bullet-point analysis supporting bid/no-bid decision and proposal development.
+
+**Sources & Action Log**
+- Standard contract terms and risk allocation preferences
+- Market practice research and competitive intelligence
+- Compliance and security capability assessment
+- Insurance coverage review and cost estimation
+
+**Communication & Privacy Standards**
+- Clear risk communication supporting business decision-making
+- Protect competitive pricing strategy and proposal approach
+- Accessible guidance for proposal team and business stakeholders
+
+**Quality Control & Reflection**
+- 3 insights on competitive positioning and risk management
+- 3 questions requiring business development and operations input
+- Recommended proposal strategy and risk mitigation measures
+
+**Human Review Hand-off**
+Commercial counsel approval on risk assessment and proposal team consultation on business terms.`
+  },
+  {
+    id: "supplier_dd",
+    label: "Supplier Due Diligence — Legal",
+    category: "Commercial",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    tags: ["due diligence", "suppliers", "vendor"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to conduct legal due diligence on this supplier to assess regulatory compliance, contractual risks, and business relationship suitability.
+
+**Corporate & Regulatory Status**
+Verify basic compliance requirements:
+- Corporate registration status and good standing verification
+- Required licenses and regulatory authorizations for services
+- Financial stability indicators and credit worthiness assessment
+- Insurance coverage adequacy and policy verification
+- Tax compliance status and withholding obligations
+- Data protection registration and GDPR compliance status
+- Industry-specific certifications and quality standards compliance
+
+**Sanctions & Compliance Screening**
+Assess regulatory risk factors:
+- Sanctions list screening (EU, US, UN consolidated lists)
+- Anti-money laundering and terrorist financing risk assessment
+- Beneficial ownership identification and PEP screening
+- Geographic risk factors and jurisdiction-specific concerns
+- Industry sector risk assessment and enhanced due diligence needs
+- Corruption and bribery risk indicators and mitigation measures
+
+**Litigation & Disputes History**
+Review legal exposure and reputation:
+- Pending or recent litigation involving supplier
+- Regulatory enforcement actions and compliance violations
+- Bankruptcy, insolvency, or financial distress history
+- IP disputes, trademark infringement, or licensing conflicts
+- Employment law violations or significant labor disputes
+- Environmental violations or sustainability compliance issues
+
+**Contractual Risk Assessment**
+Evaluate agreement terms and conditions:
+- Standard contract terms and risk allocation provisions
+- Limitation of liability and indemnification adequacy
+- Data protection and confidentiality provisions compliance
+- Intellectual property licensing and ownership clarity
+- Service level commitments and performance guarantees
+- Termination provisions and business continuity planning
+
+**Gap Analysis & Red Flags**
+Identify areas requiring attention:
+- Missing documentation or incomplete compliance evidence
+- Inconsistent information or verification difficulties
+- High-risk jurisdictions or beneficial ownership concerns
+- Regulatory compliance gaps or pending enforcement matters
+- Financial stability concerns or insurance coverage inadequacy
+- Contractual terms creating unacceptable risk exposure
+
+Provide alternative approaches for addressing identified gaps.
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Risk tolerance for identified compliance or financial concerns
+- Enhanced monitoring or audit requirements for ongoing relationship
+- Contract modifications required before engagement commencement
+- Alternative supplier evaluation if risks cannot be adequately mitigated
+
+**Outputs**
+Professional bullet-point assessment supporting vendor approval decision and ongoing risk management.
+
+**Sources & Action Log**
+- Corporate registries and regulatory database searches
+- Sanctions screening tools and watchlist databases
+- Commercial credit reports and financial analysis
+- Legal database searches and public record review
+
+**Communication & Privacy Standards**
+- Objective risk assessment based on available evidence
+- Protect confidential supplier information and competitive intelligence
+- Clear recommendations supporting informed business decisions
+
+**Quality Control & Reflection**
+- 3 insights on supplier risk profile and mitigation strategies
+- 3 questions requiring procurement and business team input
+- Recommended approval conditions and ongoing monitoring procedures
+
+**Human Review Hand-off**
+Commercial counsel approval on risk assessment and procurement team consultation on alternative suppliers.`
+  },
+  {
+    id: "esg_clause_review",
+    label: "ESG — Clause Review",
+    category: "ESG",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    criteria_refs: ["ESG Policy 2025"],
+    tags: ["ESG", "sustainability", "compliance"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to review these ESG (Environmental, Social, Governance) clauses for feasibility, compliance risk, and alignment with our sustainability commitments.
+
+**Facts (Extract)**
+Please identify and document with citations:
+- Environmental performance targets and measurement criteria
+- Social responsibility commitments and community impact requirements
+- Governance standards and transparency reporting obligations
+- Supply chain sustainability and due diligence requirements
+- Reporting frequency, format, and verification requirements
+- Audit rights and third-party assessment provisions
+- Remediation procedures and corrective action timelines
+- Performance penalties and incentive mechanisms
+
+**ESG Compliance Assessment**
+Evaluate against current regulations and standards:
+- EU Corporate Sustainability Reporting Directive (CSRD) alignment
+- Taxonomy Regulation compliance for environmental activities
+- Due diligence obligations under proposed EU legislation
+- Industry-specific ESG standards and certification requirements
+- Client ESG Policy 2025 alignment and internal consistency
+- International framework compliance (GRI, SASB, TCFD)
+
+**Feasibility & Risk Analysis**
+Assess implementation challenges:
+- Data collection and measurement capability requirements
+- Resource allocation and system development needs
+- Third-party verification and audit cost implications
+- Performance target achievability within specified timelines
+- Supply chain monitoring and compliance verification challenges
+- Regulatory compliance risk if targets or standards not met
+- Reputational risk from public reporting and transparency requirements
+
+**Commercial Impact Assessment**
+Review business implications:
+- Cost implications for compliance monitoring and reporting
+- Operational changes required for target achievement
+- Supply chain modification and vendor qualification impacts
+- Competitive advantage or disadvantage from commitments
+- Customer and stakeholder relationship benefits
+- Investment requirements for sustainability improvements
+
+**Alternative Approaches**
+If clauses present challenges, provide options:
+- Modified targets or timelines reducing implementation risk
+- Alternative measurement methodologies or standards
+- Phased implementation approach with interim milestones
+- Shared responsibility structures with counterparty support
+- Limited scope or pilot program approaches
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- ESG target ambition levels and timeline feasibility
+- Resource allocation and investment approval for compliance
+- Supply chain modification requirements and vendor impacts
+- Public reporting and transparency commitment levels
+
+**Outputs**
+Professional bullet-point analysis suitable for sustainability and business leadership review.
+
+**Sources & Action Log**
+- ESG Policy 2025 and internal sustainability commitments
+- EU sustainability regulations and guidance documents
+- Industry benchmarks and best practice standards
+- Internal capability assessment and resource planning
+
+**Communication & Privacy Standards**
+- Balanced assessment supporting informed ESG strategy decisions
+- Protect competitive sustainability initiatives and planning
+- Clear guidance accessible to sustainability and business teams
+
+**Quality Control & Reflection**
+- 3 insights on ESG commitment feasibility and strategic alignment
+- 3 questions requiring sustainability and operations team input
+- Recommended implementation approach and resource requirements
+
+**Human Review Hand-off**
+ESG counsel approval on compliance assessment and sustainability team consultation on operational feasibility.`
+  },
+  {
+    id: "sanctions_screening_note",
+    label: "Sanctions — Screening Note",
+    category: "Compliance",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    tags: ["sanctions", "compliance", "screening"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to prepare a sanctions screening assessment for this transaction/relationship to ensure compliance with EU, US, and international sanctions regimes.
+
+**Facts (Extract)**
+Document screening details with precision:
+- Parties involved and their corporate structure/beneficial ownership
+- Geographic jurisdictions and business operation locations
+- Industry sectors and specific business activities involved
+- Transaction value, structure, and payment mechanisms
+- Goods, services, or technology transfer elements
+- Timeline and ongoing relationship duration
+- Previous sanctions screening results and compliance history
+
+**Sanctions Risk Assessment**
+Screen against applicable regimes:
+- EU consolidated sanctions list and restrictive measures
+- US OFAC SDN list and sectoral sanctions programs
+- UN Security Council sanctions and country-specific measures
+- UK sanctions list and post-Brexit specific requirements
+- Industry-specific sanctions (defense, technology, energy, financial)
+- Secondary sanctions risk from US extraterritorial application
+- Beneficial ownership screening and ultimate ownership analysis
+
+**Compliance Analysis**
+Evaluate regulatory obligations:
+- Prohibited transactions and activities identification
+- License requirements and available exemptions
+- Due diligence obligations and enhanced screening requirements
+- Reporting obligations to relevant authorities
+- Record-keeping and documentation requirements
+- Ongoing monitoring and periodic re-screening obligations
+
+**Risk Rating & Recommendations**
+Provide clear assessment:
+- Overall compliance risk level (low/medium/high/prohibited)
+- Specific risk factors and mitigation requirements
+- Enhanced due diligence recommendations for elevated risk
+- Compliance monitoring and ongoing screening procedures
+- Documentation and record-keeping requirements
+- Training and awareness needs for transaction participants
+
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Risk tolerance for elevated-risk but permissible transactions
+- Enhanced due diligence scope and resource allocation
+- Legal opinion requirements for complex sanctions analysis
+- Ongoing monitoring frequency and review procedures
+
+**Outputs**
+Professional bullet-point screening note supporting transaction approval decision and ongoing compliance.
+
+**Sources & Action Log**
+- Sanctions database searches and screening tools used
+- Legal analysis of applicable sanctions regimes
+- Industry guidance and regulatory interpretation sources
+- Client sanctions compliance policies and procedures
+
+**Communication & Privacy Standards**
+- Clear compliance guidance avoiding unnecessary business disruption
+- Protect confidential transaction details and business relationships
+- Accessible recommendations for compliance and business teams
+
+**Quality Control & Reflection**
+- 3 insights on sanctions landscape and compliance requirements
+- 3 questions requiring compliance and business team input
+- Recommended approval pathway and ongoing monitoring procedures
+
+**Human Review Hand-off**
+Sanctions counsel approval on compliance assessment and business team consultation on transaction structure.`
+  },
+  {
+    id: "antitrust_dawnraid_card",
+    label: "Antitrust — Dawn Raid Card",
+    category: "Compliance",
+    jurisdiction: "EU",
+    output_format: "bullets",
+    tags: ["antitrust", "dawn raid", "competition"],
+    complexity: "advanced",
+    prompt_template: `Hi — I need to create a quick reference card for employees on how to respond to an unannounced competition authority inspection (dawn raid).
+
+**Employee Rights & Obligations**
+Immediate response guidelines:
+- Right to request identification and inspection warrant/authorization
+- Obligation to cooperate with legitimate inspection activities
+- Right to have legal counsel present during proceedings
+- Prohibition on obstruction or interference with inspection
+- Right to request copies of documents taken by authorities
+- Obligation to provide accurate information when directly questioned
+- Protection against self-incrimination and privilege considerations
+
+**Do's — Immediate Actions**
+Essential steps for employees:
+- Immediately notify designated legal counsel and management contacts
+- Escort inspectors at all times and monitor their activities
+- Request to see official authorization and identification
+- Provide reasonable cooperation with document requests
+- Make contemporaneous notes of inspector activities and requests
+- Preserve all relevant documents and electronic records
+- Maintain professional, courteous demeanor throughout process
+
+**Don'ts — Actions to Avoid**
+Critical mistakes to prevent:
+- Do not obstruct, hinder, or refuse cooperation with inspectors
+- Do not destroy, alter, or hide any documents or electronic files
+- Do not volunteer information beyond direct questions asked
+- Do not speculate, guess, or provide opinions on legal interpretations
+- Do not discuss the inspection with unauthorized personnel
+- Do not sign any documents without legal counsel review
+- Do not allow unsupervised access to privileged legal communications
+
+**Internal Contacts & Communication**
+Emergency contact information:
+- Legal Department: [24-hour contact details]
+- General Counsel: [direct line and mobile]
+- Competition Law Counsel: [immediate response contact]
+- Senior Management: [CEO/COO notification chain]
+- External Competition Counsel: [law firm emergency contacts]
+- IT Department: [document preservation and system support]
+
+**Document Handling Procedures**
+Evidence preservation requirements:
+- Immediate litigation hold activation and document preservation
+- Electronic system backup and forensic preservation measures
+- Physical document securing and inventory preparation
+- Privileged communication identification and protection
+- IT system access logging and user activity monitoring
+- Chain of custody procedures for documents provided to authorities
+
+**Decision Points — Immediate Escalation Required**
+Contact legal counsel immediately if:
+- Inspectors request access to privileged legal communications
+- Employees are asked to provide sworn statements or formal interviews
+- Inspectors attempt to access personal devices or private information
+- Any disputes arise regarding scope of inspection authority
+- Criminal enforcement authorities become involved
+- Media attention or public relations issues develop
+
+**Post-Inspection Procedures**
+Follow-up actions required:
+- Comprehensive debrief with legal counsel within 24 hours
+- Document inventory and copy request follow-up
+- Employee interview and information gathering process
+- Regulatory response strategy development and timeline
+- Board and senior management comprehensive briefing
+- Insurance notification and coverage assessment
+
+**Communication Guidelines**
+Internal and external messaging:
+- Restrict information sharing to need-to-know basis only
+- Coordinate all external communications through legal counsel
+- Prepare factual holding statements for media inquiries
+- Employee communication and confidentiality reminders
+- Client and business partner notification protocols
+- Regulatory cooperation strategy and timeline communication
+
+**Sources & Action Log**
+- EU competition law inspection procedures and authority powers
+- National implementing legislation and local court decisions
+- Industry best practices and response protocols
+- Internal compliance policies and emergency procedures
+
+**Communication & Privacy Standards**
+- Clear, actionable guidance for high-stress situations
+- Protect attorney-client privilege and work product protections
+- Professional response maintaining business relationships and reputation
+
+**Quality Control & Reflection**
+- 3 insights on inspection preparedness and response effectiveness
+- 3 questions requiring immediate legal and management input
+- Recommended training and preparation improvements
+
+**Human Review Hand-off**
+Competition counsel approval on response procedures and management briefing on preparedness requirements.`
+  },
+  {
+    id: "merger_board_brief",
+    label: "M&A — Board Brief 1-Pager",
     category: "Transactions",
     jurisdiction: "EU",
     output_format: "headings",
-    complexity: "advanced",
-    tags: ["M&A", "due diligence", "risk assessment"],
-    prompt_template: `Hi — I need you to conduct a comprehensive legal due diligence review that identifies key risks and provides clear recommendations for this M&A transaction.
+    tags: ["M&A", "board", "brief"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to create a concise one-page board briefing document summarizing this M&A transaction for board consideration and approval.
 
-**Your Role & Approach**
-You are a senior M&A associate conducting legal due diligence. Systematically review all legal aspects, identify material risks, and provide actionable recommendations with clear prioritization.
+**Transaction Overview**
+- **What's Happening:** [Transaction type, parties, and strategic rationale]
+- **Key Terms:** Purchase price, structure, and material conditions
+- **Timeline:** Critical milestones and expected closing date
+- **Strategic Fit:** Business rationale and synergy opportunities
 
-**Transaction Overview & Context**
-- Transaction structure (asset/share deal, merger, etc.)
-- Target company business description
-- Deal rationale and strategic objectives
-- Timeline and key milestones
-- Regulatory approvals required
+**Transaction Structure & Terms**
+- **Purchase Price:** Total consideration and payment structure
+- **Due Diligence:** Scope completed and material findings summary
+- **Representations & Warranties:** Key seller commitments and risk allocation
+- **Conditions Precedent:** Regulatory approvals and closing requirements
+- **Post-Closing:** Integration planning and management structure
 
-**Due Diligence Scope & Methodology**
-- Documents reviewed and data room analysis
-- Management interviews conducted
-- External searches and investigations
-- Third-party reports obtained
-- Limitations and scope restrictions
+**Risk Assessment & Mitigation**
+- **Business Risks:** Market, operational, and integration challenges
+- **Legal & Regulatory:** Antitrust, licensing, and compliance considerations
+- **Financial:** Valuation support, financing, and cash flow impact
+- **Mitigation Strategies:** Risk management and contingency planning
 
-**CRITICAL RISK AREAS**
+**Strategic Options & Alternatives Considered**
+- **Primary Recommendation:** Proceed with transaction as structured
+- **Alternative Approaches:** Other transaction structures or strategic options evaluated
+- **No-Deal Alternative:** Consequences and strategic implications of not proceeding
+- **Competitive Dynamics:** Market positioning and timing considerations
 
-**Corporate Structure & Governance**
-- Corporate organization and subsidiaries
-- Board composition and governance practices
-- Shareholder agreements and restrictions
-- Compliance with corporate formalities
-- Outstanding corporate actions or disputes
+**Board Decision Required**
+- **Approval Sought:** Transaction authorization and management directives
+- **Key Terms Requiring Ratification:** Purchase price, financing, and deal protection measures
+- **Delegation of Authority:** Management signing authority and post-closing decisions
+- **Governance Changes:** Board composition or committee structure modifications
 
-**Material Contracts & Commercial Arrangements**
-- Revenue-generating agreements analysis
-- Key supplier and vendor contracts
-- Partnership and joint venture agreements
-- Distribution and licensing deals
-- Contract change of control provisions
-- Termination risks and renewal terms
+**Implementation Next Steps**
+- **Immediate Actions:** Legal documentation finalization and regulatory filings
+- **Management Responsibilities:** Integration planning and stakeholder communication
+- **Board Oversight:** Reporting requirements and milestone reviews
+- **Success Metrics:** Performance indicators and value realization tracking
 
-**Employment & Human Resources**
-- Senior management contracts and retention
-- Employee benefits and pension obligations
-- Labor relations and union agreements
-- Outstanding employment disputes
-- Compliance with employment law
-- Change of control implications
+**Recommendation & Conclusion**
+- **Management Recommendation:** Clear position on transaction approval
+- **Value Creation Thesis:** Expected returns and strategic benefits
+- **Risk-Reward Assessment:** Balanced evaluation supporting decision
+- **Timing Criticality:** Market window and competitive considerations
 
-**Intellectual Property Portfolio**
-- IP ownership and registration status
-- Third-party licensing agreements
-- IP infringement risks and disputes
-- Trade secrets and know-how protection
-- Employee invention assignments
-- Open source software compliance
+**Sources & Action Log**
+- Due diligence findings and third-party advisor reports
+- Financial analysis and valuation supporting materials
+- Legal documentation review and risk assessment
+- Management presentations and strategic planning materials
 
-**Regulatory & Compliance Framework**
-- Industry-specific regulatory compliance
-- Licenses and permits status
-- Regulatory investigations or enforcement
-- Data protection and privacy compliance
-- Anti-corruption and sanctions compliance
-- Environmental compliance obligations
+**Communication & Privacy Standards**
+- Board-appropriate level of detail and strategic focus
+- Protect transaction confidentiality and negotiation strategy
+- Clear decision framework supporting informed board governance
 
-**Litigation & Disputes**
-- Ongoing litigation and arbitration
-- Regulatory investigations and proceedings
-- Insurance coverage and claims
-- Indemnification obligations
-- Potential liability exposure
-- Settlement agreements and releases
+**Quality Control & Reflection**
+- 3 insights on transaction value and strategic alignment
+- 3 questions requiring board input and guidance
+- Recommended board resolution and authorization scope
 
-**Financial & Tax Considerations**
-- Accounting practices and policies
-- Tax compliance and controversies
-- Transfer pricing arrangements
-- Tax optimization structures
-- Contingent tax liabilities
-- Post-transaction tax planning
+**Human Review Hand-off**
+Corporate counsel approval on board materials and management consultation on strategic presentation.`
+  },
+  {
+    id: "client_faq",
+    label: "Client FAQ — Matter-Specific",
+    category: "Client Comms",
+    jurisdiction: "NL",
+    output_format: "headings",
+    tags: ["client", "FAQ", "communication"],
+    complexity: "basic",
+    prompt_template: `Hi — I need to prepare a comprehensive client FAQ document addressing common questions and concerns for this specific legal matter.
 
-**RISK ASSESSMENT MATRIX**
+**Process & Timeline Questions**
+- **Q: What are the key steps in this legal process?**
+  A: [Step-by-step process overview with estimated timeframes]
+- **Q: How long will this matter take to resolve?**
+  A: [Realistic timeline with factors affecting duration]
+- **Q: What milestones should we expect and when?**
+  A: [Key decision points and deliverable schedule]
+- **Q: How will we be kept informed of progress?**
+  A: [Communication schedule and reporting procedures]
 
-**High Priority Issues (Deal Breakers)**
-For each high-risk item:
-- Clear description of the issue
-- Potential financial impact (quantified if possible)
-- Likelihood of materialization
-- Impact on transaction timeline
-- Recommended mitigation strategies
+**Costs & Billing Information**
+- **Q: What will this matter cost overall?**
+  A: [Budget range and cost factors affecting total fees]
+- **Q: How are legal fees calculated and billed?**
+  A: [Fee structure, billing frequency, and expense policies]
+- **Q: What additional costs should we anticipate?**
+  A: [Court fees, expert costs, and other disbursements]
+- **Q: Can costs be managed or controlled?**
+  A: [Budget management options and cost control measures]
 
-**Medium Priority Issues (Negotiation Points)**
-- Issues requiring contractual protection
-- Indemnification or escrow considerations
-- Price adjustment implications
-- Post-closing integration risks
+**Legal Risks & Outcomes**
+- **Q: What are the main risks we face in this matter?**
+  A: [Key risk factors and potential adverse outcomes]
+- **Q: What are the likely outcomes or range of results?**
+  A: [Possible scenarios and probability assessments]
+- **Q: How can we minimize legal risks?**
+  A: [Risk mitigation strategies and preventive measures]
+- **Q: What decisions will we need to make during the process?**
+  A: [Client decision points and approval requirements]
 
-**Low Priority Issues (Monitor)**
-- Items for awareness but limited impact
-- Standard business risks
-- Issues with adequate existing protections
+**Client Responsibilities & Requirements**
+- **Q: What do you need from us to move forward?**
+  A: [Document production, information, and cooperation requirements]
+- **Q: What should we do or avoid doing during this process?**
+  A: [Client guidance and behavior recommendations]
+- **Q: Who should be our main contact for this matter?**
+  A: [Communication protocols and designated contacts]
+- **Q: How should we handle questions from employees or third parties?**
+  A: [Communication guidelines and referral procedures]
 
-**TRANSACTION RECOMMENDATIONS**
+**Communication & Confidentiality**
+- **Q: How will confidentiality be maintained?**
+  A: [Privilege protection and information security measures]
+- **Q: Who can we discuss this matter with?**
+  A: [Confidentiality boundaries and permitted communications]
+- **Q: How should we handle media or public inquiries?**
+  A: [Public relations guidelines and response protocols]
+- **Q: What records should we maintain?**
+  A: [Document retention and case file management]
 
-**Deal Structure Optimization**
-- Recommended transaction structure
-- Tax efficiency considerations
-- Regulatory approval strategy
-- Financing structure implications
+**Decision Points — Human Approval Required**
+Seek guidance on:
+- Client decision authority and approval requirements for settlements
+- Budget limits and cost escalation approval procedures
+- Communication strategy for sensitive or high-profile matters
+- Risk tolerance levels and decision-making criteria
 
-**Purchase Agreement Terms**
-- Representations and warranties scope
-- Indemnification structure and caps
-- Material adverse change definitions
-- Closing conditions and requirements
-- Post-closing covenants and restrictions
+**Sources & Action Log**
+- Case-specific facts and legal analysis
+- Client consultation and requirement gathering
+- Industry practice and precedent matter experience
+- Court procedures and regulatory requirements research
 
-**Risk Mitigation Strategies**
-- Insurance coverage recommendations
-- Escrow and holdback arrangements
-- Third-party consents and approvals
-- Regulatory compliance programs
-- Integration planning priorities
+**Communication & Privacy Standards**
+- Clear, accessible language avoiding legal jargon
+- Balanced information supporting informed client decisions
+- Confidentiality protection and privilege maintenance
 
-**Valuation Impact Analysis**
-- Issues affecting purchase price
-- Working capital and debt adjustments
-- Contingent consideration implications
-- Tax attributes and benefits
-- Synergy realization risks
+**Quality Control & Reflection**
+- 3 insights on client needs and communication effectiveness
+- 3 questions requiring client input and clarification
+- Recommended communication schedule and feedback mechanisms
 
-**Integration Planning**
-- Legal entity rationalization
-- Contract harmonization priorities
-- Compliance program integration
-- System and process alignment
-- Cultural and organizational considerations
+**Human Review Hand-off**
+Partner approval on client communication strategy and matter management approach.`
+  },
+  {
+    id: "client_email_update",
+    label: "Client Email — Update & Next Steps",
+    category: "Client Comms",
+    jurisdiction: "NL",
+    output_format: "bullets",
+    tags: ["client", "email", "update"],
+    complexity: "basic",
+    prompt_template: `Hi — I need to draft a professional client update email summarizing recent developments and outlining next steps in this matter.
 
-**Decision Points Requiring Business Input**
+**Recent Developments & Status Update**
+Please summarize what has changed since our last communication:
+- Key developments, decisions, or events in the past [time period]
+- Progress made on previously identified action items
+- New information received or issues discovered
+- Third-party responses, court decisions, or regulatory developments
+- Timeline adjustments or schedule modifications
+- Budget or resource allocation updates
 
-**Risk Tolerance Assessment**
-- Acceptable level of identified risks
-- Risk/reward trade-off analysis
-- Competitive situation impact
-- Strategic importance weighting
+**Current Status & Position**
+Provide clear picture of where we stand:
+- Overall case/matter progress and current phase
+- Outstanding issues requiring resolution
+- Our current legal or negotiating position
+- Counterparty actions and positions
+- Regulatory or court proceeding status
+- Any changed circumstances affecting strategy or timeline
 
-**Commercial Terms Negotiation**
-- Price adjustment mechanisms
-- Indemnification scope and limits
-- Closing condition requirements
-- Post-closing cooperation terms
+**Open Items & Pending Actions**
+Identify work still in progress:
+- Tasks currently underway and expected completion dates
+- Information or decisions still needed from client
+- Third-party responses or approvals awaited
+- Court deadlines or regulatory submission requirements
+- Expert analysis or technical assessments in progress
+- Document production or discovery activities continuing
 
-**POST-CLOSING OBLIGATIONS**
+**Decision Points Requiring Client Input**
+Highlight areas needing client direction:
+- Strategic decisions affecting case direction or settlement approach
+- Budget or resource allocation questions requiring approval
+- Settlement negotiations or offer evaluations
+- Litigation strategy choices or procedural decisions
+- Business operations guidance during pending matter resolution
+- Communication or public relations strategy considerations
 
-**Integration Execution**
-- Legal entity integration timeline
-- Contract renegotiation priorities
-- Compliance program rollout
-- Employee communication and retention
+**Next Steps & Timeline**
+Outline immediate action plan:
+- Specific actions we will take in next [time period]
+- Client actions or decisions needed and by when
+- Key milestones or deadlines approaching
+- Meetings, hearings, or negotiations scheduled
+- Document or information production timeline
+- Expected next communication or reporting date
 
-**Ongoing Risk Management**
-- Monitoring and reporting requirements
-- Insurance and indemnification claims
-- Regulatory compliance oversight
-- Performance metrics and KPIs
+**How We Can Help & Support**
+Clarify our ongoing role:
+- Additional services or expertise available if needed
+- Proactive steps we're taking to advance the matter
+- Resources or connections we can provide
+- Alternative approaches or strategies under consideration
+- Risk management or prevention measures being implemented
 
-**Documentation & Work Papers**
-- Due diligence report and appendices
-- Risk register and mitigation tracking
-- Legal opinions and third-party reports
-- Management interview summaries
+**Next Communication Schedule**
+Set expectations for ongoing updates:
+- When you can expect our next substantive update
+- Circumstances that would trigger immediate communication
+- Preferred communication method and frequency
+- Emergency contact information for urgent matters
+- Regular reporting schedule for ongoing matters
 
-**Professional Standards Compliance**
-- Maintain attorney-client privilege
-- Confidentiality agreement compliance
-- Conflict of interest monitoring
-- Professional liability coverage
+**Sources & Action Log**
+- Recent case files and correspondence reviewed
+- Client consultation notes and instructions
+- Third-party communications and responses
+- Court filings and regulatory submissions tracked
 
-**Quality Control Framework**
-- Partner review and sign-off requirements
-- Technical accuracy verification
-- Business judgment validation
-- Client communication effectiveness
+**Communication & Privacy Standards**
+- Professional, clear language appropriate for business stakeholders
+- Balanced information delivery avoiding unnecessary alarm
+- Confidentiality protection and privilege maintenance throughout
 
-**Human Review & Approval Requirements**
-Items requiring partner approval:
-- High-risk issue identification and assessment
-- Deal structure and terms recommendations
-- Material legal opinions or interpretations
-- Significant cost or timeline implications
+**Quality Control & Reflection**
+- 3 insights on matter progress and strategic positioning
+- 3 questions requiring client clarification or input
+- Recommended client actions and priority focus areas
 
-This comprehensive due diligence review provides systematic risk assessment and actionable recommendations to support informed transaction decision-making.`
+**Human Review Hand-off**
+Partner review of client communication and approval of strategy representation.`
+  },
+  {
+    id: "ai_policy_draft",
+    label: "AI Policy — For Legal Team",
+    category: "Policy",
+    jurisdiction: "EU",
+    output_format: "headings",
+    criteria_refs: ["AI Policy Baseline 2025"],
+    tags: ["AI", "policy", "legal team"],
+    complexity: "intermediate",
+    prompt_template: `Hi — I need to draft a comprehensive AI policy specifically designed for legal team use, addressing professional responsibility, client confidentiality, and quality standards.
+
+**Approved AI Models & Tools**
+Define permitted AI technologies:
+- **Enterprise-Grade Platforms:** Pre-approved AI tools with professional licenses and security features
+- **Prohibited Consumer Tools:** ChatGPT free, Bard, and other consumer-grade AI platforms without enterprise controls
+- **Evaluation Process:** Procedures for assessing new AI tools and obtaining approval for legal team use
+- **Integration Requirements:** Technical specifications for AI tool integration with firm systems
+- **Vendor Assessment:** Due diligence requirements for AI service providers and data processing agreements
+
+**Data Security & EU Storage Requirements**
+Establish data protection standards:
+- **EU Data Residency:** Mandatory EU-based data processing and storage for all client information
+- **Client Data Prohibition:** Absolute prohibition on inputting client names, matter details, or confidential information
+- **Anonymization Standards:** Required data scrubbing and anonymization procedures before AI use
+- **Audit Trails:** Comprehensive logging requirements for all AI interactions and data processing
+- **Retention Limits:** Maximum data retention periods and deletion requirements for AI platforms
+
+**Professional Responsibility & Ethics**
+Address legal profession obligations:
+- **Competence Requirements:** Mandatory AI literacy training and competence maintenance for legal professionals
+- **Supervision Standards:** Partner oversight requirements for AI-assisted work product
+- **Client Disclosure:** When and how to inform clients about AI assistance in legal work
+- **Quality Control:** Review procedures ensuring AI output meets professional standards
+- **Bias Detection:** Procedures for identifying and mitigating AI bias in legal analysis and recommendations
+
+**Permitted Use Cases & Applications**
+Define appropriate AI applications:
+- **Research & Analysis:** Legal research, case law analysis, and regulatory guidance synthesis
+- **Document Review:** Contract analysis, due diligence support, and document summarization
+- **Writing Assistance:** Drafting support, proofreading, and formatting assistance for legal documents
+- **Administrative Tasks:** Calendar management, time tracking, and routine correspondence
+- **Prohibited Uses:** Final legal advice, client communications, and court filings without human review
+
+**Human Oversight & Quality Assurance**
+Establish supervision requirements:
+- **Review Standards:** Mandatory human review and verification of all AI-generated content
+- **Approval Hierarchies:** Partner sign-off requirements for AI-assisted client deliverables
+- **Error Detection:** Procedures for identifying and correcting AI mistakes or hallucinations
+- **Professional Judgment:** Requirements for human legal analysis confirming AI recommendations
+- **Client Service Standards:** Ensuring AI use enhances rather than compromises client service quality
+
+**Risk Controls & Incident Response**
+Address operational risks:
+- **Bias Monitoring:** Regular assessment of AI outputs for discrimination or unfair bias
+- **Timing Accuracy:** Verification procedures for AI-provided dates, deadlines, and time-sensitive information
+- **Tone Appropriateness:** Review requirements ensuring AI-assisted communications maintain professional standards
+- **Confidentiality Breaches:** Incident response procedures for inadvertent disclosure of confidential information
+- **System Failures:** Business continuity planning for AI tool outages or technical failures
+
+**Training & Competence Development**
+Ensure proper AI literacy:
+- **Initial Training:** Comprehensive AI literacy program for all legal team members
+- **Ongoing Education:** Regular updates on AI developments and best practices
+- **Competence Assessment:** Periodic evaluation of AI use skills and professional responsibility compliance
+- **Best Practices Sharing:** Internal knowledge sharing and lessons learned documentation
+- **External Training:** Participation in professional development and industry AI training programs
+
+**Compliance Monitoring & Reporting**
+Establish oversight procedures:
+- **Usage Monitoring:** Regular review of AI tool usage patterns and compliance with policy
+- **Audit Procedures:** Internal and external audit requirements for AI policy compliance
+- **Violation Reporting:** Procedures for reporting policy violations and non-compliance issues
+- **Performance Metrics:** Key indicators measuring AI policy effectiveness and compliance rates
+- **Continuous Improvement:** Regular policy review and update procedures based on experience and regulatory developments
+
+**Sources & Action Log**
+- AI Policy Baseline 2025 requirements and industry standards
+- Legal profession ethical rules and professional responsibility guidance
+- EU data protection regulations and AI governance developments
+- Law firm best practices and technology risk management protocols
+
+**Communication & Privacy Standards**
+- Clear guidance accessible to all legal team members
+- Professional responsibility emphasis protecting client interests
+- Practical implementation support balancing innovation with risk management
+
+**Quality Control & Reflection**
+- 3 insights on AI adoption risks and opportunities for legal practice
+- 3 questions requiring technology and risk management input
+- Recommended implementation timeline and training program development
+
+**Human Review Hand-off**
+Professional responsibility counsel approval on ethics compliance and technology team consultation on implementation feasibility.`
   }
-];
-
-export const presetCategories = [
-  { id: "Contracts", name: "Contracts", icon: "FileText", description: "Review and analyze contractual documents" },
-  { id: "Transactions", name: "Transactions", icon: "Briefcase", description: "M&A and transaction support" },
-  { id: "Disputes", name: "Disputes", icon: "Scale", description: "Litigation and dispute resolution" },
-  { id: "Investigations", name: "Investigations", icon: "Search", description: "Internal investigations and compliance" },
-  { id: "Privacy", name: "Privacy", icon: "Shield", description: "Data protection and privacy matters" },
-  { id: "Employment", name: "Employment", icon: "Users", description: "Employment law and HR matters" },
-  { id: "IP", name: "IP", icon: "Lightbulb", description: "Intellectual property matters" },
-  { id: "Commercial", name: "Commercial", icon: "Building", description: "Commercial and procurement matters" },
-  { id: "ESG", name: "ESG", icon: "Leaf", description: "Environmental and sustainability" },
-  { id: "Compliance", name: "Compliance", icon: "CheckCircle", description: "Regulatory compliance matters" },
-  { id: "Client Comms", name: "Client Comms", icon: "MessageSquare", description: "Client communication and updates" },
-  { id: "Research", name: "Research", icon: "BookOpen", description: "Legal research and analysis" },
-  { id: "Regulatory", name: "Regulatory", icon: "AlertTriangle", description: "Regulatory compliance and reviews" },
-  { id: "Risk", name: "Risk", icon: "AlertCircle", description: "Risk assessment and management" },
-  { id: "Policy", name: "Policy", icon: "FileCheck", description: "Policy development and review" }
 ];

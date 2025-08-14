@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { Scale, ArrowLeft } from "lucide-react";
+import { Scale, ArrowLeft, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SagaPresetGrid from "@/components/SagaPresetGrid";
@@ -13,15 +13,35 @@ import { LegalPreset } from "@/data/sagaPresets";
 const Saga = () => {
   const [prompt, setPrompt] = useState("");
   const [selectedPreset, setSelectedPreset] = useState<LegalPreset | null>(null);
+  const [activeTab, setActiveTab] = useState("presets");
+  const [copied, setCopied] = useState(false);
 
   const handleSelectPreset = (preset: LegalPreset) => {
     setPrompt(preset.prompt_template);
     setSelectedPreset(preset);
+    // Stay on presets tab when selecting a preset
+    setActiveTab("presets");
   };
 
   const clearPrompt = () => {
     setPrompt("");
     setSelectedPreset(null);
+  };
+
+  const copyToClipboard = async () => {
+    if (selectedPreset) {
+      try {
+        await navigator.clipboard.writeText(selectedPreset.prompt_template);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (error) {
+        console.error('Failed to copy to clipboard:', error);
+      }
+    }
+  };
+
+  const switchToChecker = () => {
+    setActiveTab("checker");
   };
 
   return (
@@ -64,12 +84,12 @@ const Saga = () => {
             Professional Legal AI Prompts
           </h2>
           <p className="text-xl text-slate-300 max-w-4xl mx-auto mb-8 leading-relaxed">
-            Transform legal work with comprehensive, professional prompts designed for Dutch and EU practice.
-            Select ready-to-use presets or enhance your own prompts with quality standards.
+            Select from 30+ professional legal prompts designed for Dutch and EU practice, 
+            or enhance your own prompts with quality standards.
           </p>
         </div>
 
-        <Tabs defaultValue="presets" className="space-y-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-sm max-w-md mx-auto">
             <TabsTrigger value="presets" className="text-white data-[state=active]:bg-white/20">
               Professional Presets
@@ -92,20 +112,38 @@ const Saga = () => {
                         {selectedPreset.complexity && ` • ${selectedPreset.complexity}`}
                       </CardDescription>
                     </div>
-                    <Button onClick={clearPrompt} variant="outline" size="sm">
-                      Clear Selection
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button onClick={copyToClipboard} variant="outline" size="sm">
+                        {copied ? (
+                          <>
+                            <Check className="w-4 h-4 mr-2" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4 mr-2" />
+                            Copy Prompt
+                          </>
+                        )}
+                      </Button>
+                      <Button onClick={switchToChecker} variant="outline" size="sm">
+                        Enhance Further
+                      </Button>
+                      <Button onClick={clearPrompt} variant="outline" size="sm">
+                        Clear
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-white/5 rounded-lg p-4 max-h-64 overflow-y-auto">
-                    <pre className="text-sm text-slate-300 whitespace-pre-wrap font-mono">
-                      {selectedPreset.prompt_template.substring(0, 500)}
-                      {selectedPreset.prompt_template.length > 500 && '...'}
+                  <div className="bg-white/5 rounded-lg p-4 max-h-96 overflow-y-auto">
+                    <pre className="text-sm text-slate-300 whitespace-pre-wrap font-mono leading-relaxed">
+                      {selectedPreset.prompt_template}
                     </pre>
                   </div>
                   <div className="mt-4 text-sm text-slate-400">
-                    Full prompt loaded in editor above. Ready to use or customize as needed.
+                    This is a complete, professional prompt ready to use with any AI assistant. 
+                    Click "Copy Prompt" to use it directly, or "Enhance Further" for additional customization.
                   </div>
                 </CardContent>
               </Card>
@@ -121,7 +159,7 @@ const Saga = () => {
               </h3>
               <p className="text-slate-300 max-w-2xl mx-auto">
                 Transform basic prompts into comprehensive, professional legal work instructions 
-                that meet quality standards and reduce liability risk.
+                that meet quality standards and reduce liability risk. Paste your own prompt below.
               </p>
             </div>
             
