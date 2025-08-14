@@ -78,13 +78,13 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
       // Copy to clipboard - using the correct property name
       await navigator.clipboard.writeText(preset.prompt_template);
       
-      // Very gentle screen buzz effect - barely noticeable
-      document.body.style.animation = 'subtle-buzz 0.15s ease-in-out';
+      // Gentle but noticeable screen buzz effect
+      document.body.style.animation = 'gentle-buzz 0.25s ease-in-out';
       setTimeout(() => {
         document.body.style.animation = '';
-      }, 150);
+      }, 250);
       
-      // Soft bleep sound effect
+      // Pleasant bleep sound effect
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -92,12 +92,12 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       
-      oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.03, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.06, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.12);
       
       oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.08);
+      oscillator.stop(audioContext.currentTime + 0.12);
       
       // Call the original handler
       onSelectPreset(preset);
@@ -112,9 +112,10 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
   return (
     <>
       <style>{`
-        @keyframes subtle-buzz {
+        @keyframes gentle-buzz {
           0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(0.5px); }
+          25% { transform: translateX(-1px); }
+          75% { transform: translateX(1px); }
         }
       `}</style>
       
