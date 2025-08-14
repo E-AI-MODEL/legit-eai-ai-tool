@@ -1,17 +1,19 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle, AlertTriangle, XCircle, RefreshCw, Copy, Check } from "lucide-react";
+import { CheckCircle, AlertTriangle, XCircle, RefreshCw, Copy, Loader } from "lucide-react";
 import { useState } from "react";
 import ClipboardNotification from "@/components/ClipboardNotification";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CheckResult {
-  category: string;
+  rubric: string;
+  flag: string;
+  check: string;
+  advice: string;
   status: "pass" | "warning" | "fail";
-  message: string;
-  suggestion: string;
-  priority: "high" | "medium" | "low";
 }
 
 interface SagaPromptCheckerProps {
@@ -24,100 +26,75 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
   const [isChecking, setIsChecking] = useState(false);
   const [enhancedPrompt, setEnhancedPrompt] = useState("");
 
-  const performQualityCheck = (text: string): { results: CheckResult[], enhanced: string } => {
-    const results: CheckResult[] = [];
-    let enhanced = text;
-
-    // Professional Structure Check
-    if (!/(Facts|Analysis|Decision|Review)/i.test(text)) {
-      results.push({
-        category: "Professional Structure",
-        status: "fail",
-        message: "Missing systematic analysis framework",
-        suggestion: "Add structured sections for facts, analysis, and decision points",
-        priority: "high"
-      });
-    }
-
-    // Decision Authority Check
-    if (!/approval|review|checkpoint/i.test(text)) {
-      results.push({
-        category: "Decision Authority",
-        status: "fail", 
-        message: "No human oversight defined",
-        suggestion: "Include specific points where human approval is required",
-        priority: "high"
-      });
-    }
-
-    // Evidence & Sources Check
-    if (!/source|citation|reference/i.test(text)) {
-      results.push({
-        category: "Evidence & Sources",
-        status: "warning",
-        message: "Source documentation not specified",
-        suggestion: "Add requirements for source citations and references",
-        priority: "medium"
-      });
-    }
-
-    // Communication Standards Check  
-    if (!/professional|neutral|client/i.test(text)) {
-      results.push({
-        category: "Communication",
-        status: "warning",
-        message: "Professional communication standards not defined",
-        suggestion: "Specify tone, language, and client communication requirements",
-        priority: "medium"
-      });
-    }
-
-    // Create enhanced prompt if issues found
-    if (results.length > 0) {
-      enhanced = `${text}
-
-## Professional Standards Framework
-
-**Structured Analysis Required:**
-- Extract key facts with source citations
-- Provide systematic legal analysis
-- Include risk assessment and alternatives
-
-**Decision Checkpoints:**
-- Flag items requiring partner review
-- Define client approval points
-- Document critical assumptions
-
-**Quality Controls:**
-- Use professional, measured language
-- Maintain source traceability
-- Provide clear next steps and deliverables
-
-**Output Requirements:**
-- Client-ready format and tone
-- Actionable recommendations
-- Risk mitigation strategies`;
-    }
-
-    return { 
-      results: results.sort((a, b) => {
-        const priorityOrder = { high: 3, medium: 2, low: 1 };
-        return priorityOrder[b.priority] - priorityOrder[a.priority];
-      }), 
-      enhanced 
-    };
-  };
-
-  const handleEnhancePrompt = async () => {
-    if (!prompt.trim()) return;
+  const performQualityCheck = async (text: string) => {
+    if (!text.trim()) return;
     
     setIsChecking(true);
+    setCheckResults([]);
     
-    const { results, enhanced } = performQualityCheck(prompt);
-    setCheckResults(results);
-    setEnhancedPrompt(enhanced);
-    
-    setIsChecking(false);
+    try {
+      const { data, error } = await supabase.functions.invoke('eai-semantic-check', {
+        body: { prompt: text }
+      });
+
+      if (error) {
+        console.error('Error calling eai-semantic-check:', error);
+        throw error;
+      }
+
+      if (data?.results) {
+        setCheckResults(data.results);
+        
+        // Generate enhanced prompt based on failing checks
+        const failingChecks = data.results.filter((r: CheckResult) => r.status === 'fail');
+        const warningChecks = data.results.filter((r: CheckResult) => r.status === 'warning');
+        
+        if (failingChecks.length > 0 || warningChecks.length > 0) {
+          let enhanced = text + '\n\n## Professional Enhancement Framework\n\n';
+          
+          // Add enhancements for critical failures
+          if (failingChecks.some((r: CheckResult) => r.rubric.includes('Agency'))) {
+            enhanced += '**Decision Authority & Review Points:**\n- Define clear human review checkpoints\n- Specify when AI suggests vs. human decides\n- Include approval workflows for critical decisions\n\n';
+          }
+          
+          if (failingChecks.some((r: CheckResult) => r.rubric.includes('Traceability'))) {
+            enhanced += '**Cognitive Ownership Requirements:**\n- User must justify acceptance/rejection of AI output\n- Require reasoning trace-back and annotation\n- Document decision rationale\n\n';
+          }
+          
+          if (failingChecks.some((r: CheckResult) => r.rubric.includes('Scaffolding'))) {
+            enhanced += '**Task Distribution:**\n- User performs initial analysis and planning\n- AI provides supporting research and suggestions\n- User maintains control of final decisions\n\n';
+          }
+          
+          if (warningChecks.some((r: CheckResult) => r.rubric.includes('Bias'))) {
+            enhanced += '**Bias Mitigation:**\n- Consider multiple perspectives and alternatives\n- Use neutral, professional language\n- Challenge assumptions explicitly\n\n';
+          }
+          
+          if (warningChecks.some((r: CheckResult) => r.rubric.includes('Output'))) {
+            enhanced += '**Output Requirements:**\n- Specify exact format and structure\n- Define review and approval process\n- Include audit trail documentation\n\n';
+          }
+          
+          enhanced += '**Quality Controls:**\n- Maintain professional communication standards\n- Provide source citations and references\n- Include risk assessment and mitigation strategies';
+          
+          setEnhancedPrompt(enhanced);
+        }
+      }
+    } catch (error) {
+      console.error('Error in quality check:', error);
+      // Fallback to basic checks if API fails
+      setCheckResults([{
+        rubric: "System Error",
+        flag: "🚨 API Error",
+        check: "Unable to connect to quality assessment service",
+        advice: "Please try again or check your connection",
+        status: "fail"
+      }]);
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  const handleEnhancePrompt = () => {
+    performQualityCheck(prompt);
   };
 
   const applyEnhancement = () => {
@@ -134,14 +111,6 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
     setEnhancedPrompt("");
   };
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-    }
-  };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pass': return <CheckCircle className="w-4 h-4 text-green-400" />;
@@ -151,28 +120,31 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'border-red-400/50 text-red-400';
-      case 'medium': return 'border-yellow-400/50 text-yellow-400';
-      case 'low': return 'border-green-400/50 text-green-400';
-      default: return 'border-blue-400/50 text-blue-400';
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pass': return 'border-green-400/50 text-green-400';
+      case 'warning': return 'border-yellow-400/50 text-yellow-400';
+      case 'fail': return 'border-red-400/50 text-red-400';
+      default: return 'border-gray-400/50 text-gray-400';
     }
   };
+
+  const passedChecks = checkResults.filter(r => r.status === 'pass').length;
+  const totalChecks = checkResults.length;
 
   return (
     <div className="grid lg:grid-cols-2 gap-6">
       {/* Input Section */}
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
-          <CardTitle className="text-xl text-white">Your Prompt</CardTitle>
+          <CardTitle className="text-xl text-white">Your Legal Prompt</CardTitle>
           <CardDescription className="text-slate-300">
-            Paste your draft prompt for professional enhancement
+            Enter your prompt for professional EAI compliance analysis
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
-            placeholder="Enter your legal prompt here..."
+            placeholder="Enter your legal AI prompt here for comprehensive quality analysis..."
             value={prompt}
             onChange={(e) => onPromptChange(e.target.value)}
             className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 font-mono text-sm min-h-[300px] resize-none"
@@ -185,6 +157,7 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                 variant="outline" 
                 onClick={clearPrompt}
                 className="gap-2"
+                disabled={isChecking}
               >
                 <XCircle className="w-4 h-4" />
                 Clear
@@ -197,11 +170,14 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
             >
               {isChecking ? (
                 <>
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing...
+                  <Loader className="w-4 h-4 mr-2 animate-spin" />
+                  Analyzing with AI...
                 </>
               ) : (
-                'Enhance Prompt'
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Professional EAI Analysis
+                </>
               )}
             </Button>
           </div>
@@ -211,32 +187,42 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
       {/* Results Section */}
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
-          <CardTitle className="text-xl text-white">Enhancement Results</CardTitle>
+          <CardTitle className="text-xl text-white flex items-center gap-2">
+            EAI Compliance Results
+            {totalChecks > 0 && (
+              <Badge variant="outline" className="text-xs">
+                {passedChecks}/{totalChecks} passed
+              </Badge>
+            )}
+          </CardTitle>
           <CardDescription className="text-slate-300">
-            Professional quality analysis and improvements
+            Professional legal AI prompt assessment using 10 EAI rubrics
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {checkResults.length > 0 ? (
+          {isChecking ? (
+            <div className="text-center py-12">
+              <Loader className="w-8 h-8 text-blue-400 mx-auto mb-4 animate-spin" />
+              <p className="text-slate-400 mb-2">Running comprehensive EAI analysis...</p>
+              <p className="text-slate-500 text-sm">
+                Analyzing against 10 professional compliance rubrics
+              </p>
+            </div>
+          ) : checkResults.length > 0 ? (
             <div className="space-y-4">
               {/* Quality Issues */}
               <div className="space-y-3 max-h-60 overflow-y-auto">
                 {checkResults.map((result, index) => (
-                  <div key={index} className="bg-white/5 rounded-lg p-3 border border-white/10">
+                  <div key={index} className={`bg-white/5 rounded-lg p-3 border ${getStatusColor(result.status).split(' ')[0]}`}>
                     <div className="flex items-start gap-3 mb-2">
                       {getStatusIcon(result.status)}
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-white font-medium text-sm">{result.category}</span>
-                          <Badge 
-                            variant="outline" 
-                            className={`text-xs ${getPriorityColor(result.priority)}`}
-                          >
-                            {result.priority}
-                          </Badge>
+                          <span className="text-white font-medium text-sm">{result.rubric}</span>
+                          <span className="text-xs">{result.flag}</span>
                         </div>
-                        <p className="text-xs text-slate-300 mb-1">{result.message}</p>
-                        <p className="text-xs text-slate-400">{result.suggestion}</p>
+                        <p className="text-xs text-slate-300 mb-1">{result.check}</p>
+                        <p className="text-xs text-slate-400">{result.advice}</p>
                       </div>
                     </div>
                   </div>
@@ -247,14 +233,14 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
               {enhancedPrompt && enhancedPrompt !== prompt && (
                 <div className="border-t border-white/10 pt-4 space-y-3">
                   <div className="text-sm text-white font-medium">
-                    Enhanced Professional Prompt Ready
+                    ✨ Professional Enhancement Ready
                   </div>
                   <div className="flex gap-2">
                     <Button
                       onClick={applyEnhancement}
                       className="flex-1"
                     >
-                      Apply Enhancement
+                      Apply AI Enhancement
                     </Button>
                     <ClipboardNotification text={enhancedPrompt}>
                       <Button variant="outline" size="sm">
@@ -268,9 +254,9 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
           ) : (
             <div className="text-center py-12">
               <CheckCircle className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400 mb-2">Ready to enhance your prompt</p>
+              <p className="text-slate-400 mb-2">Ready for EAI compliance analysis</p>
               <p className="text-slate-500 text-sm">
-                We'll analyze structure, decision points, and professional standards
+                Advanced AI-powered assessment using professional legal standards
               </p>
             </div>
           )}
