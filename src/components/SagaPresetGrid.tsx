@@ -74,121 +74,167 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Search and Filter */}
-      <div className="space-y-4">
-        <Input
-          placeholder="Search presets..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
-        />
-        
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant={selectedCategory === null ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSelectedCategory(null)}
-            className={selectedCategory === null ? "" : "text-slate-400 border-slate-600 hover:text-white"}
-          >
-            All
-          </Button>
-          {presetCategories.map((category) => (
-            <Button
-              key={category.id}
-              variant={selectedCategory === category.id ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(category.id)}
-              className={selectedCategory === category.id ? "" : "text-slate-400 border-slate-600 hover:text-white"}
-            >
-              {category.name}
-            </Button>
-          ))}
-        </div>
-      </div>
+  const handleUsePrompt = async (preset: LegalPreset) => {
+    try {
+      // Copy to clipboard
+      await navigator.clipboard.writeText(preset.system_prompt);
+      
+      // Screen buzz effect
+      document.body.style.animation = 'buzz 0.2s ease-in-out';
+      setTimeout(() => {
+        document.body.style.animation = '';
+      }, 200);
+      
+      // Bleep sound effect
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+      
+      // Call the original handler
+      onSelectPreset(preset);
+      
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      // Fallback - still call the original handler
+      onSelectPreset(preset);
+    }
+  };
 
-      {/* Presets Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredPresets.map((preset) => {
-          const category = presetCategories.find(cat => cat.id === preset.category);
-          const IconComponent = category ? iconMap[category.icon as keyof typeof iconMap] : FileText;
+  return (
+    <>
+      <style>{`
+        @keyframes buzz {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-2px) rotate(-0.5deg); }
+          75% { transform: translateX(2px) rotate(0.5deg); }
+        }
+      `}</style>
+      
+      <div className="space-y-6">
+        {/* Search and Filter */}
+        <div className="space-y-4">
+          <Input
+            placeholder="Search presets..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+          />
           
-          return (
-            <Card key={preset.id} className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors group">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <IconComponent className="w-4 h-4 text-slate-400" />
-                    <Badge 
-                      variant="outline" 
-                      className={`text-xs ${getJurisdictionColor(preset.jurisdiction)}`}
-                    >
-                      {preset.jurisdiction}
-                    </Badge>
-                  </div>
-                  {preset.complexity && (
-                    <Badge 
-                      variant="outline" 
-                      className={`text-xs ${getComplexityColor(preset.complexity)}`}
-                    >
-                      {preset.complexity}
-                    </Badge>
-                  )}
-                </div>
-                <CardTitle className="text-sm text-white leading-tight line-clamp-2">
-                  {preset.label}
-                </CardTitle>
-                <CardDescription className="text-xs text-slate-400 line-clamp-2">
-                  {category?.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-3">
-                <div className="text-xs text-slate-500">
-                  Format: <span className="text-slate-300">{preset.output_format}</span>
-                </div>
-                
-                {preset.tags && preset.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {preset.tags.slice(0, 2).map((tag) => (
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={selectedCategory === null ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory(null)}
+              className={selectedCategory === null ? "" : "text-slate-400 border-slate-600 hover:text-white"}
+            >
+              All
+            </Button>
+            {presetCategories.map((category) => (
+              <Button
+                key={category.id}
+                variant={selectedCategory === category.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category.id)}
+                className={selectedCategory === category.id ? "" : "text-slate-400 border-slate-600 hover:text-white"}
+              >
+                {category.name}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Presets Grid */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredPresets.map((preset) => {
+            const category = presetCategories.find(cat => cat.id === preset.category);
+            const IconComponent = category ? iconMap[category.icon as keyof typeof iconMap] : FileText;
+            
+            return (
+              <Card key={preset.id} className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors group">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <IconComponent className="w-4 h-4 text-slate-400" />
                       <Badge 
-                        key={tag}
                         variant="outline" 
-                        className="text-xs text-slate-400 border-slate-600"
+                        className={`text-xs ${getJurisdictionColor(preset.jurisdiction)}`}
                       >
-                        {tag}
+                        {preset.jurisdiction}
                       </Badge>
-                    ))}
-                    {preset.tags.length > 2 && (
+                    </div>
+                    {preset.complexity && (
                       <Badge 
                         variant="outline" 
-                        className="text-xs text-slate-400 border-slate-600"
+                        className={`text-xs ${getComplexityColor(preset.complexity)}`}
                       >
-                        +{preset.tags.length - 2}
+                        {preset.complexity}
                       </Badge>
                     )}
                   </div>
-                )}
-                
-                <Button
-                  onClick={() => onSelectPreset(preset)}
-                  size="sm"
-                  className="w-full text-xs font-medium"
-                >
-                  Use This Prompt
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-      
-      {filteredPresets.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-slate-400">No presets found matching "{searchTerm}"</p>
+                  <CardTitle className="text-sm text-white leading-tight line-clamp-2">
+                    {preset.label}
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-400 line-clamp-2">
+                    {category?.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-3">
+                  <div className="text-xs text-slate-500">
+                    Format: <span className="text-slate-300">{preset.output_format}</span>
+                  </div>
+                  
+                  {preset.tags && preset.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {preset.tags.slice(0, 2).map((tag) => (
+                        <Badge 
+                          key={tag}
+                          variant="outline" 
+                          className="text-xs text-slate-400 border-slate-600"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                      {preset.tags.length > 2 && (
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs text-slate-400 border-slate-600"
+                        >
+                          +{preset.tags.length - 2}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                  
+                  <Button
+                    onClick={() => handleUsePrompt(preset)}
+                    size="sm"
+                    className="w-full text-xs font-medium"
+                  >
+                    Use This Prompt
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
-      )}
-    </div>
+        
+        {filteredPresets.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-slate-400">No presets found matching "{searchTerm}"</p>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
