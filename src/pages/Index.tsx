@@ -1,35 +1,11 @@
-
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Brain, CheckCircle, Zap, Target, ArrowRight, Lightbulb, Shield, Scale, BookOpen } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Index = () => {
-  const [versionClicks, setVersionClicks] = useState(0);
-  const navigate = useNavigate();
-
-  // Reset click counter after 5 seconds of inactivity
-  useEffect(() => {
-    if (versionClicks > 0) {
-      const timer = setTimeout(() => setVersionClicks(0), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [versionClicks]);
-
-  const handleVersionClick = () => {
-    const newCount = versionClicks + 1;
-    setVersionClicks(newCount);
-    
-    if (newCount === 2) {
-      // Navigate to secret Saga environment
-      navigate('/saga-secret');
-      setVersionClicks(0);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Hero Section */}
@@ -40,13 +16,7 @@ const Index = () => {
             <div className="flex items-center justify-center gap-2 mb-4">
               <Brain className="w-10 h-10 text-[#0B3C5D]" />
               <span className="text-2xl font-bold text-[#0B3C5D]">EAI Model</span>
-              <Badge 
-                variant="secondary" 
-                className="cursor-pointer hover:bg-gray-200 transition-colors"
-                onClick={handleVersionClick}
-              >
-                v1.0
-              </Badge>
+              <Badge variant="secondary">v1.0</Badge>
             </div>
             <h1 className="text-5xl font-bold text-gray-900 leading-tight">
               Education & AI<br />

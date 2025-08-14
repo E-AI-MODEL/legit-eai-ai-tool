@@ -13,6 +13,7 @@ import SagaSecret from "./pages/SagaSecret";
 import NotFound from "./pages/NotFound";
 import { ViewModeProvider } from "@/context/view-mode";
 import ViewModeSwitcher from "@/components/ViewModeSwitcher";
+import { SecretAccess } from "@/components/SecretAccess";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <SecretAccess />
           <Routes>
             <Route path="/" element={<Intro />} />
             <Route path="/main" element={<Index />} />
