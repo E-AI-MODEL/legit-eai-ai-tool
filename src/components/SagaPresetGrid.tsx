@@ -79,7 +79,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
       {/* Search and Filter */}
       <div className="space-y-4">
         <Input
-          placeholder="Zoek presets..."
+          placeholder="Search presets..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
@@ -92,7 +92,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
             onClick={() => setSelectedCategory(null)}
             className={selectedCategory === null ? "" : "text-slate-400 border-slate-600 hover:text-white"}
           >
-            Alles
+            All
           </Button>
           {presetCategories.map((category) => (
             <Button
@@ -109,15 +109,15 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
       </div>
 
       {/* Presets Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredPresets.map((preset) => {
           const category = presetCategories.find(cat => cat.id === preset.category);
           const IconComponent = category ? iconMap[category.icon as keyof typeof iconMap] : FileText;
           
           return (
-            <Card key={preset.id} className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors">
+            <Card key={preset.id} className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors group">
               <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <IconComponent className="w-4 h-4 text-slate-400" />
                     <Badge 
@@ -136,49 +136,47 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
                     </Badge>
                   )}
                 </div>
-                <CardTitle className="text-sm text-white leading-tight">
+                <CardTitle className="text-sm text-white leading-tight line-clamp-2">
                   {preset.label}
                 </CardTitle>
-                <CardDescription className="text-xs text-slate-400">
+                <CardDescription className="text-xs text-slate-400 line-clamp-2">
                   {category?.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="pt-0">
-                <div className="space-y-3">
-                  <div className="text-xs text-slate-500">
-                    Format: <span className="text-slate-300">{preset.output_format}</span>
-                  </div>
-                  
-                  {preset.tags && preset.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {preset.tags.slice(0, 3).map((tag) => (
-                        <Badge 
-                          key={tag}
-                          variant="outline" 
-                          className="text-xs text-slate-400 border-slate-600"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                      {preset.tags.length > 3 && (
-                        <Badge 
-                          variant="outline" 
-                          className="text-xs text-slate-400 border-slate-600"
-                        >
-                          +{preset.tags.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                  
-                  <Button
-                    onClick={() => onSelectPreset(preset)}
-                    size="sm"
-                    className="w-full text-xs"
-                  >
-                    Gebruik Template
-                  </Button>
+              <CardContent className="pt-0 space-y-3">
+                <div className="text-xs text-slate-500">
+                  Format: <span className="text-slate-300">{preset.output_format}</span>
                 </div>
+                
+                {preset.tags && preset.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {preset.tags.slice(0, 2).map((tag) => (
+                      <Badge 
+                        key={tag}
+                        variant="outline" 
+                        className="text-xs text-slate-400 border-slate-600"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                    {preset.tags.length > 2 && (
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs text-slate-400 border-slate-600"
+                      >
+                        +{preset.tags.length - 2}
+                      </Badge>
+                    )}
+                  </div>
+                )}
+                
+                <Button
+                  onClick={() => onSelectPreset(preset)}
+                  size="sm"
+                  className="w-full text-xs font-medium"
+                >
+                  Use This Prompt
+                </Button>
               </CardContent>
             </Card>
           );
@@ -186,8 +184,8 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
       </div>
       
       {filteredPresets.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-slate-400">Geen presets gevonden voor "{searchTerm}"</p>
+        <div className="text-center py-12">
+          <p className="text-slate-400">No presets found matching "{searchTerm}"</p>
         </div>
       )}
     </div>
