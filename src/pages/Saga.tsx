@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -16,9 +17,19 @@ const Saga = () => {
 
   // Clear prompt and preset when component mounts AND unmounts
   useEffect(() => {
-    // Clear any existing state on mount
+    // Clear any existing state on mount - prevent any forwarding from other pages
     setPrompt("");
     setSelectedPreset(null);
+    setActiveTab("presets");
+    
+    // Clear any navigation state that might contain prompts
+    if (window.history.state) {
+      const cleanState = { ...window.history.state };
+      delete cleanState.prompt;
+      delete cleanState.generatedPrompt;
+      delete cleanState.promptText;
+      window.history.replaceState(cleanState, '', window.location.pathname);
+    }
     
     return () => {
       // Clear state on unmount

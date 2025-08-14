@@ -128,6 +128,12 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
     }
   };
 
+  const clearPrompt = () => {
+    onPromptChange("");
+    setCheckResults([]);
+    setEnhancedPrompt("");
+  };
+
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -173,20 +179,32 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
             rows={15}
           />
           
-          <Button 
-            onClick={handleEnhancePrompt}
-            disabled={isChecking || !prompt.trim()}
-            className="w-full"
-          >
-            {isChecking ? (
-              <>
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              'Enhance Prompt'
+          <div className="flex gap-2">
+            {prompt.trim() && (
+              <Button 
+                variant="outline" 
+                onClick={clearPrompt}
+                className="gap-2"
+              >
+                <XCircle className="w-4 h-4" />
+                Clear
+              </Button>
             )}
-          </Button>
+            <Button 
+              onClick={handleEnhancePrompt}
+              disabled={isChecking || !prompt.trim()}
+              className="flex-1"
+            >
+              {isChecking ? (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                'Enhance Prompt'
+              )}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
