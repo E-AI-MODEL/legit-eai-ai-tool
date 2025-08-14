@@ -15,7 +15,7 @@ const Intro = () => {
   }, []);
 
   const handleEnter = () => {
-    navigate("/saga");
+    navigate("/main");
   };
 
   return (
