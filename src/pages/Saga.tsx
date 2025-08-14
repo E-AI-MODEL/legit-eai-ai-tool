@@ -1,77 +1,75 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { Scale, ArrowLeft, Shield, Brain, Database, Zap, Wand2, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { Scale, ArrowLeft, Shield, Brain, Database, Zap, Wand2, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import SagaPromptPresets from "@/components/SagaPromptPresets";
+import SagaPromptChecker from "@/components/SagaPromptChecker";
 
 const Saga = () => {
   const [prompt, setPrompt] = useState("");
-  const [checkResults, setCheckResults] = useState<any[]>([]);
   const [generatedPrompt, setGeneratedPrompt] = useState("");
-  const [isChecking, setIsChecking] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [genContext, setGenContext] = useState({
     topic: "",
-    audience: "law students",
-    output: "Bullet-list sections with clear headings",
-    tone: "professional, neutral",
-    constraints: ""
+    audience: "advocaten",
+    output: "Gestructureerde secties met duidelijke kopjes",
+    tone: "professioneel, neutraal", 
+    constraints: "Nederlandse juridische praktijk, EAI-compliant"
   });
 
   const adviceLibrary = {
-    "Structure": {
+    "Structuur": {
       "chips": [
-        "Add a 'Facts (Extract)' section with exact fields and pinpoint citations.",
-        "Add an 'Analysis (Interpretation)' section with risks, options, and trade-offs.",
-        "Define data types for extracted fields (e.g., ISO date, boolean)."
+        "Voeg 'Feiten (Extractie)' sectie toe met exacte velden en precieze bronvermelding.",
+        "Voeg 'Analyse (Interpretatie)' sectie toe met risico's, opties en afwegingen.",
+        "Definieer datatypes voor geëxtraheerde velden (bijv. ISO datum, boolean)."
       ]
     },
-    "Evidence": {
+    "Bewijs": {
       "chips": [
-        "Require a Sources list and pinpoint citations for each claim.",
-        "Ask for an Action Log of steps and tools used."
+        "Eis een Bronnenlijst en precieze citaten voor elke bewering.",
+        "Vraag om een Actie Log van stappen en gebruikte tools."
       ]
     },
-    "Decision points": {
+    "Beslispunten": {
       "chips": [
-        "Insert Human Approval checkpoints and pause before sending advice.",
-        "Add an override note: the lawyer makes the final call."
+        "Voeg Menselijke Goedkeuring checkpoints toe en pauzeer voor adviesverstrekking.",
+        "Voeg override notitie toe: de advocaat neemt de finale beslissing."
       ]
     },
-    "Tone": {
+    "Toon": {
       "chips": [
-        "Remove certainty language; offer 1–2 alternatives with trade-offs.",
-        "Use neutral, plain English; avoid urgency language."
+        "Vermijd zekerheidstaal; bied 1-2 alternatieven met afwegingen.",
+        "Gebruik neutrale, gewone taal; vermijd urgentie-taal."
       ]
     },
     "Privacy": {
       "chips": [
-        "Avoid PII; if needed, request redacted excerpts only.",
-        "State EU storage/processing and no training on client data."
+        "Vermijd PII; vraag indien nodig alleen geredacted uittreksels.",
+        "Vermeld EU opslag/verwerking en geen training op cliëntdata."
       ]
     },
     "Output format": {
       "chips": [
-        "Specify the output format (bullets, table, or tracked changes).",
-        "Include a short opening plan and a clear section order."
+        "Specificeer het output formaat (bullets, tabel, of tracked changes).",
+        "Voeg kort openingsplan en duidelijke sectievolgorde toe."
       ]
     },
     "Timing": {
       "chips": [
-        "Add a review window before finalizing.",
-        "If timing is critical, explain why and offer an opt-out."
+        "Voeg review window toe voor finalisatie.",
+        "Bij kritieke timing, leg uit waarom en bied opt-out."
       ]
     },
     "Scope & criteria": {
       "chips": [
-        "Name the jurisdiction and legal criteria (law/article/case/guideline).",
-        "Define key terms upfront to avoid ambiguity."
+        "Benoem jurisdictie en juridische criteria (wet/artikel/zaak/richtlijn).",
+        "Definieer kerntermen vooraf om dubbelzinnigheid te vermijden."
       ]
     }
   };
@@ -79,51 +77,51 @@ const Saga = () => {
   const detectorRules = [
     {
       id: "missing-structure",
-      label: "Structure",
+      label: "Structuur",
       severity: "medium",
-      description: "Detects missing facts/analysis sections"
+      description: "Detecteert ontbrekende feiten/analyse secties"
     },
     {
       id: "missing-proof",
-      label: "Evidence",
+      label: "Bewijs", 
       severity: "high",
-      description: "Checks for sources and citations"
+      description: "Controleert op bronnen en citaten"
     },
     {
       id: "missing-approval",
-      label: "Decision points",
-      severity: "high",
-      description: "Ensures human approval checkpoints"
+      label: "Beslispunten",
+      severity: "high", 
+      description: "Zorgt voor menselijke goedkeuring checkpoints"
     },
     {
       id: "tone-certainty",
-      label: "Tone",
+      label: "Toon",
       severity: "medium",
-      description: "Flags certainty language"
+      description: "Markeert zekerheidstaal"
     },
     {
       id: "privacy-risk",
       label: "Privacy",
       severity: "high",
-      description: "Detects PII and privacy risks"
+      description: "Detecteert PII en privacy risico's"
     },
     {
       id: "format-unclear",
       label: "Output format",
       severity: "low",
-      description: "Checks output format clarity"
+      description: "Controleert output format helderheid"
     },
     {
       id: "timing-pressure",
       label: "Timing",
       severity: "medium",
-      description: "Flags urgency language"
+      description: "Markeert urgentie-taal"
     },
     {
       id: "missing-scope",
       label: "Scope & criteria",
       severity: "high",
-      description: "Ensures jurisdiction and legal criteria"
+      description: "Zorgt voor jurisdictie en juridische criteria"
     }
   ];
 
@@ -134,35 +132,6 @@ const Saga = () => {
       case 'low': return 'border-green-400/50 text-green-400';
       default: return 'border-blue-400/50 text-blue-400';
     }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pass': return <CheckCircle className="w-4 h-4 text-green-400" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-400" />;
-      case 'fail': return <XCircle className="w-4 h-4 text-red-400" />;
-      default: return <AlertTriangle className="w-4 h-4 text-gray-400" />;
-    }
-  };
-
-  const handlePromptCheck = async () => {
-    if (!prompt.trim()) return;
-    
-    setIsChecking(true);
-    try {
-      const response = await fetch('/functions/v1/eai-semantic-check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
-      });
-      
-      const data = await response.json();
-      setCheckResults(data.results || []);
-    } catch (error) {
-      console.error('Error checking prompt:', error);
-      setCheckResults([]);
-    }
-    setIsChecking(false);
   };
 
   const handleGeneratePrompt = async () => {
@@ -212,6 +181,15 @@ const Saga = () => {
     setIsGenerating(false);
   };
 
+  const handleSelectPreset = (preset: any) => {
+    setPrompt(preset.template);
+    setGenContext(prev => ({
+      ...prev,
+      topic: preset.title,
+      constraints: `Nederlandse juridische praktijk, ${preset.tags.join(', ')}, EAI-compliant`
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-blue-900">
       {/* Header */}
@@ -246,152 +224,117 @@ const Saga = () => {
       <section className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Legal AI Backend Assets
+            Saga Legal AI Toolkit
           </h2>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-8 leading-relaxed">
-            Clean advice library and detector rule-set with plain Saga-style labels. 
-            No rubric jargon on the frontend, complete with one-click apply normalizer.
+            Complete juridische AI-toolkit met EAI-compliance, praktische presets en geavanceerde analyse-tools 
+            specifiek ontwikkeld voor Nederlandse advocatenpraktijk.
           </p>
         </div>
 
-        <Tabs defaultValue="tools" className="mb-16">
-          <TabsList className="grid w-full grid-cols-2 bg-white/10">
-            <TabsTrigger value="tools" className="text-white data-[state=active]:bg-white/20">
-              Live Tools
+        <Tabs defaultValue="presets" className="mb-16">
+          <TabsList className="grid w-full grid-cols-4 bg-white/10">
+            <TabsTrigger value="presets" className="text-white data-[state=active]:bg-white/20">
+              Juridische Presets
+            </TabsTrigger>
+            <TabsTrigger value="checker" className="text-white data-[state=active]:bg-white/20">
+              Prompt Checker
+            </TabsTrigger>
+            <TabsTrigger value="generator" className="text-white data-[state=active]:bg-white/20">
+              Generator
             </TabsTrigger>
             <TabsTrigger value="assets" className="text-white data-[state=active]:bg-white/20">
               Backend Assets
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="tools" className="space-y-8">
-            {/* Prompt Tools */}
-            <div className="grid lg:grid-cols-2 gap-8">
-              {/* Prompt Checker */}
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-xl text-white flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6" />
-                    Prompt Checker
-                  </CardTitle>
-                  <CardDescription className="text-slate-300">
-                    Analyze prompts against EAI compliance rules
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Textarea
-                    placeholder="Enter your prompt to check..."
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
-                    rows={6}
-                  />
-                  <Button 
-                    onClick={handlePromptCheck}
-                    disabled={isChecking || !prompt.trim()}
-                    className="w-full"
-                  >
-                    {isChecking ? 'Checking...' : 'Check Prompt'}
-                  </Button>
-                  
-                  {checkResults.length > 0 && (
-                    <div className="space-y-2 max-h-60 overflow-y-auto">
-                      {checkResults.map((result, index) => (
-                        <div key={index} className="bg-white/5 rounded-lg p-3 border border-white/10">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              {getStatusIcon(result.status)}
-                              <span className="text-white font-medium text-sm">{result.rubric}</span>
-                            </div>
-                            <Badge variant="outline" className={`text-xs ${getSeverityColor('medium')}`}>
-                              {result.status}
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-slate-400">{result.advice}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Prompt Generator */}
-              <Card className="bg-white/5 border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-xl text-white flex items-center gap-3">
-                    <Wand2 className="w-6 h-6" />
-                    Prompt Generator
-                  </CardTitle>
-                  <CardDescription className="text-slate-300">
-                    Generate or improve EAI-compliant prompts
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Topic/Goal"
-                      value={genContext.topic}
-                      onChange={(e) => setGenContext({...genContext, topic: e.target.value})}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 text-sm"
-                    />
-                    <Input
-                      placeholder="Audience"
-                      value={genContext.audience}
-                      onChange={(e) => setGenContext({...genContext, audience: e.target.value})}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 text-sm"
-                    />
-                  </div>
-                  <Input
-                    placeholder="Output format"
-                    value={genContext.output}
-                    onChange={(e) => setGenContext({...genContext, output: e.target.value})}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 text-sm"
-                  />
-                  <Input
-                    placeholder="Additional constraints"
-                    value={genContext.constraints}
-                    onChange={(e) => setGenContext({...genContext, constraints: e.target.value})}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 text-sm"
-                  />
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={handleGeneratePrompt}
-                      disabled={isGenerating || !genContext.topic.trim()}
-                      className="flex-1"
-                    >
-                      {isGenerating ? 'Generating...' : 'Generate'}
-                    </Button>
-                    <Button 
-                      onClick={handleImprovePrompt}
-                      disabled={isGenerating || !prompt.trim()}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      {isGenerating ? 'Improving...' : 'Improve Current'}
-                    </Button>
-                  </div>
-                  
-                  {generatedPrompt && (
-                    <div className="bg-white/5 rounded-lg p-3 border border-white/10">
-                      <h4 className="text-white font-medium mb-2 text-sm">Generated Prompt:</h4>
-                      <Textarea
-                        value={generatedPrompt}
-                        onChange={(e) => setGeneratedPrompt(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white text-sm"
-                        rows={8}
-                      />
-                      <Button
-                        onClick={() => setPrompt(generatedPrompt)}
-                        className="mt-2 w-full"
-                        size="sm"
-                      >
-                        Use This Prompt
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+          <TabsContent value="presets" className="space-y-8">
+            <div className="max-h-96 overflow-y-auto">
+              <SagaPromptPresets onSelectPreset={handleSelectPreset} />
             </div>
+          </TabsContent>
+
+          <TabsContent value="checker" className="space-y-8">
+            <SagaPromptChecker prompt={prompt} onPromptChange={setPrompt} />
+          </TabsContent>
+
+          <TabsContent value="generator" className="space-y-8">
+            {/* Custom Prompt Generator */}
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-xl text-white flex items-center gap-3">
+                  <Wand2 className="w-6 h-6" />
+                  Aangepaste Prompt Generator
+                </CardTitle>
+                <CardDescription className="text-slate-300">
+                  Genereer EAI-compliante prompts voor specifieke juridische taken
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    placeholder="Onderwerp/Doel"
+                    value={genContext.topic}
+                    onChange={(e) => setGenContext({...genContext, topic: e.target.value})}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+                  />
+                  <Input
+                    placeholder="Doelgroep"
+                    value={genContext.audience}
+                    onChange={(e) => setGenContext({...genContext, audience: e.target.value})}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+                  />
+                </div>
+                <Input
+                  placeholder="Output formaat"
+                  value={genContext.output}
+                  onChange={(e) => setGenContext({...genContext, output: e.target.value})}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+                />
+                <Input
+                  placeholder="Extra eisen"
+                  value={genContext.constraints}
+                  onChange={(e) => setGenContext({...genContext, constraints: e.target.value})}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+                />
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleGeneratePrompt}
+                    disabled={isGenerating || !genContext.topic.trim()}
+                    className="flex-1"
+                  >
+                    {isGenerating ? 'Genereren...' : 'Nieuwe Prompt'}
+                  </Button>
+                  <Button 
+                    onClick={handleImprovePrompt}
+                    disabled={isGenerating || !prompt.trim()}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    {isGenerating ? 'Verbeteren...' : 'Verbeter Huidige'}
+                  </Button>
+                </div>
+                
+                {generatedPrompt && (
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h4 className="text-white font-medium mb-3">Gegenereerde Prompt:</h4>
+                    <Textarea
+                      value={generatedPrompt}
+                      onChange={(e) => setGeneratedPrompt(e.target.value)}
+                      className="bg-white/10 border-white/20 text-white text-sm"
+                      rows={12}
+                    />
+                    <Button
+                      onClick={() => setPrompt(generatedPrompt)}
+                      className="mt-3 w-full"
+                      size="sm"
+                    >
+                      Gebruik Deze Prompt
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="assets" className="space-y-8">
@@ -402,10 +345,10 @@ const Saga = () => {
                 <CardHeader>
                   <CardTitle className="text-xl text-white flex items-center gap-3">
                     <Database className="w-6 h-6" />
-                    Advice Library
+                    Advies Bibliotheek
                   </CardTitle>
                   <CardDescription className="text-slate-300">
-                    Frontend-safe chips grouped by label with backend rationale anchors
+                    Frontend-veilige tips gegroepeerd per label met backend rationale ankers
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -431,10 +374,10 @@ const Saga = () => {
                 <CardHeader>
                   <CardTitle className="text-xl text-white flex items-center gap-3">
                     <Brain className="w-6 h-6" />
-                    Detector Rules
+                    Detector Regels
                   </CardTitle>
                   <CardDescription className="text-slate-300">
-                    Backend regex/heuristics mapped to plain labels
+                    Backend regex/heuristieken gekoppeld aan gewone labels
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -463,18 +406,18 @@ const Saga = () => {
               <CardHeader>
                 <CardTitle className="text-xl text-white flex items-center gap-3">
                   <Zap className="w-6 h-6" />
-                  One-Click Apply Normalizer
+                  Een-Klik Toepassing Normalizer
                 </CardTitle>
                 <CardDescription className="text-slate-300">
-                  Server-side prompt normalization with structured output
+                  Server-side prompt normalisatie met gestructureerde output
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-semibold text-white mb-3">Processing Order</h4>
+                    <h4 className="font-semibold text-white mb-3">Verwerkingsvolgorde</h4>
                     <div className="space-y-2 text-sm text-slate-300">
-                      {["Structure", "Scope & criteria", "Evidence", "Decision points", "Output format", "Tone", "Privacy", "Timing"].map((item, index) => (
+                      {["Structuur", "Scope & criteria", "Bewijs", "Beslispunten", "Output format", "Toon", "Privacy", "Timing"].map((item, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <span className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center text-xs">
                             {index + 1}
@@ -485,13 +428,13 @@ const Saga = () => {
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-white mb-3">Default Headers</h4>
+                    <h4 className="font-semibold text-white mb-3">Standaard Headers</h4>
                     <div className="space-y-1 text-sm text-slate-300">
-                      <div>• Facts (Extract)</div>
-                      <div>• Analysis (Interpretation)</div>
-                      <div>• Decision points — Human approval required</div>
-                      <div>• Sources & Action Log</div>
-                      <div>• Human Review Hand-off</div>
+                      <div>• Feiten (Extractie)</div>
+                      <div>• Analyse (Interpretatie)</div>
+                      <div>• Beslispunten — Menselijke goedkeuring vereist</div>
+                      <div>• Bronnen & Actie Log</div>
+                      <div>• Menselijke Review Overdracht</div>
                     </div>
                   </div>
                 </div>
@@ -503,10 +446,10 @@ const Saga = () => {
               <CardHeader>
                 <CardTitle className="text-xl text-white flex items-center gap-3">
                   <Shield className="w-6 h-6" />
-                  Integration Ready
+                  Integratie Klaar
                 </CardTitle>
                 <CardDescription className="text-slate-300">
-                  Clean backend assets with EAI safeguards under the hood
+                  Schone backend assets met EAI veiligheidsmaatregelen onder de motorkap
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -514,19 +457,19 @@ const Saga = () => {
                   <div>
                     <h4 className="font-semibold text-white mb-2">Backend Output</h4>
                     <ul className="text-slate-400 space-y-1">
-                      <li>• Summary with issue detection</li>
-                      <li>• Plain label explanations</li>
-                      <li>• Advice chips by category</li>
-                      <li>• Normalized prompt ready</li>
+                      <li>• Samenvatting met issue detectie</li>
+                      <li>• Gewone label uitleg</li>
+                      <li>• Advies chips per categorie</li>
+                      <li>• Genormaliseerde prompt klaar</li>
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-white mb-2">Safeguards</h4>
+                    <h4 className="font-semibold text-white mb-2">Veiligheidsmaatregelen</h4>
                     <ul className="text-slate-400 space-y-1">
-                      <li>• No rubric jargon exposed</li>
-                      <li>• Internal metrics logged</li>
-                      <li>• Unit tested rules</li>
-                      <li>• Audit trail maintained</li>
+                      <li>• Geen rubric jargon zichtbaar</li>
+                      <li>• Interne metrics gelogd</li>
+                      <li>• Unit geteste regels</li>
+                      <li>• Audit trail onderhouden</li>
                     </ul>
                   </div>
                 </div>
