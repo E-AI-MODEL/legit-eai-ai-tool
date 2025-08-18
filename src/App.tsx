@@ -29,7 +29,7 @@ const App = () => (
             <Route path="/task-density" element={<TaskDensity />} />
             <Route path="/prompt-checker" element={<PromptChecker />} />
             <Route path="/prompt-generator" element={<PromptGenerator />} />
-            <Route path="/saga" element={<Saga />} />
+            <Route path="/lp-ai-x9k3m7" element={<Saga />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
