@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -55,7 +54,7 @@ const Main = () => {
               </div>
               {/* Secret V1.0 Button */}
               <Button asChild variant="ghost" size="sm" className="opacity-20 hover:opacity-100 transition-opacity">
-                <Link to="/saga">V1.0</Link>
+                <Link to="/lp-ai-x9k3m7">V1.0</Link>
               </Button>
             </div>
           </div>

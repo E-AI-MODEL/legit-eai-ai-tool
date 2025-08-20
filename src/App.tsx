@@ -13,6 +13,7 @@ import Saga from "./pages/Saga";
 import NotFound from "./pages/NotFound";
 import { ViewModeProvider } from "@/context/view-mode";
 import ViewModeSwitcher from "@/components/ViewModeSwitcher";
+import PasswordProtection from "@/components/PasswordProtection";
 
 const queryClient = new QueryClient();
 
@@ -25,11 +26,31 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Intro />} />
-            <Route path="/main" element={<Main />} />
-            <Route path="/task-density" element={<TaskDensity />} />
-            <Route path="/prompt-checker" element={<PromptChecker />} />
-            <Route path="/prompt-generator" element={<PromptGenerator />} />
-            <Route path="/lp-ai-x9k3m7" element={<Saga />} />
+            <Route path="/main" element={
+              <PasswordProtection>
+                <Main />
+              </PasswordProtection>
+            } />
+            <Route path="/task-density" element={
+              <PasswordProtection>
+                <TaskDensity />
+              </PasswordProtection>
+            } />
+            <Route path="/prompt-checker" element={
+              <PasswordProtection>
+                <PromptChecker />
+              </PasswordProtection>
+            } />
+            <Route path="/prompt-generator" element={
+              <PasswordProtection>
+                <PromptGenerator />
+              </PasswordProtection>
+            } />
+            <Route path="/lp-ai-x9k3m7" element={
+              <PasswordProtection>
+                <Saga />
+              </PasswordProtection>
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
