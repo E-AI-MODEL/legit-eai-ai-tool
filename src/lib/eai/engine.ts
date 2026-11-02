@@ -3,6 +3,9 @@
  * Symbolic rules decide quality; output is deterministic for the same input.
  */
 
+import { detectPhases, workflowSection } from "./workflowPhases";
+import { estimateTaskDensity } from "./taskDensity";
+
 export type EaiStatus = "pass" | "warning" | "fail";
 
 export interface EaiRubric {
@@ -141,7 +144,7 @@ const FIX_SECTIONS: Record<string, string> = {
   "Bias, Inclusion & Professional Neutrality":
     "Neutrality\n- Use neutral, non-absolute language.\n- Present the position of all parties involved and at least one alternative interpretation.",
   "Output Specification & Structure":
-    "Output Format\n- Use clearly headed sections with bullet points: Facts, Legal Framework, Analysis, Risks, Options, Open Points.\n- Keep it concise and in plain professional English.",
+    "Output Format\n- Use headed sections with bullet points: Facts, Legal Framework, Analysis, Risks, Options, Open Points.\n- Keep it concise and in plain professional English.",
   "Problem Complexity & Visible Reasoning":
     "Visible Reasoning\n- Reason step by step: facts → applicable rule → application → conclusion.\n- Make every intermediate step explicit; no unexplained conclusions.",
   "Error & Failure Analysis":
@@ -149,6 +152,9 @@ const FIX_SECTIONS: Record<string, string> = {
   "Legal Learning Mode":
     "Reflection & Hand-off\n- Close with: 3 key insights, 3 open questions, and the items I must verify or approve.",
 };
+
+const OWN_WORK_SECTION =
+  "Lawyer's Own Work\n- I will write my initial view before reading your analysis.\n- I will choose which sources and legal framework are decisive.\n- I will weigh the counterarguments and choose the position to take.\n- I will verify every cited source before use.\n- I will write the final client advice myself and sign off on it.";
 
 function stripNoise(s: string): string {
   return s
@@ -169,8 +175,11 @@ export function improvePrompt(prompt: string, results: EaiResult[] = analyzeProm
     "Role\n- Act as a careful legal research and drafting assistant supporting a qualified lawyer. You support; the lawyer decides.",
     `Task\n${task}`,
     ...missing,
-    "Start\n- Confirm your understanding of the task in one line, list any missing information you need, then proceed.",
+    ...(detectPhases(task).missing.length ? [workflowSection()] : []),
   ];
+  // EAI: if the AI would still do most of the thinking, hand explicit work back to the lawyer.
+  if (estimateTaskDensity(parts.join("\n")).label === "AI-heavy") parts.push(OWN_WORK_SECTION);
+  parts.push("Start\n- Confirm your understanding of the task in one line, list any missing information you need, then proceed.");
   return parts.join("\n\n");
 }
 
