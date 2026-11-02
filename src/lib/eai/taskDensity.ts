@@ -1,7 +1,7 @@
 /**
  * Task density estimate from prompt text: share of cognitive work assigned to AI.
  * Each actionable line/sentence is classified as human, AI, or shared.
- * TD = (ai + 0.5 * shared) / actionable. Same thresholds as the Task Density audit page.
+ * TD = (ai + 0.5 * shared) / actionable. Style/format instructions (use, keep, close...) are not counted as work. Same thresholds as the Task Density audit page.
  */
 
 export type DensityLabel = "Human-led" | "Balanced" | "AI-heavy";
@@ -20,7 +20,7 @@ export const TD_THRESHOLDS = { humanLed: 0.3, balanced: 0.7 } as const;
 const HUMAN_SUBJECT = /^(?:[-•*\d.)\s]*)(?:i|we|lawyer|the lawyer|user|the user|human|reviewer|partner)\b/;
 const HUMAN_MENTION = /\b(i|me|my|we|lawyer|user|human|reviewer|partner)\b/;
 const AI_MENTION = /\b(you|your|ai|assistant|model)\b/;
-const AI_VERB = /^(?:[-•*\d.)\s]*)(write|draft|analy[sz]e|summari[sz]e|list|extract|identify|review|give|create|generate|compare|provide|explain|check|cite|mark|use|reason|state|present|close|end|build|confirm|stop|keep|make|leave|prepare|assess|flag|translate|rewrite|structure|propose|suggest|find|search|outline|calculate|determine|evaluate)\b/;
+const AI_VERB = /^(?:[-•*\d.)\s]*)(write|draft|analy[sz]e|summari[sz]e|list|extract|identify|review|give|create|generate|compare|provide|explain|check|cite|mark|reason|state|present|build|prepare|assess|flag|translate|rewrite|structure|propose|suggest|find|search|outline|calculate|determine|evaluate)\b/;
 
 export function densityLabel(value: number): DensityLabel {
   if (value < TD_THRESHOLDS.humanLed) return "Human-led";

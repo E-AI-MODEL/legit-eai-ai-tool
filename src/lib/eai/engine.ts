@@ -4,6 +4,7 @@
  */
 
 import { detectPhases, workflowSection } from "./workflowPhases";
+import { estimateTaskDensity } from "./taskDensity";
 
 export type EaiStatus = "pass" | "warning" | "fail";
 
@@ -152,6 +153,9 @@ const FIX_SECTIONS: Record<string, string> = {
     "Reflection & Hand-off\n- Close with: 3 key insights, 3 open questions, and the items I must verify or approve.",
 };
 
+const OWN_WORK_SECTION =
+  "Lawyer's Own Work\n- I will write my initial view before reading your analysis.\n- I will choose which sources and legal framework are decisive.\n- I will weigh the counterarguments and choose the position to take.\n- I will verify every cited source before use.\n- I will write the final client advice myself and sign off on it.";
+
 function stripNoise(s: string): string {
   return s
     .replace(/```[\s\S]*?```/g, "")
@@ -172,8 +176,10 @@ export function improvePrompt(prompt: string, results: EaiResult[] = analyzeProm
     `Task\n${task}`,
     ...missing,
     ...(detectPhases(task).missing.length ? [workflowSection()] : []),
-    "Start\n- Confirm your understanding of the task in one line, list any missing information you need, then proceed.",
   ];
+  // EAI: if the AI would still do most of the thinking, hand explicit work back to the lawyer.
+  if (estimateTaskDensity(parts.join("\n")).label === "AI-heavy") parts.push(OWN_WORK_SECTION);
+  parts.push("Start\n- Confirm your understanding of the task in one line, list any missing information you need, then proceed.");
   return parts.join("\n\n");
 }
 
