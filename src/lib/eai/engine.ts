@@ -3,6 +3,8 @@
  * Symbolic rules decide quality; output is deterministic for the same input.
  */
 
+import { detectPhases, workflowSection } from "./workflowPhases";
+
 export type EaiStatus = "pass" | "warning" | "fail";
 
 export interface EaiRubric {
@@ -141,7 +143,7 @@ const FIX_SECTIONS: Record<string, string> = {
   "Bias, Inclusion & Professional Neutrality":
     "Neutrality\n- Use neutral, non-absolute language.\n- Present the position of all parties involved and at least one alternative interpretation.",
   "Output Specification & Structure":
-    "Output Format\n- Use clearly headed sections with bullet points: Facts, Legal Framework, Analysis, Risks, Options, Open Points.\n- Keep it concise and in plain professional English.",
+    "Output Format\n- Use headed sections with bullet points: Facts, Legal Framework, Analysis, Risks, Options, Open Points.\n- Keep it concise and in plain professional English.",
   "Problem Complexity & Visible Reasoning":
     "Visible Reasoning\n- Reason step by step: facts → applicable rule → application → conclusion.\n- Make every intermediate step explicit; no unexplained conclusions.",
   "Error & Failure Analysis":
@@ -169,6 +171,7 @@ export function improvePrompt(prompt: string, results: EaiResult[] = analyzeProm
     "Role\n- Act as a careful legal research and drafting assistant supporting a qualified lawyer. You support; the lawyer decides.",
     `Task\n${task}`,
     ...missing,
+    ...(detectPhases(task).missing.length ? [workflowSection()] : []),
     "Start\n- Confirm your understanding of the task in one line, list any missing information you need, then proceed.",
   ];
   return parts.join("\n\n");
