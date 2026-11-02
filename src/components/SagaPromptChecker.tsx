@@ -3,10 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle, AlertTriangle, XCircle, Loader, Scale, Sparkles, Copy } from "lucide-react";
+import { CheckCircle, AlertTriangle, XCircle, Loader, Scale, Sparkles, Copy, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import ClipboardNotification from "@/components/ClipboardNotification";
 import { analyzePrompt, improvePrompt } from "@/lib/eai/engine";
+import { issueCertificate, renderCertificate, type Certificate } from "@/lib/eai/certificate";
+import { estimateTaskDensity, type TaskDensity } from "@/lib/eai/taskDensity";
+import { PHASES } from "@/lib/eai/workflowPhases";
 
 interface CheckResult {
   rubric: string;
@@ -25,6 +28,8 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
   const [checkResults, setCheckResults] = useState<CheckResult[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [improvedPrompt, setImprovedPrompt] = useState("");
+  const [certificate, setCertificate] = useState<Certificate | null>(null);
+  const [originalDensity, setOriginalDensity] = useState<TaskDensity | null>(null);
 
   const processPrompt = () => {
     if (!prompt.trim()) return;
@@ -33,6 +38,8 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
     const improved = improvePrompt(prompt, results);
     setCheckResults(results);
     setImprovedPrompt(improved);
+    setOriginalDensity(estimateTaskDensity(prompt));
+    setCertificate(issueCertificate(improved));
     onPromptChange(improved);
     setIsProcessing(false);
   };
@@ -41,6 +48,8 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
     onPromptChange("");
     setCheckResults([]);
     setImprovedPrompt("");
+    setCertificate(null);
+    setOriginalDensity(null);
   };
 
   const getStatusIcon = (status: string) => {
@@ -178,6 +187,53 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                 </div>
               )}
               
+              {certificate && (
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-4 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-5 h-5 text-blue-300" />
+                      <span className="text-white font-medium text-sm">Verification</span>
+                    </div>
+                    <Badge variant="outline" className={`text-xs ${certificate.verdict === "Certified" ? "text-green-400 border-green-400/50" : certificate.verdict === "Conditional" ? "text-yellow-400 border-yellow-400/50" : "text-red-400 border-red-400/50"}`}>
+                      {certificate.verdict}
+                    </Badge>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs text-slate-300 mb-1">
+                      <span>Work done by AI</span>
+                      <span>
+                        {originalDensity && originalDensity.actionable > 0 && <>{Math.round(originalDensity.value * 100)}% → </>}
+                        {Math.round(certificate.assessment.density.value * 100)}% · {certificate.assessment.density.label}
+                      </span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                      <div className="h-full bg-blue-400" style={{ width: `${Math.round(certificate.assessment.density.value * 100)}%` }} />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {PHASES.map((p) => (
+                      <span key={p.id} className={`text-[11px] px-2 py-0.5 rounded border ${certificate.assessment.phases.covered.includes(p.id) ? "border-green-400/40 text-green-300" : "border-white/15 text-slate-500"}`}>
+                        {p.name}
+                      </span>
+                    ))}
+                  </div>
+                  {certificate.reasons.length > 0 && (
+                    <ul className="text-xs text-slate-400 space-y-0.5">
+                      {certificate.reasons.map((r) => <li key={r}>• {r}</li>)}
+                    </ul>
+                  )}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] text-slate-500 font-mono">{certificate.id}</span>
+                    <ClipboardNotification text={renderCertificate(certificate)}>
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <Copy className="w-4 h-4" />
+                        Copy Certificate
+                      </Button>
+                    </ClipboardNotification>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-3 max-h-60 overflow-y-auto">
                 {checkResults.map((result, index) => (
                   <div key={index} className={`bg-white/5 rounded-lg p-3 border ${getStatusColor(result.status).split(' ')[0]}`}>
