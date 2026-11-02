@@ -113,3 +113,17 @@
     hyphens: auto;
   }
 }
+
+/* Copy micro-feedback: gentle 1px buzz + short 20% dim (see src/lib/feedback.ts) */
+@keyframes gentle-buzz {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+@keyframes connection-flash {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(0.8); }
+}
+body.copy-feedback {
+  animation: gentle-buzz 0.25s ease-in-out, connection-flash 0.3s ease-in-out;
+}

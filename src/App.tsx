@@ -10,14 +10,11 @@ import PromptChecker from "./pages/PromptChecker";
 import PromptGenerator from "./pages/PromptGenerator";
 import Saga from "./pages/Saga";
 import NotFound from "./pages/NotFound";
-import { ViewModeProvider } from "@/context/view-mode";
-import ViewModeSwitcher from "@/components/ViewModeSwitcher";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ViewModeProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -32,9 +29,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-        <ViewModeSwitcher />
       </TooltipProvider>
-    </ViewModeProvider>
   </QueryClientProvider>
 );
 
