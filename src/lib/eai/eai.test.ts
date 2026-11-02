@@ -14,6 +14,9 @@ describe("task density", () => {
   it("a prompt where AI does everything is AI-heavy", () => {
     expect(estimateTaskDensity("Write the full NDA review and decide which clauses to accept.").label).toBe("AI-heavy");
   });
+  it("an improved prompt is never left AI-heavy", () => {
+    expect(estimateTaskDensity(improvePrompt("Write the full NDA review.")).label).not.toBe("AI-heavy");
+  });
   it("human-owned steps lower the density", () => {
     const d = estimateTaskDensity("I will draft my own view first.\nI will decide.\nSummarise the contract.");
     expect(d.value).toBeLessThan(0.5);
