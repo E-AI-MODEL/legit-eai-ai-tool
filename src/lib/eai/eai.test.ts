@@ -52,3 +52,19 @@ describe("certificate", () => {
     expect(c.verdict).toBe("Not certified");
   });
 });
+
+import { humanCheckpoints } from "./checkpoints";
+
+describe("lawyer checkpoints", () => {
+  const byId = (p: string) => Object.fromEntries(humanCheckpoints(p).map((c) => [c.id, c.ok]));
+  it("a bare request leaves sources, lawyer decision, counterarguments and audit open", () => {
+    const c = byId("Review this NDA.");
+    expect(c).toMatchObject({ sources: false, lawyerDecides: false, counter: false, audit: false, privacy: true });
+  });
+  it("personal data closes the privacy checkpoint", () => {
+    expect(byId("Mail jan@kantoor.nl about the NDA.").privacy).toBe(false);
+  });
+  it("an improved prompt closes every checkpoint", () => {
+    expect(humanCheckpoints(improvePrompt("Review this NDA.")).every((c) => c.ok)).toBe(true);
+  });
+});
