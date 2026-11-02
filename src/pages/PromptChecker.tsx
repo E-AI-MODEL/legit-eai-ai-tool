@@ -198,9 +198,12 @@ const PromptChecker = () => {
     setIsChecking(true);
 
     try {
-      const heurRaw = computeHeuristicResults(prompt);
+      // Strict mode: any warning counts as a critical issue.
+      const heurRaw = computeHeuristicResults(prompt).map(r =>
+        strictMode && r.status === "warning" ? { ...r, status: "fail" as const } : r
+      );
       const finalResults: CheckResult[] = withScores(heurRaw, prompt);
-      const mode = strictMode ? "Strict rules" : "Rules";
+      const mode = strictMode ? "Strict" : "Standard";
 
       setResults(finalResults);
       setHasResults(true);
