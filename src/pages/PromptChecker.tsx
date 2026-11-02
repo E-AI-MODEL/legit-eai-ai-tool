@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, CheckCircle, Copy, FileDown, AlertTriangle, XCircle, Clock, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { improvePrompt } from "@/lib/eai/engine";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 
@@ -197,36 +197,10 @@ const PromptChecker = () => {
 
     setIsChecking(true);
 
-    let aiResultsRaw: Omit<CheckResult, "score">[] | null = null;
-
-    try {
-      const { data, error } = await supabase.functions.invoke("eai-semantic-check", {
-        body: { prompt },
-      });
-      if (error) throw error;
-      if (data && Array.isArray(data.results) && data.results.length > 0) {
-        aiResultsRaw = data.results as Omit<CheckResult, "score">[];
-      }
-    } catch (e) {
-      console.warn("AI check failed, continuing with heuristic:", e);
-    }
-
     try {
       const heurRaw = computeHeuristicResults(prompt);
-      const heur = withScores(heurRaw, prompt);
-      let finalResults: CheckResult[] = heur;
-      let mode = "Heuristic";
-
-      if (aiResultsRaw) {
-        const ai = withScores(aiResultsRaw, prompt);
-        if (strictMode) {
-          finalResults = mergeWorst(ai, heur);
-          mode = "Strict Mode (AI ∩ Heuristic)";
-        } else {
-          finalResults = ai;
-          mode = "AI";
-        }
-      }
+      const finalResults: CheckResult[] = withScores(heurRaw, prompt);
+      const mode = strictMode ? "Strict rules" : "Rules";
 
       setResults(finalResults);
       setHasResults(true);
@@ -246,35 +220,13 @@ const PromptChecker = () => {
     }
   };
 
-  const suggestBetterPrompt = async () => {
+  const suggestBetterPrompt = () => {
     if (!prompt.trim()) return;
-    try {
-      setIsSuggesting(true);
-      const { data, error } = await supabase.functions.invoke("eai-prompt-suggest", {
-        body: { mode: "improve", prompt },
-      });
-      if (error) throw error;
-      if (data?.prompt) {
-        const cleaned = String(data.prompt)
-          .replace(/```[\s\S]*?```/g, "")
-          .replace(/^\|.*\|.*$/gm, "")
-          .replace(/^\s*\|?\s*-{2,}.*$/gm, "")
-          .replace(/(?:^|\n)#{1,6}\s*Example(?:s)?(?: Implementation)?[\s\S]*$/i, "")
-          .replace(/Copy Example:?/gi, "")
-          .replace(/\n\{[\s\S]*?\n\}\s*/g, "\n")
-          .replace(/\n{3,}/g, "\n\n")
-          .trim();
-        setSuggestedPrompt(cleaned);
-        toast({ title: "Suggestion ready", description: "An improved prompt was generated." });
-      } else {
-        toast({ title: "No suggestion", description: "The AI couldn't suggest a better prompt.", variant: "destructive" });
-      }
-    } catch (e) {
-      toast({ title: "Error", description: "Failed to suggest a better prompt.", variant: "destructive" });
-      console.error(e);
-    } finally {
-      setIsSuggesting(false);
-    }
+    setIsSuggesting(true);
+    const results = computeHeuristicResults(prompt) as Parameters<typeof improvePrompt>[1];
+    setSuggestedPrompt(improvePrompt(prompt, results));
+    toast({ title: "Suggestion ready", description: "An improved prompt was generated." });
+    setIsSuggesting(false);
   };
 
   const clearPrompt = () => {
