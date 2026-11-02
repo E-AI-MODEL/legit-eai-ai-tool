@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle, AlertTriangle, XCircle, Loader, Scale, Sparkles, Copy } from "lucide-react";
 import { useState } from "react";
 import ClipboardNotification from "@/components/ClipboardNotification";
-import { supabase } from "@/integrations/supabase/client";
+import { analyzePrompt, improvePrompt } from "@/lib/eai/engine";
 
 interface CheckResult {
   rubric: string;
@@ -26,65 +26,15 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
   const [isProcessing, setIsProcessing] = useState(false);
   const [improvedPrompt, setImprovedPrompt] = useState("");
 
-  const processPrompt = async () => {
+  const processPrompt = () => {
     if (!prompt.trim()) return;
-    
     setIsProcessing(true);
-    setCheckResults([]);
-    setImprovedPrompt("");
-    
-    try {
-      console.log('SAGA: Processing legal prompt:', prompt.substring(0, 100) + '...');
-      
-      // First analyze the prompt
-      const { data: analysisData, error: analysisError } = await supabase.functions.invoke('eai-semantic-check', {
-        body: { prompt }
-      });
-
-      if (analysisError) {
-        console.error('SAGA Analysis Error:', analysisError);
-        throw analysisError;
-      }
-
-      console.log('SAGA Analysis Complete:', analysisData);
-      
-      if (analysisData?.results) {
-        setCheckResults(analysisData.results);
-      }
-
-      // Then enhance the prompt based on analysis
-      const { data: enhanceData, error: enhanceError } = await supabase.functions.invoke('eai-prompt-suggest', {
-        body: { 
-          mode: 'improve',
-          prompt: prompt,
-          constraints: 'Legal professional context with EAI compliance standards - deliver ready-to-use professional prompt'
-        }
-      });
-
-      if (enhanceError) {
-        console.error('SAGA Enhancement Error:', enhanceError);
-        throw enhanceError;
-      }
-
-      console.log('SAGA Enhancement Complete:', enhanceData);
-
-      if (enhanceData?.prompt) {
-        setImprovedPrompt(enhanceData.prompt);
-        // Automatically apply the improved prompt
-        onPromptChange(enhanceData.prompt);
-      }
-    } catch (error) {
-      console.error('SAGA Processing Failed:', error);
-      setCheckResults([{
-        rubric: "SAGA System Status",
-        flag: "🔌 Processing Error",
-        check: "Unable to analyze and improve your prompt",
-        advice: "Please check your connection and try again",
-        status: "fail"
-      }]);
-    } finally {
-      setIsProcessing(false);
-    }
+    const results = analyzePrompt(prompt);
+    const improved = improvePrompt(prompt, results);
+    setCheckResults(results);
+    setImprovedPrompt(improved);
+    onPromptChange(improved);
+    setIsProcessing(false);
   };
 
   const clearAll = () => {

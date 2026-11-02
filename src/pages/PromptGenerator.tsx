@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, FileText, Copy, Users, BookOpen, AlertTriangle, Lightbulb, Target } from "lucide-react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { generatePrompt } from "@/lib/eai/engine";
 
 interface Scenario {
   name: string;
@@ -450,41 +450,17 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {}
   };
 
-  const handleGeneratePrompt = async () => {
+  const handleGeneratePrompt = () => {
     if (!genTopic.trim()) {
       toast({ title: "Enter a topic", description: "Describe your legal task or topic first.", variant: "destructive" });
       return;
     }
-    try {
-      setIsGenerating(true);
-      setIsQuickGen(true);
-      setPhasePrompt(null);
-      setGeneratedPrompt(null);
-      const { data, error } = await supabase.functions.invoke("eai-prompt-suggest", {
-        body: { mode: "generate", context: { topic: genTopic, audience: "lawyers", output: "Structured bullet-list sections with clear headings", constraints: "Respond in ENGLISH only." } },
-      });
-      if (error) throw error;
-      if (data?.prompt) {
-        const cleaned = String(data.prompt)
-          .replace(/```[\s\S]*?```/g, "")
-          .replace(/^\|.*\|.*$/gm, "")
-          .replace(/^\s*\|?\s*-{2,}.*$/gm, "")
-          .replace(/(?:^|\n)#{1,6}\s*Example(?:s)?(?: Implementation)?[\s\S]*$/i, "")
-          .replace(/Copy Example:?/gi, "")
-          .replace(/\n\{[\s\S]*?\n\}\s*/g, "\n")
-          .replace(/\n{3,}/g, "\n\n")
-          .trim();
-        setGeneratedPrompt(cleaned);
-        toast({ title: "Prompt generated", description: "An AI-optimized prompt is ready." });
-      } else {
-        toast({ title: "No prompt returned", description: "Try refining your topic.", variant: "destructive" });
-      }
-    } catch (e) {
-      console.error(e);
-      toast({ title: "Generation failed", description: "Please try again.", variant: "destructive" });
-    } finally {
-      setIsGenerating(false);
-    }
+    setIsGenerating(true);
+    setIsQuickGen(true);
+    setPhasePrompt(null);
+    setGeneratedPrompt(generatePrompt(genTopic));
+    toast({ title: "Prompt generated", description: "An EAI-compliant prompt is ready." });
+    setIsGenerating(false);
   };
 
   return (

@@ -1,9 +1,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useCallback } from "react";
 import { Brain, FileCheck, Wand2, Scale, ArrowRight, Shield, BookOpen } from "lucide-react";
+import { useDoubleTap } from "@/hooks/use-double-tap";
 
 const Main = () => {
+  const navigate = useNavigate();
+  const openSaga = useCallback(() => navigate("/lp-ai-x9k3m7"), [navigate]);
+  const handleLogoTap = useDoubleTap(openSaga);
+
   const tools = [
     {
       title: "Task Density & Ownership Audit",
@@ -38,10 +44,16 @@ const Main = () => {
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleLogoTap}
+                aria-label="L.E.G.I.T. logo"
+                className="flex items-center gap-2 select-none focus:outline-none"
+                style={{ touchAction: "manipulation" }}
+              >
                 <Scale className="w-8 h-8 text-[#0B3C5D]" />
                 <Shield className="w-6 h-6 text-[#0B3C5D]" />
-              </div>
+              </button>
               <div>
                 <h1 className="text-2xl font-bold text-[#0B3C5D]">L.E.G.I.T.</h1>
                 <p className="text-sm text-gray-600">Legal Guidance for Integrity and Transparency</p>
