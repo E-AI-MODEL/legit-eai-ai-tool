@@ -1,6 +1,6 @@
-
-import { Check, Copy } from "lucide-react";
+import { Check } from "lucide-react";
 import { useState } from "react";
+import { copyWithFeedback } from "@/lib/feedback";
 
 interface ClipboardNotificationProps {
   text: string;
@@ -12,12 +12,9 @@ export default function ClipboardNotification({ text, children, className = "" }
   const [showNotification, setShowNotification] = useState(false);
 
   const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(text);
+    if (await copyWithFeedback(text)) {
       setShowNotification(true);
       setTimeout(() => setShowNotification(false), 1500);
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
     }
   };
 

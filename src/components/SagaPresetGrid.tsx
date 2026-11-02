@@ -21,6 +21,7 @@ import {
   FileCheck 
 } from "lucide-react";
 import { useState } from "react";
+import { copyWithFeedback } from "@/lib/feedback";
 import { sagaPresets, presetCategories, LegalPreset } from "@/data/sagaPresets";
 
 interface SagaPresetGridProps {
@@ -75,55 +76,12 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
   };
 
   const handleUsePrompt = async (preset: LegalPreset) => {
-    try {
-      // Copy to clipboard - using the correct property name
-      await navigator.clipboard.writeText(preset.prompt_template);
-      
-      // Gentle but noticeable screen buzz effect with connection lost flash
-      document.body.style.animation = 'gentle-buzz 0.25s ease-in-out, connection-flash 0.3s ease-in-out';
-      setTimeout(() => {
-        document.body.style.animation = '';
-      }, 300);
-      
-      // Pleasant bleep sound effect
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.06, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.12);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.12);
-      
-      // Call the original handler
-      onSelectPreset(preset);
-      
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-      // Fallback - still call the original handler
-      onSelectPreset(preset);
-    }
+    await copyWithFeedback(preset.prompt_template);
+    onSelectPreset(preset);
   };
 
   return (
     <>
-      <style>{`
-        @keyframes gentle-buzz {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-1px); }
-          75% { transform: translateX(1px); }
-        }
-        @keyframes connection-flash {
-          0% { filter: brightness(1); }
-          50% { filter: brightness(0.8); }
-          100% { filter: brightness(1); }
-        }
-      `}</style>
       
       <div className="space-y-6">
         {/* Search and Filter */}
