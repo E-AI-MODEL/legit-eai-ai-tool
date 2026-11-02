@@ -18,7 +18,7 @@ export interface TaskDensity {
 export const TD_THRESHOLDS = { humanLed: 0.3, balanced: 0.7 } as const;
 
 const HUMAN_SUBJECT = /^(?:[-•*\d.)\s]*)(?:i|we|lawyer|the lawyer|user|the user|human|reviewer|partner)\b/;
-const HUMAN_MENTION = /\b(i|me|my|we|lawyer|user|human|reviewer|partner)\b/;
+const HUMAN_MENTION = /\b(i|me|we|lawyer|user|human|reviewer|partner)\b/;
 const AI_MENTION = /\b(you|your|ai|assistant|model)\b/;
 const AI_VERB = /^(?:[-•*\d.)\s]*)(write|draft|analy[sz]e|summari[sz]e|list|extract|identify|review|give|create|generate|compare|provide|explain|check|cite|mark|reason|state|present|build|prepare|assess|flag|translate|rewrite|structure|propose|suggest|find|search|outline|calculate|determine|evaluate)\b/;
 
