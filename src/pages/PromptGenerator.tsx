@@ -44,7 +44,7 @@ const PromptGenerator = () => {
     setCopied(false);
   };
 
-  const useScenario = (key: string) => {
+  const pickScenario = (key: string) => {
     const [p, s] = key.split(":").map(Number);
     const sc = generatorPhases.find((ph) => ph.number === p)?.scenarios[s];
     if (sc) { setTask(sc.prompt); setResult(null); }
@@ -76,7 +76,7 @@ const PromptGenerator = () => {
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="scenario" className="flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5" /> Start from an example (optional)</Label>
-              <Select onValueChange={useScenario}>
+              <Select onValueChange={pickScenario}>
                 <SelectTrigger id="scenario"><SelectValue placeholder="Choose one of 30 legal scenarios" /></SelectTrigger>
                 <SelectContent className="max-h-80">
                   {generatorPhases.map((ph) => (
