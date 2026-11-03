@@ -21,7 +21,7 @@ const HUMAN_SUBJECT = /^(?:[-•*\d.)\s]*)(?:i|we|lawyer|the lawyer|user|the use
 const HUMAN_MENTION = /\b(i|me|we|lawyer|user|human|reviewer|partner)\b/;
 // "AI" as a topic ("AI literacy training") is not an instruction; only "you" or the AI as acting subject counts.
 const AI_MENTION = /\b(you|your)\b|\b(ai|assistant|model)\s+(will|should|must|can|may|to|drafts?|writes?|decides?|reviews?|analy[sz]es?|generates?|suggests?|proposes?|prepares?|checks?)\b/;
-const AI_VERB = /^(?:[-•*\d.)\s]*)(write|draft|analy[sz]e|summari[sz]e|list|extract|identify|review|give|create|generate|compare|provide|explain|check|cite|mark|reason|state|present|build|prepare|assess|flag|translate|rewrite|structure|propose|suggest|find|search|outline|calculate|determine|evaluate)\b/;
+const AI_VERB = /^(?:[-•*\d.)\s]*)(write|draft|analy[sz]e|summari[sz]e|list|extract|identify|review|give|create|generate|compare|provide|explain|check|cite|mark|reason|state|present|build|prepare|assess|flag|translate|rewrite|structure|propose|suggest|find|search|outline|calculate|determine|evaluate|research|decide|advise|interpret|negotiate|recommend|conclude)\b/;
 
 export function densityLabel(value: number): DensityLabel {
   if (value < TD_THRESHOLDS.humanLed) return "Human-led";
