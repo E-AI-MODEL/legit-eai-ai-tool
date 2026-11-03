@@ -18,12 +18,12 @@ interface SagaPromptCheckerProps {
 }
 
 const statusIcon = (status: EaiResult["status"]) =>
-  status === "pass" ? <CheckCircle className="w-4 h-4 text-green-400 shrink-0" /> :
-  status === "warning" ? <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0" /> :
-  <XCircle className="w-4 h-4 text-red-400 shrink-0" />;
+  status === "pass" ? <CheckCircle className="w-4 h-4 text-success shrink-0" /> :
+  status === "warning" ? <AlertTriangle className="w-4 h-4 text-warning shrink-0" /> :
+  <XCircle className="w-4 h-4 text-destructive shrink-0" />;
 
 const statusBorder = (status: EaiResult["status"]) =>
-  status === "pass" ? "border-green-400/40" : status === "warning" ? "border-yellow-400/40" : "border-red-400/40";
+  status === "pass" ? "border-success/40" : status === "warning" ? "border-warning/40" : "border-destructive/40";
 
 const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) => {
   const [checkResults, setCheckResults] = useState<EaiResult[]>([]);
@@ -62,13 +62,13 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
   return (
     <div className="grid lg:grid-cols-2 gap-6 items-start">
       {/* Editor */}
-      <Card className="bg-white/5 border-white/10">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-xl text-white flex items-center gap-2">
+          <CardTitle className="text-xl text-foreground flex items-center gap-2">
             <Scale className="w-5 h-5" />
             Your prompt
           </CardTitle>
-          <CardDescription className="text-slate-300">
+          <CardDescription className="text-muted-foreground">
             Write or paste your prompt. The cockpit updates while you type.
           </CardDescription>
         </CardHeader>
@@ -77,7 +77,7 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
             placeholder="E.g. Review this NDA for a Dutch client and list the risky clauses…"
             value={prompt}
             onChange={(e) => onPromptChange(e.target.value)}
-            className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 font-mono text-sm min-h-[300px] resize-none"
+            className="bg-muted border-border text-foreground placeholder:text-muted-foreground font-mono text-sm min-h-[300px] resize-none"
             rows={15}
           />
           <div className="flex gap-2">
@@ -90,14 +90,14 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
             <Button
               onClick={processPrompt}
               disabled={!hasText}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="flex-1"
             >
               <Sparkles className="w-4 h-4 mr-2" />
               Improve & Copy
             </Button>
           </div>
           {copied && certificate && (
-            <p className="text-xs text-green-300 flex items-center gap-1.5">
+            <p className="text-xs text-success flex items-center gap-1.5">
               <CheckCircle className="w-3.5 h-3.5" />
               Professional prompt placed above and copied to your clipboard.
             </p>
@@ -107,15 +107,15 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
 
       <div className="space-y-6">
         {/* Live EAI cockpit */}
-        <Card className="bg-white/5 border-white/10">
+        <Card className="bg-card border-border">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white flex items-center justify-between gap-2">
+            <CardTitle className="text-lg text-foreground flex items-center justify-between gap-2">
               <span className="flex items-center gap-2">
                 <Gauge className="w-5 h-5" />
                 EAI Cockpit
               </span>
               {live && (
-                <Badge variant="outline" className="text-xs text-slate-200 border-white/30">
+                <Badge variant="outline" className="text-xs text-foreground border-border">
                   Score {live.score}/100
                 </Badge>
               )}
@@ -123,25 +123,25 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
           </CardHeader>
           <CardContent className="space-y-5">
             {!live ? (
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Start typing to see who does the thinking, which phase is next, and which lawyer checkpoints are still open.
               </p>
             ) : (
               <>
                 {/* Task density */}
                 <div>
-                  <div className="flex justify-between text-xs text-slate-300 mb-1">
+                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
                     <span>Work done by AI</span>
                     <span>
                       {originalDensity && originalDensity.actionable > 0 && certificate && (
-                        <span className="text-slate-500">{Math.round(originalDensity.value * 100)}% → </span>
+                        <span className="text-muted-foreground/80">{Math.round(originalDensity.value * 100)}% → </span>
                       )}
                       {live.density.actionable ? `${densityPct}% · ${live.density.label}` : "no instructions yet"}
                     </span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                     <div
-                      className={`h-full transition-all ${live.density.label === "AI-heavy" ? "bg-red-400" : live.density.label === "Balanced" ? "bg-blue-400" : "bg-green-400"}`}
+                      className={`h-full transition-all ${live.density.label === "AI-heavy" ? "bg-destructive" : live.density.label === "Balanced" ? "bg-primary" : "bg-success"}`}
                       style={{ width: `${densityPct}%` }}
                     />
                   </div>
@@ -149,7 +149,7 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
 
                 {/* Phases */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-slate-300">
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>Process phases</span>
                     <span>{live.phases.covered.length}/{PHASES.length}</span>
                   </div>
@@ -160,32 +160,32 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                       return (
                         <span
                           key={p.id}
-                          className={`text-[11px] px-2 py-1 rounded border ${done ? "border-green-400/40 text-green-300" : isNext ? "border-yellow-400/50 text-yellow-300" : "border-white/15 text-slate-500"}`}
+                          className={`text-[11px] px-2 py-1 rounded border ${done ? "border-success/40 text-success" : isNext ? "border-warning/40 text-warning" : "border-border text-muted-foreground/80"}`}
                         >
                           {p.name}
                         </span>
                       );
                     })}
                   </div>
-                  {nextPhase && <p className="text-xs text-slate-400">Next: {nextPhase.instruction}</p>}
+                  {nextPhase && <p className="text-xs text-muted-foreground">Next: {nextPhase.instruction}</p>}
                 </div>
 
                 {/* Human-in-the-loop checkpoints */}
                 <div className="space-y-1.5">
-                  <span className="text-xs text-slate-300">Lawyer checkpoints</span>
+                  <span className="text-xs text-muted-foreground">Lawyer checkpoints</span>
                   <ul className="space-y-1">
                     {checkpoints.map((c) => (
                       <li key={c.id} className="flex items-start gap-2 text-xs">
                         {c.ok ? (
-                          <CheckCircle className="w-3.5 h-3.5 text-green-400 mt-0.5 shrink-0" />
+                          <CheckCircle className="w-3.5 h-3.5 text-success mt-0.5 shrink-0" />
                         ) : c.id === "privacy" ? (
-                          <XCircle className="w-3.5 h-3.5 text-red-400 mt-0.5 shrink-0" />
+                          <XCircle className="w-3.5 h-3.5 text-destructive mt-0.5 shrink-0" />
                         ) : (
-                          <Circle className="w-3.5 h-3.5 text-slate-500 mt-0.5 shrink-0" />
+                          <Circle className="w-3.5 h-3.5 text-muted-foreground/80 mt-0.5 shrink-0" />
                         )}
-                        <span className={c.ok ? "text-slate-200" : "text-slate-400"}>
+                        <span className={c.ok ? "text-foreground" : "text-muted-foreground"}>
                           {c.label}
-                          {!c.ok && <span className="block text-slate-500">{c.hint}</span>}
+                          {!c.ok && <span className="block text-muted-foreground/80">{c.hint}</span>}
                         </span>
                       </li>
                     ))}
@@ -198,32 +198,32 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
 
         {/* Result after Improve */}
         {certificate && (
-          <Card className="bg-white/5 border-white/10">
+          <Card className="bg-card border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg text-white flex items-center justify-between gap-2">
+              <CardTitle className="text-lg text-foreground flex items-center justify-between gap-2">
                 <span className="flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 text-blue-300" />
+                  <ShieldCheck className="w-5 h-5 text-primary" />
                   Verification
                 </span>
                 <Badge
                   variant="outline"
-                  className={`text-xs ${certificate.verdict === "Certified" ? "text-green-400 border-green-400/50" : certificate.verdict === "Conditional" ? "text-yellow-400 border-yellow-400/50" : "text-red-400 border-red-400/50"}`}
+                  className={`text-xs ${certificate.verdict === "Certified" ? "text-success border-success/40" : certificate.verdict === "Conditional" ? "text-warning border-warning/40" : "text-destructive border-destructive/40"}`}
                 >
                   {certificate.verdict}
                 </Badge>
               </CardTitle>
-              <CardDescription className="text-slate-400 text-xs">
+              <CardDescription className="text-muted-foreground text-xs">
                 Your original prompt passed {passedChecks}/{checkResults.length} rules. Missing parts were added.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {certificate.reasons.length > 0 && (
-                <ul className="text-xs text-slate-400 space-y-0.5">
+                <ul className="text-xs text-muted-foreground space-y-0.5">
                   {certificate.reasons.map((r) => <li key={r}>• {r}</li>)}
                 </ul>
               )}
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[11px] text-slate-500 font-mono">{certificate.id}</span>
+                <span className="text-[11px] text-muted-foreground/80 font-mono">{certificate.id}</span>
                 <ClipboardNotification text={renderCertificate(certificate)}>
                   <Button variant="outline" size="sm" className="gap-2">
                     <Copy className="w-4 h-4" />
@@ -232,15 +232,15 @@ const SagaPromptChecker = ({ prompt, onPromptChange }: SagaPromptCheckerProps) =
                 </ClipboardNotification>
               </div>
               <details className="group">
-                <summary className="text-xs text-slate-300 cursor-pointer select-none">Rule details for your original prompt</summary>
+                <summary className="text-xs text-muted-foreground cursor-pointer select-none">Rule details for your original prompt</summary>
                 <div className="space-y-2 mt-3">
                   {checkResults.map((r) => (
-                    <div key={r.rubric} className={`bg-white/5 rounded-lg p-3 border ${statusBorder(r.status)}`}>
+                    <div key={r.rubric} className={`bg-card rounded-lg p-3 border ${statusBorder(r.status)}`}>
                       <div className="flex items-start gap-3">
                         {statusIcon(r.status)}
                         <div className="flex-1">
-                          <span className="text-white font-medium text-sm">{r.rubric}</span>
-                          {r.status !== "pass" && <p className="text-xs text-slate-400 mt-1">{r.advice}</p>}
+                          <span className="text-foreground font-medium text-sm">{r.rubric}</span>
+                          {r.status !== "pass" && <p className="text-xs text-muted-foreground mt-1">{r.advice}</p>}
                         </div>
                       </div>
                     </div>

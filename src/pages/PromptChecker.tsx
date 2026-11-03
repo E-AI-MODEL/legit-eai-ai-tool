@@ -242,17 +242,17 @@ const PromptChecker = () => {
 
   const getStatusIcon = (status: "pass" | "warning" | "fail") => {
     switch (status) {
-      case "pass": return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case "warning": return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
-      case "fail": return <XCircle className="w-5 h-5 text-red-500" />;
+      case "pass": return <CheckCircle className="w-5 h-5 text-success" />;
+      case "warning": return <AlertTriangle className="w-5 h-5 text-warning" />;
+      case "fail": return <XCircle className="w-5 h-5 text-destructive" />;
     }
   };
 
   const getStatusColor = (status: "pass" | "warning" | "fail") => {
     switch (status) {
-      case "pass": return "bg-green-100 text-green-800";
-      case "warning": return "bg-yellow-100 text-yellow-800";
-      case "fail": return "bg-red-100 text-red-800";
+      case "pass": return "bg-success/15 text-success";
+      case "warning": return "bg-warning/15 text-warning";
+      case "fail": return "bg-destructive/15 text-destructive";
     }
   };
 
@@ -296,18 +296,18 @@ const PromptChecker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-card shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
-            <Link to="/" className="text-[#0B3C5D] hover:text-[#0B3C5D]/80">
+            <Link to="/" className="text-primary hover:text-primary/80">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <CheckCircle className="w-6 h-6 text-[#0B3C5D]" />
-            <h1 className="text-xl font-bold text-[#0B3C5D]">Prompt Checker (pCheck)</h1>
+            <CheckCircle className="w-6 h-6 text-primary" />
+            <h1 className="text-xl font-bold text-primary">Prompt Checker (pCheck)</h1>
           </div>
-          <p className="text-gray-600 mt-2">Paste any AI prompt and run a full EAI Model compliance & quality check.</p>
+          <p className="text-muted-foreground mt-2">Paste any AI prompt and run a full EAI Model compliance & quality check.</p>
         </div>
       </header>
 
@@ -329,10 +329,10 @@ const PromptChecker = () => {
             />
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
               <div className="flex items-center gap-4 flex-wrap">
-                <p className="text-sm text-gray-600 whitespace-nowrap">{prompt.length}/5000<span className="hidden sm:inline"> characters</span></p>
+                <p className="text-sm text-muted-foreground whitespace-nowrap">{prompt.length}/5000<span className="hidden sm:inline"> characters</span></p>
                 <div className="flex items-center gap-2">
                   <Switch id="strict-mode" checked={strictMode} onCheckedChange={setStrictMode} />
-                  <label htmlFor="strict-mode" className="text-sm text-gray-700">Strict Mode</label>
+                  <label htmlFor="strict-mode" className="text-sm text-muted-foreground">Strict Mode</label>
                 </div>
               </div>
               <div className="flex gap-2 w-full sm:w-auto">
@@ -393,42 +393,42 @@ const PromptChecker = () => {
               <CardContent>
                 {/* Summary */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">
+                  <div className="text-center p-4 bg-success/10 rounded-lg">
+                    <div className="text-2xl font-bold text-success">
                       {results.filter(r => r.status === "pass").length}
                     </div>
-                    <div className="text-sm text-green-700">Compliant</div>
+                    <div className="text-sm text-success">Compliant</div>
                   </div>
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                    <div className="text-2xl font-bold text-yellow-600">
+                  <div className="text-center p-4 bg-warning/10 rounded-lg">
+                    <div className="text-2xl font-bold text-warning">
                       {results.filter(r => r.status === "warning").length}
                     </div>
-                    <div className="text-sm text-yellow-700">Warnings</div>
+                    <div className="text-sm text-warning">Warnings</div>
                   </div>
-                  <div className="text-center p-4 bg-red-50 rounded-lg">
-                    <div className="text-2xl font-bold text-red-600">
+                  <div className="text-center p-4 bg-destructive/10 rounded-lg">
+                    <div className="text-2xl font-bold text-destructive">
                       {results.filter(r => r.status === "fail").length}
                     </div>
-                    <div className="text-sm text-red-700">Critical Issues</div>
+                    <div className="text-sm text-destructive">Critical Issues</div>
                   </div>
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-center p-4 bg-primary/5 rounded-lg">
+                    <div className="text-2xl font-bold text-primary">
                       {overallScore ?? 0}
                     </div>
-                    <div className="text-sm text-blue-700">Overall Score</div>
+                    <div className="text-sm text-primary">Overall Score</div>
                   </div>
                 </div>
 
                 {/* Detailed Results */}
                 <div className="space-y-4">
                   {results.map((result, index) => (
-                    <div key={index} className="border rounded-lg p-4 bg-white">
+                    <div key={index} className="border rounded-lg p-4 bg-card">
                       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-3">
                         <div className="flex items-center gap-3">
                           {getStatusIcon(result.status)}
                           <div>
                             <h4 className="font-semibold">{result.rubric}</h4>
-                            <p className="text-sm text-gray-600">{result.check}</p>
+                            <p className="text-sm text-muted-foreground">{result.check}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 md:self-center">
@@ -445,7 +445,7 @@ const PromptChecker = () => {
                         </div>
                         <Progress value={Math.round(result.score)} />
                       </div>
-                      <div className="bg-blue-50 p-3 rounded-lg mt-3">
+                      <div className="bg-primary/5 p-3 rounded-lg mt-3">
                         <p className="text-sm"><strong>EAI Recommendation:</strong> {result.advice}</p>
                       </div>
                     </div>
@@ -455,7 +455,7 @@ const PromptChecker = () => {
                 {suggestedPrompt && (
                   <div className="mt-6">
                     <h4 className="font-semibold mb-2">Suggested Improved Prompt</h4>
-                    <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D] whitespace-pre-wrap">
+                    <div className="bg-muted p-3 rounded-lg font-mono text-sm border-l-4 border-primary whitespace-pre-wrap">
                       {suggestedPrompt}
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">

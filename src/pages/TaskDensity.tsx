@@ -83,9 +83,9 @@ const TaskDensity = () => {
   };
 
   const getTDColor = (td: number) => {
-    if (td < 0.3) return "text-green-600";
-    if (td < 0.7) return "text-yellow-600";
-    return "text-red-600";
+    if (td < 0.3) return "text-success";
+    if (td < 0.7) return "text-warning";
+    return "text-destructive";
   };
 
   const getTDLabel = (td: number) => {
@@ -136,17 +136,17 @@ const TaskDensity = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-card shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to="/" className="text-[#0B3C5D] hover:text-[#0B3C5D]/80">
+              <Link to="/" className="text-primary hover:text-primary/80">
                 <ArrowLeft className="w-5 h-5" />
               </Link>
-              <Brain className="w-6 h-6 text-[#0B3C5D]" />
-              <h1 className="text-xl font-bold text-[#0B3C5D]">Task-Density & Ownership Audit</h1>
+              <Brain className="w-6 h-6 text-primary" />
+              <h1 className="text-xl font-bold text-primary">Task-Density & Ownership Audit</h1>
             </div>
             <Button variant="outline" onClick={saveProgress} className="gap-2">
               <Save className="w-4 h-4" />
@@ -155,7 +155,7 @@ const TaskDensity = () => {
           </div>
           <div className="mt-4">
             <Progress value={(currentStep / totalSteps) * 100} className="h-2" />
-            <div className="flex justify-between text-sm text-gray-600 mt-2">
+            <div className="flex justify-between text-sm text-muted-foreground mt-2">
               <span>Step {currentStep} of {totalSteps}</span>
               <span>{Math.round((currentStep / totalSteps) * 100)}% Complete</span>
             </div>
@@ -238,7 +238,7 @@ const TaskDensity = () => {
                   rows={8}
                   className="mt-1"
                 />
-                <p className="text-sm text-gray-600 mt-1">Enter each sub-step on a new line</p>
+                <p className="text-sm text-muted-foreground mt-1">Enter each sub-step on a new line</p>
               </div>
               <div className="flex justify-between">
                 <Button variant="outline" onClick={prevStep}>
@@ -262,7 +262,7 @@ const TaskDensity = () => {
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 {subStepData.map((step, index) => (
-                  <div key={step.id} className="border rounded-lg p-4 bg-gray-50">
+                  <div key={step.id} className="border rounded-lg p-4 bg-muted">
                     <div className="flex items-center gap-2 mb-3">
                       <Badge variant="outline">{index + 1}</Badge>
                       <span className="font-medium">{step.name}</span>
@@ -316,8 +316,8 @@ const TaskDensity = () => {
               <CardDescription>Calculate task density and add commentary.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="text-center p-6 bg-blue-50 rounded-lg">
-                <Calculator className="w-12 h-12 text-[#0B3C5D] mx-auto mb-4" />
+              <div className="text-center p-6 bg-primary/5 rounded-lg">
+                <Calculator className="w-12 h-12 text-primary mx-auto mb-4" />
                 <Button onClick={calculateTaskDensity} className="mb-4">
                   Calculate Task Density
                 </Button>
@@ -327,7 +327,7 @@ const TaskDensity = () => {
                       {(calculatedTD * 100).toFixed(1)}%
                     </div>
                     <Badge className={getTDColor(calculatedTD)}>{getTDLabel(calculatedTD)}</Badge>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       Task Density: Percentage of cognitive work performed by AI
                     </p>
                   </div>
@@ -369,9 +369,9 @@ const TaskDensity = () => {
                     <div className="flex items-center gap-2 mb-3">
                       <Badge variant="outline">{index + 1}</Badge>
                       <span className="font-medium">{step.name}</span>
-                      <Badge className={step.performer === "AI" ? "bg-red-100 text-red-800" : 
-                                      step.performer === "Human" ? "bg-green-100 text-green-800" : 
-                                      "bg-yellow-100 text-yellow-800"}>
+                      <Badge className={step.performer === "AI" ? "bg-destructive/15 text-destructive" : 
+                                      step.performer === "Human" ? "bg-success/15 text-success" : 
+                                      "bg-warning/15 text-warning"}>
                         {step.performer}
                       </Badge>
                     </div>
@@ -424,7 +424,7 @@ const TaskDensity = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <h4 className="font-semibold">Summary</h4>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                  <div className="bg-muted p-4 rounded-lg space-y-2">
                     <p><strong>Task:</strong> {formData.taskDescription}</p>
                     <p><strong>Actors:</strong> {formData.actors}</p>
                     <p><strong>Goal:</strong> {formData.goal}</p>
