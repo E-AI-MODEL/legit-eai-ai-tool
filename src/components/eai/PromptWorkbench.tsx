@@ -28,7 +28,7 @@ const statusBorder = (status: EaiResult["status"]) =>
 const verdictClass = (v: Certificate["verdict"]) =>
   v === "Certified" ? "text-success border-success/50" : v === "Conditional" ? "text-warning border-warning/50" : "text-destructive border-destructive/50";
 
-/** Write → live cockpit → one "Improve & Copy" → certificate. Used by SAGA and the Prompt Checker. */
+/** Write → live cockpit → one "Improve & Copy" → certificate. Used by the hidden library section and the Prompt Checker. */
 const PromptWorkbench = ({ prompt, onPromptChange, placeholder }: PromptWorkbenchProps) => {
   const [checkResults, setCheckResults] = useState<EaiResult[]>([]);
   const [certificate, setCertificate] = useState<Certificate | null>(null);
