@@ -464,18 +464,18 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-card shadow-sm border-b">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
-            <Link to="/" className="text-[#0B3C5D] hover:text-[#0B3C5D]/80">
+            <Link to="/" className="text-primary hover:text-primary/80">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <FileText className="w-6 h-6 text-[#0B3C5D]" />
-            <h1 className="text-xl font-bold text-[#0B3C5D]">Prompt Generator (pGen)</h1>
+            <FileText className="w-6 h-6 text-primary" />
+            <h1 className="text-xl font-bold text-primary">Prompt Generator (pGen)</h1>
           </div>
-          <p className="text-gray-600 mt-2">Structured scenarios for AI-assisted legal practice.</p>
+          <p className="text-muted-foreground mt-2">Structured scenarios for AI-assisted legal practice.</p>
         </div>
       </header>
 
@@ -484,7 +484,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-yellow-600" />
+              <Lightbulb className="w-5 h-5 text-warning" />
               AI-Optimized Prompt Generator
             </CardTitle>
               <CardDescription>Describe your legal matter or task. We'll craft an EAI-compliant prompt for legal practice.</CardDescription>
@@ -529,10 +529,10 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                     </Button>
                   </CardHeader>
                   <CardContent>
-                    <div className="border rounded-md p-4 bg-gray-50">
+                    <div className="border rounded-md p-4 bg-muted">
                       <pre className="font-mono text-sm whitespace-pre-wrap break-words">{generatedPrompt}</pre>
                     </div>
-                    <div className="mt-4 border rounded-md p-3 bg-yellow-50">
+                    <div className="mt-4 border rounded-md p-3 bg-warning/10">
                       <p className="text-sm">Tip: Copy this prompt and paste it into ChatGPT, Claude, or your favorite AI tool. The AI assists while you keep ownership of the thinking.</p>
                     </div>
                   </CardContent>
@@ -593,7 +593,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                       <Card 
                         key={index} 
                         className={`cursor-pointer transition-all hover:shadow-md border-2 ${
-                          selectedScenario === index ? 'border-[#0B3C5D] bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                          selectedScenario === index ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/40'
                         }`}
                         onClick={() => handleScenarioSelect(selectedPhase, index)}
                       >
@@ -632,7 +632,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                               <div className="flex justify-between items-start">
                                 <div className="min-w-0 flex-1">
                                   <CardTitle className="text-lg flex items-center gap-2">
-                                    <Target className="w-5 h-5 text-[#0B3C5D] flex-shrink-0" />
+                                    <Target className="w-5 h-5 text-primary flex-shrink-0" />
                                     <span className="break-words">{scenario.name}</span>
                                   </CardTitle>
                                   <CardDescription className="mt-2 break-words">{scenario.goal}</CardDescription>
@@ -647,7 +647,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                               {/* Micro-Skills */}
                               <div>
                                 <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                  <Users className="w-4 h-4 text-blue-600" />
+                                  <Users className="w-4 h-4 text-primary" />
                                   Micro-Skills Developed
                                 </h4>
                                 <div className="flex flex-wrap gap-2">
@@ -693,10 +693,10 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                                     </Button>
                                   </CardHeader>
                                   <CardContent>
-                                    <div className="border rounded-md p-4 bg-gray-50">
+                                    <div className="border rounded-md p-4 bg-muted">
                                       <pre className="font-mono text-sm whitespace-pre-wrap break-words">{phasePrompt}</pre>
                                     </div>
-                                    <div className="mt-4 border rounded-md p-3 bg-yellow-50">
+                                    <div className="mt-4 border rounded-md p-3 bg-warning/10">
                                       <p className="text-sm">Tip: Copy this prompt and paste it into ChatGPT, Claude, or your favorite AI tool. The AI assists while you keep ownership of the thinking.</p>
                                     </div>
                                   </CardContent>
@@ -709,7 +709,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                                   {/* Prompt */}
                                   <div>
                                     <h4 className="font-semibold mb-2">EAI-Compliant Prompt Template</h4>
-                                    <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm border-l-4 border-[#0B3C5D] break-words whitespace-pre-wrap">
+                                    <div className="bg-muted p-3 rounded-lg font-mono text-sm border-l-4 border-primary break-words whitespace-pre-wrap">
                                       {scenario.prompt}
                                     </div>
                                   </div>
@@ -726,11 +726,11 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                                   {scenario.example && scenario.example.length > 0 && (
                                     <div>
                                       <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                        <Lightbulb className="w-4 h-4 text-yellow-600" />
+                                        <Lightbulb className="w-4 h-4 text-warning" />
                                         Example Implementation
                                       </h4>
-                                      <div className="bg-yellow-50 p-3 rounded-lg border">
-                                        <pre className="text-sm text-gray-700 whitespace-pre-wrap break-words overflow-x-auto">
+                                      <div className="bg-warning/10 p-3 rounded-lg border">
+                                        <pre className="text-sm text-muted-foreground whitespace-pre-wrap break-words overflow-x-auto">
                                           {JSON.stringify(scenario.example[0], null, 2)}
                                         </pre>
                                         <Button 
@@ -748,12 +748,12 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
 
                                   {/* Tips */}
                                   {scenario.tips && (
-                                    <div className="bg-blue-50 p-3 rounded-lg">
+                                    <div className="bg-primary/5 p-3 rounded-lg">
                                       <div className="flex items-start gap-2">
-                                        <Users className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                        <Users className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                                         <div className="min-w-0">
-                                          <h4 className="font-semibold text-blue-800 mb-1">Implementation Tips</h4>
-                                          <p className="text-sm text-blue-700 break-words">{scenario.tips}</p>
+                                          <h4 className="font-semibold text-primary mb-1">Implementation Tips</h4>
+                                          <p className="text-sm text-primary break-words">{scenario.tips}</p>
                                         </div>
                                       </div>
                                     </div>
@@ -761,12 +761,12 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
 
                                   {/* Warnings */}
                                   {scenario.warnings && (
-                                    <div className="bg-yellow-50 p-3 rounded-lg">
+                                    <div className="bg-warning/10 p-3 rounded-lg">
                                       <div className="flex items-start gap-2">
-                                        <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                                        <AlertTriangle className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
                                         <div className="min-w-0">
-                                          <h4 className="font-semibold text-yellow-800 mb-1">EAI Model Warnings</h4>
-                                          <p className="text-sm text-yellow-700 break-words">{scenario.warnings}</p>
+                                          <h4 className="font-semibold text-warning mb-1">EAI Model Warnings</h4>
+                                          <p className="text-sm text-warning break-words">{scenario.warnings}</p>
                                         </div>
                                       </div>
                                     </div>
@@ -782,9 +782,9 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Workflow Selected</h3>
-                  <p className="text-gray-600">Select a workflow from the left to view EAI-compliant prompt scenarios.</p>
+                  <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No Workflow Selected</h3>
+                  <p className="text-muted-foreground">Select a workflow from the left to view EAI-compliant prompt scenarios.</p>
                 </div>
               )}
             </CardContent>
@@ -798,12 +798,12 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
             <CardDescription>Target Roles: Lawyers, In‑house Counsel | EAI Model Compliance: ✅</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700 mb-4 break-words">
+            <p className="text-muted-foreground mb-4 break-words">
               These prompt templates are designed for legal practice contexts where AI tools streamline analysis, drafting, and communication
               while maintaining human agency and legal judgment. Each scenario embeds reflection points and quality checks aligned with the EAI Model.
             </p>
-            <div className="bg-[#0B3C5D] bg-opacity-5 p-4 rounded-lg">
-              <p className="text-sm text-[#0B3C5D] break-words">
+            <div className="bg-primary bg-opacity-5 p-4 rounded-lg">
+              <p className="text-sm text-primary break-words">
                 <strong>Base Prompt Structure:</strong> Use this structure to create legal practice prompts supported by AI.
                 Insert the matter, clause, or topic where required. Output must be structured, defensible, and include a section for human review/approval.
               </p>

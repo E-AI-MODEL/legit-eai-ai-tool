@@ -18,7 +18,20 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+				serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+				mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+			},
 			colors: {
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))'
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))'
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

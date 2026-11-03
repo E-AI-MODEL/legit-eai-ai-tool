@@ -28,7 +28,7 @@ const legalPresets: PresetCategory[] = [
     name: "Dossieranalyse",
     icon: FileText,
     description: "Feitensamenvatting en juridische vraagstelling",
-    color: "text-blue-400 border-blue-400/50",
+    color: "text-primary border-primary/40",
     presets: [
       {
         id: "facts-extract",
@@ -109,7 +109,7 @@ Formuleer heldere, beantwoordbare juridische vragen op basis van feitencomplex.
     name: "Cliëntcommunicatie",
     icon: MessageSquare,
     description: "FAQ, e-mailconcepten en gespreksvoorbereiding",
-    color: "text-green-400 border-green-400/50",
+    color: "text-success border-success/40",
     presets: [
       {
         id: "client-faq",
@@ -195,7 +195,7 @@ Stel professionele e-mailconcepten op voor verschillende cliëntinteracties.
     name: "Processtrategie",
     icon: Scale,
     description: "Opties, risico's en impactanalyse",
-    color: "text-purple-400 border-purple-400/50",
+    color: "text-primary border-primary/40",
     presets: [
       {
         id: "risk-analysis",
@@ -243,7 +243,7 @@ Beoordeel systematisch alle risico's en kansen in de zaak voor strategische besl
     name: "Bewijs & Onderzoek",
     icon: Search,
     description: "Documentanalyse en inconsistenties opsporen",
-    color: "text-orange-400 border-orange-400/50",
+    color: "text-warning border-warning/40",
     presets: [
       {
         id: "doc-analysis",
@@ -290,7 +290,7 @@ Identificeer inconsistenties, tegenstrijdigheden en zwakke punten in documentati
     name: "Contract & Tekstreview",
     icon: FileCheck,
     description: "Helderheid, risico's en alternatieven",
-    color: "text-red-400 border-red-400/50",
+    color: "text-destructive border-destructive/40",
     presets: [
       {
         id: "contract-review",
@@ -342,10 +342,10 @@ interface SagaPromptPresetsProps {
 const SagaPromptPresets = ({ onSelectPreset }: SagaPromptPresetsProps) => {
   const getComplexityColor = (complexity: string) => {
     switch (complexity) {
-      case 'basic': return 'text-green-400 border-green-400/50';
-      case 'intermediate': return 'text-yellow-400 border-yellow-400/50';
-      case 'advanced': return 'text-red-400 border-red-400/50';
-      default: return 'text-blue-400 border-blue-400/50';
+      case 'basic': return 'text-success border-success/40';
+      case 'intermediate': return 'text-warning border-warning/40';
+      case 'advanced': return 'text-destructive border-destructive/40';
+      default: return 'text-primary border-primary/40';
     }
   };
 
@@ -354,24 +354,24 @@ const SagaPromptPresets = ({ onSelectPreset }: SagaPromptPresetsProps) => {
       {legalPresets.map((category) => {
         const IconComponent = category.icon;
         return (
-          <Card key={category.id} className="bg-white/5 border-white/10">
+          <Card key={category.id} className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-lg text-white flex items-center gap-3">
+              <CardTitle className="text-lg text-foreground flex items-center gap-3">
                 <IconComponent className="w-5 h-5" />
                 {category.name}
               </CardTitle>
-              <CardDescription className="text-slate-300">
+              <CardDescription className="text-muted-foreground">
                 {category.description}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-3">
                 {category.presets.map((preset) => (
-                  <div key={preset.id} className="bg-white/5 rounded-lg p-3 border border-white/10">
+                  <div key={preset.id} className="bg-card rounded-lg p-3 border border-border">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h4 className="font-medium text-white text-sm">{preset.title}</h4>
-                        <p className="text-xs text-slate-400 mt-1">{preset.description}</p>
+                        <h4 className="font-medium text-foreground text-sm">{preset.title}</h4>
+                        <p className="text-xs text-muted-foreground mt-1">{preset.description}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge 
@@ -394,7 +394,7 @@ const SagaPromptPresets = ({ onSelectPreset }: SagaPromptPresetsProps) => {
                         <Badge 
                           key={tag}
                           variant="outline" 
-                          className="text-xs text-slate-400 border-slate-600"
+                          className="text-xs text-muted-foreground border-border"
                         >
                           {tag}
                         </Badge>

@@ -85,21 +85,21 @@ const Saga = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-blue-900">
+    <div className="min-h-screen bg-background">
       {/* Simplified Header */}
-      <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
+      <header className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                <Scale className="w-4 h-4 text-slate-900" />
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <Scale className="w-4 h-4 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg sm:text-xl font-semibold text-white">SAGA Legal AI</h1>
-                <p className="text-xs text-slate-300 hidden sm:block">Professional Legal Prompt Platform</p>
+                <h1 className="text-lg sm:text-xl font-semibold text-foreground">SAGA Legal AI</h1>
+                <p className="text-xs text-muted-foreground hidden sm:block">Professional Legal Prompt Platform</p>
               </div>
             </div>
-            <Button asChild variant="ghost" size="sm" className="text-white hover:bg-white/10">
+            <Button asChild variant="ghost" size="sm" className="text-foreground hover:bg-muted">
               <Link to="/" onClick={() => { setPrompt(""); setSelectedPreset(null); }}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
@@ -112,32 +112,32 @@ const Saga = () => {
       {/* Simplified Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-4xl font-bold text-white mb-3 sm:mb-6">
+          <h2 className="text-2xl sm:text-4xl font-bold text-foreground mb-3 sm:mb-6">
             Professional Legal AI Prompts
           </h2>
-          <p className="text-base sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Ready-to-use professional prompts or enhance your own with quality standards.
           </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 sm:space-y-8">
-          <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-sm max-w-md mx-auto">
-            <TabsTrigger value="presets" className="text-white data-[state=active]:bg-white/20 text-sm">
+          <TabsList className="grid w-full grid-cols-2 bg-muted max-w-md mx-auto">
+            <TabsTrigger value="presets" className="text-foreground data-[state=active]:bg-card text-sm">
               Professional Presets
             </TabsTrigger>
-            <TabsTrigger value="checker" className="text-white data-[state=active]:bg-white/20 text-sm">
+            <TabsTrigger value="checker" className="text-foreground data-[state=active]:bg-card text-sm">
               Prompt Enhancer
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="presets" className="space-y-6">
             {selectedPreset && (
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex-1">
-                      <CardTitle className="text-white text-lg">{selectedPreset.label}</CardTitle>
-                      <CardDescription className="text-slate-300 text-sm">
+                      <CardTitle className="text-foreground text-lg">{selectedPreset.label}</CardTitle>
+                      <CardDescription className="text-muted-foreground text-sm">
                         {selectedPreset.category} • {selectedPreset.jurisdiction} • {selectedPreset.output_format}
                       </CardDescription>
                     </div>
@@ -151,7 +151,7 @@ const Saga = () => {
                         onClick={clearPrompt} 
                         variant="ghost" 
                         size="sm"
-                        className="text-slate-400 hover:text-white"
+                        className="text-muted-foreground hover:text-foreground"
                       >
                         ×
                       </Button>
@@ -159,12 +159,12 @@ const Saga = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-white/5 rounded-lg p-4 max-h-96 overflow-y-auto">
-                    <pre className="text-sm text-slate-300 whitespace-pre-wrap font-mono leading-relaxed">
+                  <div className="bg-card rounded-lg p-4 max-h-96 overflow-y-auto">
+                    <pre className="text-sm text-muted-foreground whitespace-pre-wrap font-mono leading-relaxed">
                       {selectedPreset.prompt_template}
                     </pre>
                   </div>
-                  <div className="mt-4 text-sm text-slate-400">
+                  <div className="mt-4 text-sm text-muted-foreground">
                     This is a complete, professional prompt ready to use with any AI assistant.
                   </div>
                 </CardContent>
@@ -176,10 +176,10 @@ const Saga = () => {
 
           <TabsContent value="checker" className="space-y-6">
             <div className="text-center mb-6 sm:mb-8">
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-4">
                 Professional Prompt Enhancement
               </h3>
-              <p className="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base">
+              <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base">
                 Transform basic prompts into comprehensive, professional legal work instructions.
               </p>
             </div>

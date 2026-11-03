@@ -60,18 +60,18 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
 
   const getComplexityColor = (complexity?: string) => {
     switch (complexity) {
-      case 'basic': return 'text-green-400 border-green-400/50';
-      case 'intermediate': return 'text-yellow-400 border-yellow-400/50';
-      case 'advanced': return 'text-red-400 border-red-400/50';
-      default: return 'text-blue-400 border-blue-400/50';
+      case 'basic': return 'text-success border-success/40';
+      case 'intermediate': return 'text-warning border-warning/40';
+      case 'advanced': return 'text-destructive border-destructive/40';
+      default: return 'text-primary border-primary/40';
     }
   };
 
   const getJurisdictionColor = (jurisdiction: string) => {
     switch (jurisdiction) {
-      case 'NL': return 'text-orange-400 border-orange-400/50';
-      case 'EU': return 'text-blue-400 border-blue-400/50';
-      default: return 'text-gray-400 border-gray-400/50';
+      case 'NL': return 'text-warning border-warning/40';
+      case 'EU': return 'text-primary border-primary/40';
+      default: return 'text-muted-foreground border-border';
     }
   };
 
@@ -90,7 +90,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
             placeholder="Search presets..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+            className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
           />
           
           <div className="flex flex-wrap gap-2">
@@ -98,7 +98,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
               variant={selectedCategory === null ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory(null)}
-              className={selectedCategory === null ? "" : "text-slate-400 border-slate-600 hover:text-white"}
+              className={selectedCategory === null ? "" : "text-muted-foreground border-border hover:text-foreground"}
             >
               All
             </Button>
@@ -108,7 +108,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
                 variant={selectedCategory === category.id ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(category.id)}
-                className={selectedCategory === category.id ? "" : "text-slate-400 border-slate-600 hover:text-white"}
+                className={selectedCategory === category.id ? "" : "text-muted-foreground border-border hover:text-foreground"}
               >
                 {category.name}
               </Button>
@@ -123,11 +123,11 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
             const IconComponent = category ? iconMap[category.icon as keyof typeof iconMap] : FileText;
             
             return (
-              <Card key={preset.id} className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors group">
+              <Card key={preset.id} className="bg-card border-border hover:bg-muted transition-colors group">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <IconComponent className="w-4 h-4 text-slate-400" />
+                      <IconComponent className="w-4 h-4 text-muted-foreground" />
                       <Badge 
                         variant="outline" 
                         className={`text-xs ${getJurisdictionColor(preset.jurisdiction)}`}
@@ -144,16 +144,16 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className="text-sm text-white leading-tight line-clamp-2">
+                  <CardTitle className="text-sm text-foreground leading-tight line-clamp-2">
                     {preset.label}
                   </CardTitle>
-                  <CardDescription className="text-xs text-slate-400 line-clamp-2">
+                  <CardDescription className="text-xs text-muted-foreground line-clamp-2">
                     {category?.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0 space-y-3">
-                  <div className="text-xs text-slate-500">
-                    Format: <span className="text-slate-300">{preset.output_format}</span>
+                  <div className="text-xs text-muted-foreground/80">
+                    Format: <span className="text-muted-foreground">{preset.output_format}</span>
                   </div>
                   
                   {preset.tags && preset.tags.length > 0 && (
@@ -162,7 +162,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
                         <Badge 
                           key={tag}
                           variant="outline" 
-                          className="text-xs text-slate-400 border-slate-600"
+                          className="text-xs text-muted-foreground border-border"
                         >
                           {tag}
                         </Badge>
@@ -170,7 +170,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
                       {preset.tags.length > 2 && (
                         <Badge 
                           variant="outline" 
-                          className="text-xs text-slate-400 border-slate-600"
+                          className="text-xs text-muted-foreground border-border"
                         >
                           +{preset.tags.length - 2}
                         </Badge>
@@ -193,7 +193,7 @@ const SagaPresetGrid = ({ onSelectPreset }: SagaPresetGridProps) => {
         
         {filteredPresets.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-slate-400">No presets found matching "{searchTerm}"</p>
+            <p className="text-muted-foreground">No presets found matching "{searchTerm}"</p>
           </div>
         )}
       </div>

@@ -15,7 +15,7 @@ const Intro = () => {
   const handleTap = useDoubleTap(enter);
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="min-h-screen bg-card flex items-center justify-center">
       <button
         onClick={handleTap}
         aria-label="Double-tap to enter L.E.G.I.T."
@@ -24,10 +24,10 @@ const Intro = () => {
         }`}
         style={{ touchAction: "manipulation" }}
       >
-        <h1 className="text-6xl md:text-8xl font-light text-black mb-4 tracking-wide">
+        <h1 className="text-6xl md:text-8xl font-light text-foreground mb-4 tracking-wide">
           L.E.G.I.T.
         </h1>
-        <p className="text-xl md:text-2xl font-light text-gray-700 tracking-wider">
+        <p className="text-xl md:text-2xl font-light text-muted-foreground tracking-wider">
           Legal Guidance for Integrity and Transparency
         </p>
       </button>

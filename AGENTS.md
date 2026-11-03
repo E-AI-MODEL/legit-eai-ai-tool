@@ -5,3 +5,4 @@
 - EAI rule modules live together in `src/lib/eai/` (engine, taskDensity, workflowPhases, certificate) and stay pure/deterministic so they can be unit-tested; rule tests are in `src/lib/eai/eai.test.ts` (`bun run test`).
 - Every copy action goes through `copyWithFeedback` in `src/lib/feedback.ts` (buzz + dim + bleep, styles in `index.css`) so feedback stays identical everywhere.
 - There is no mobile/desktop view switcher; layouts rely on normal responsive breakpoints only (the switcher overlay was removed on request).
+- Colors and fonts come only from semantic tokens in `src/index.css` / `tailwind.config.ts` (incl. `success`/`warning`); pages use no raw palette classes so one theme change restyles everything.
