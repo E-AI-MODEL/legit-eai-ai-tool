@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { improvePrompt, generatePrompt } from "./engine";
-import { estimateTaskDensity, densityLabel } from "./taskDensity";
+import { estimateTaskDensity, densityLabel, takeBackAdvice } from "./taskDensity";
 import { detectPhases } from "./workflowPhases";
 import { issueCertificate, checkConfidentiality } from "./certificate";
 
@@ -108,5 +108,13 @@ describe("task density audit: plain step lists", () => {
     const steps = classifyUnits("Research case law\nDecide which clauses to accept\nI check the sources");
     expect(steps.map((s) => s.performer)).toEqual(["ai", "ai", "human"]);
     expect(estimateTaskDensity("Research case law\nDecide which clauses to accept\nI check the sources").value).toBe(0.67);
+  });
+});
+
+describe("task density audit: take-back advice", () => {
+  it("asks the lawyer to take back deciding and advising before preparatory steps", () => {
+    const steps = classifyUnits("Review this NDA.\nIdentify the risky clauses.\nDecide which clauses to accept.\nDraft the advice letter to the client.");
+    const picked = takeBackAdvice(steps).map((i) => steps[i].text);
+    expect(picked).toEqual(["Decide which clauses to accept.", "Draft the advice letter to the client."]);
   });
 });

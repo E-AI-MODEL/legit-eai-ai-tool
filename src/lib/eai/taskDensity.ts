@@ -78,12 +78,15 @@ export function estimateTaskDensity(prompt: string): TaskDensity {
  * Fewest steps the lawyer should take back (heaviest AI work first) so the
  * task is no longer AI-heavy. Empty when the split is already acceptable.
  */
+// Steps where the AI would be judging rather than preparing; the lawyer should take these back first.
+const JUDGMENT = /\b(decide|decision|advise|advice|conclude|conclusion|recommend|assess|evaluate|determine|interpret|negotiate|approve|judge)\b/i;
+
 export function takeBackAdvice(steps: WorkStep[]): number[] {
   const working = steps.map((s) => ({ ...s }));
   const order = working
-    .map((s, i) => ({ i, w: s.performer === "ai" ? s.effort : s.performer === "shared" ? 0.5 * s.effort : 0 }))
+    .map((s, i) => ({ i, w: s.performer === "ai" ? s.effort : s.performer === "shared" ? 0.5 * s.effort : 0, j: JUDGMENT.test(s.text) ? 1 : 0 }))
     .filter((x) => x.w > 0)
-    .sort((a, b) => b.w - a.w);
+    .sort((a, b) => b.j - a.j || b.w - a.w);
   const picked: number[] = [];
   for (const { i } of order) {
     if (densityFromSteps(working).label !== "AI-heavy") break;
