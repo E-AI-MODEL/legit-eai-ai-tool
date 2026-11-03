@@ -221,6 +221,7 @@ Word-compatible tracked changes document with comprehensive comment explanations
 Show the reasoning step by step and check each conclusion against the source, so I can trace it.
 
 **My Part (Lawyer)**
+- I first confirm the key facts of the deal (parties, term, fees, liability caps) before any redline.
 - I choose the negotiation position per clause before any wording is drafted.
 - I approve each tracked change before it goes to the other side.
 
@@ -586,6 +587,7 @@ Word-compatible tracked changes with comprehensive comment explanations ready fo
 - Alternative interpretation of locked box versus completion accounts mechanics
 - Where both parties' positions on the W&I insurance gap are reasonable
 - Risks that weaken the hints if the buyer's leverage is limited
+- Legal basis for each hint (Dutch Civil Code provisions or market practice), so the analysis stays checkable
 Show the reasoning step by step and check each conclusion against the source, so I can trace it.
 
 **My Part (Lawyer)**
@@ -2012,6 +2014,7 @@ Internal and external messaging:
 - Alternative interpretation of legal professional privilege for in-house documents
 - Where both parties' interests allow cooperation without waiving rights
 - Risks that weaken the company's position, such as obstruction or seal breaches
+- Legal basis for each staff instruction (Awb inspection powers, Regulation 1/2003 art. 20-21)
 Show the reasoning step by step and check each conclusion against the source, so I can trace it.
 
 **My Part (Lawyer)**
