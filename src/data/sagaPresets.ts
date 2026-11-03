@@ -70,6 +70,18 @@ Pause and seek approval before proceeding if:
 **Outputs**
 Deliver analysis in themed bullet points suitable for email or memo format.
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the other party will raise against our preferred term and carve-outs
+- Alternative interpretation of the confidentiality scope and when a Dutch court might follow it (reasonableness and fairness, art. 6:248 BW)
+- Where both parties' positions are commercially reasonable and what would shift the balance
+- Risks that weaken my conclusion if the NDA turns out to be one-way in practice
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I first mark which extracted facts I accept before any deviation analysis starts.
+- I decide which deviations we accept, negotiate or reject.
+- I write the covering note to the client myself.
+
 **Sources & Action Log**
 - List all source documents with pinpoint citations
 - Document analysis steps and any tools used
@@ -131,6 +143,17 @@ Pause for approval if:
 **Outputs**
 Professional bullet-point analysis ready for client communication.
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the processor will raise on audit rights, sub-processor approval and liability caps
+- Alternative interpretation of the controller/processor roles (art. 4 and 28 GDPR) and its consequences
+- Where both parties can live with a compromise on breach notification timing
+- Risks that weaken my conclusion if the processor also acts as an independent controller
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I confirm the controller/processor qualification before the clause analysis.
+- I decide which processor positions are acceptable for this client.
+
 **Sources & Action Log**
 - GDPR articles and EDPB guidance consulted with specific references
 - Document analysis methodology and tools used
@@ -189,6 +212,18 @@ Pause and seek approval before finalizing positions on:
 
 **Outputs**
 Word-compatible tracked changes document with comprehensive comment explanations ready for negotiation.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the supplier will raise against each priority redline
+- Alternative interpretation of the liability and indemnity clauses under Dutch law
+- Where both parties' positions are reasonable and a fallback position exists
+- Risks that weaken our redlines if the supplier has stronger bargaining power
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I first confirm the key facts of the deal (parties, term, fees, liability caps) before any redline.
+- I choose the negotiation position per clause before any wording is drafted.
+- I approve each tracked change before it goes to the other side.
 
 **Sources & Action Log**
 - Firm Playbook: MSA-2025 sections referenced
@@ -249,6 +284,19 @@ Pause for approval if:
 
 **Outputs**
 Professional bullet-point analysis suitable for project stakeholder review.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the supplier will raise that a deliverable is out of scope
+- Alternative interpretation of acceptance criteria and milestone definitions
+- Where both parties carry part of the risk of unclear dependencies
+- Risks that weaken my reading if the MSA order of precedence points the other way
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I mark which deliverables are business-critical before the gap analysis.
+- I confirm the scope reading with the business owner myself.
+- I decide which gaps are raised with the supplier.
+- I set the priority order of the change requests.
 
 **Sources & Action Log**
 - SOW playbook standards referenced
@@ -317,6 +365,16 @@ Seek guidance on:
 - Discovery scope and expert witness retention
 - Motion filing strategy and timing
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the opposing party will raise on liability and causation
+- Alternative interpretation of the key evidence and how a court might weigh it
+- Where both parties face litigation risk that favours settlement
+- Risks that weaken my assessment of the chances of success
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide the litigation strategy and the advice to the client.
+
 **Sources & Action Log**
 - Legal authorities researched and cited
 - Factual investigation completed
@@ -377,6 +435,18 @@ Pause for approval if:
 
 **Outputs**
 Professional bullet-point analysis highlighting DORA compliance gaps and remediation priorities.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the ICT provider will raise against the DORA art. 30 clauses
+- Alternative interpretation of whether the service supports a critical or important function
+- Where both parties can agree on exit, audit and subcontracting terms
+- Risks that weaken my conclusion if the regulator applies a stricter reading
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I confirm whether the function is critical or important before the clause scan.
+- I decide which gaps are mandatory to close before signing.
+- I agree the remediation plan with the client's compliance officer myself.
 
 **Sources & Action Log**
 - DORA articles and technical standards referenced
@@ -439,6 +509,18 @@ Pause for approval on:
 **Outputs**
 Professional bullet-point analysis suitable for client deal team review.
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the seller will raise on warranties, indemnities and the asset list
+- Alternative interpretation of the transferred liabilities and employees (art. 7:662 BW transfer of undertaking)
+- Where both parties can meet on the escrow or price adjustment mechanism
+- Risks that weaken my conclusion if due diligence findings are incomplete
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I confirm the asset and liability list with the client before the analysis.
+- I decide which warranties are deal-breakers.
+- I set the negotiation priorities for the next draft.
+
 **Sources & Action Log**
 - M&A Playbook sections and precedent provisions referenced
 - Dutch law requirements and transfer procedures considered
@@ -499,6 +581,17 @@ Pause for approval before finalizing positions on:
 
 **Outputs**
 Word-compatible tracked changes with comprehensive comment explanations ready for counterparty exchange.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the seller will raise against each redline hint
+- Alternative interpretation of locked box versus completion accounts mechanics
+- Where both parties' positions on the W&I insurance gap are reasonable
+- Risks that weaken the hints if the buyer's leverage is limited
+- Legal basis for each hint (Dutch Civil Code provisions or market practice), so the analysis stays checkable
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I choose which redline hints go into the markup.
 
 **Sources & Action Log**
 - Firm M&A Clauses 2025 playbook provisions
@@ -576,6 +669,17 @@ Seek guidance on:
 
 **Outputs**
 Professional bullet-point brief suitable for mediation team preparation.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the other party will bring to the mediation
+- Alternative interpretation of the dispute and the facts the other side relies on
+- Where both parties have interests that allow a settlement zone
+- Risks that weaken our position if the mediation fails and the case goes to court
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I set the settlement mandate and walk-away point with the client myself.
+- I decide what is shared with the mediator.
 
 **Sources & Action Log**
 - Case files and evidence reviewed
@@ -674,6 +778,17 @@ Define investigation products:
 - Process improvements and control enhancements
 - Regulatory response strategy and submissions
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the person under investigation could raise about process or fairness
+- Alternative interpretation of the initial allegations and innocent explanations
+- Where both parties' interests (employer and employee) must be balanced, including privacy
+- Risks that weaken the plan, such as evidence contamination or breach of hearing rights
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I approve the scope and the list of interviewees before the plan is finalised.
+- I decide on any data collection that touches employee privacy.
+
 **Sources & Action Log**
 - Investigation planning resources and precedents consulted
 - Regulatory guidance and best practices reviewed
@@ -750,6 +865,17 @@ Seek immediate guidance on:
 
 **Outputs**
 Professional bullet-point assessment suitable for senior management and board briefing.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument that the report falls outside the Whistleblower Protection Act (Wbk) scope
+- Alternative interpretation of the reported facts and possible good-faith explanations
+- Where both parties' interests (reporter protection and accused's rights) conflict
+- Risks that weaken the first assessment, such as incomplete or anonymous information
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide whether the report is admitted and who is informed.
+- I confirm the confidentiality measures for the reporter myself.
 
 **Sources & Action Log**
 - EU Whistleblower Directive requirements and national implementing legislation
@@ -846,6 +972,18 @@ Provide structured deliverables:
 - Monitoring and review procedures documentation
 - Regulatory filing materials if consultation required
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument that the supplementary measures are not effective against third-country access
+- Alternative interpretation of the third-country law and practice (Schrems II, EDPB Recommendations 01/2020)
+- Where both parties (exporter and importer) share responsibility for the measures
+- Risks that weaken my conclusion if the importer's practice differs from the contract
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I confirm the transfer map and data categories before the assessment.
+- I decide whether the residual risk is acceptable.
+- I sign the TIA conclusion myself.
+
 **Sources & Action Log**
 - EDPB TIA guidelines and case-specific guidance
 - Third country legal analysis and government access laws
@@ -932,6 +1070,17 @@ Seek guidance on:
 **Outputs**
 Professional bullet-point analysis with prioritized recommendations suitable for privacy and IT teams.
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the client's marketing team will raise against stricter consent
+- Alternative interpretation of 'strictly necessary' cookies under art. 11.7a Telecommunicatiewet
+- Where both parties (business and regulator expectations) can meet on analytics cookies
+- Risks that weaken my conclusion if the actual site behaviour differs from the policy
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I verify the actual cookie scan against the policy myself.
+- I decide which changes are mandatory before the next release.
+
 **Sources & Action Log**
 - ePrivacy Directive and national implementing legislation
 - GDPR provisions and supervisory authority guidance
@@ -1004,6 +1153,17 @@ Seek guidance on:
 
 **Outputs**
 Professional bullet-point analysis highlighting compliance issues and recommended modifications.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the employee or their lawyer will raise on the settlement terms
+- Alternative interpretation of the transition payment and notice period calculation
+- Where both parties can compromise on non-compete and reference clauses
+- Risks that weaken the agreement, such as unemployment benefit (WW) eligibility issues
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I confirm the employment facts and dates with the client before the scan.
+- I decide which terms we accept or renegotiate.
 
 **Sources & Action Log**
 - Dutch employment law statutory requirements
@@ -1089,6 +1249,17 @@ Define deliverables and timeline:
 - Regular review and update schedule establishment
 - Success metrics and effectiveness measurement
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the works council will raise against the policy change (art. 27 WOR)
+- Alternative interpretation of whether the change requires employee consent
+- Where both parties (employer and employees) can agree on transition arrangements
+- Risks that weaken the policy if it conflicts with the applicable CAO
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I check the applicable CAO and existing policies myself.
+- I decide whether works council consent is sought before rollout.
+
 **Sources & Action Log**
 - Legal and regulatory developments driving changes
 - Industry best practices and peer organization approaches
@@ -1165,6 +1336,17 @@ Pause for approval on:
 **Outputs**
 Professional bullet-point analysis suitable for business and R&D team review.
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the licensor will raise on scope, exclusivity and sublicensing
+- Alternative interpretation of the licensed field of use and territory
+- Where both parties can agree on improvements and ownership of derivatives
+- Risks that weaken my conclusion if the licensor's title to the IP is unclear
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I confirm the business use of the licensed IP before the scan.
+- I decide which licence terms are acceptable.
+
 **Sources & Action Log**
 - IP Playbook 2025 standards and precedent provisions
 - Market licensing terms and industry benchmarks
@@ -1240,6 +1422,17 @@ Seek guidance on:
 
 **Outputs**
 Professional bullet-point clearance memo suitable for brand and marketing team review.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument an earlier rights holder could raise (likelihood of confusion)
+- Alternative interpretation of the similarity of goods and services in the relevant classes
+- Where both parties could coexist through a coexistence agreement
+- Risks that weaken the clearance opinion if unregistered rights exist
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide the clearance risk level communicated to the client.
+- I choose whether to file, modify the mark or seek coexistence.
 
 **Sources & Action Log**
 - EU and national trademark database searches conducted
@@ -1328,6 +1521,17 @@ Structure immediate obligations:
 **Outputs**
 Professional bullet-point assessment suitable for senior management and board briefing.
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument that the breach is notifiable to the AP within 72 hours (art. 33 GDPR)
+- Alternative interpretation of the risk to data subjects and whether art. 34 notification applies
+- Where both parties (client and processor) carry notification duties
+- Risks that weaken the initial assessment because facts are still developing
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide whether and when the breach is notified.
+- I approve the wording of the note before it reaches the client.
+
 **Sources & Action Log**
 - GDPR Articles 33-34 and supervisory authority guidance
 - Incident response procedures and forensic investigation findings
@@ -1404,6 +1608,17 @@ Seek guidance on:
 
 **Outputs**
 Professional bullet-point analysis supporting bid/no-bid decision and proposal development.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the contracting authority will raise against our clarification questions
+- Alternative interpretation of the award criteria and knock-out requirements (Aanbestedingswet 2012)
+- Where both parties benefit from adjusted liability or termination terms
+- Risks that weaken our bid if we deviate from the mandatory terms
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide which clarification questions are submitted.
+- I approve any deviation from the tender terms.
 
 **Sources & Action Log**
 - Standard contract terms and risk allocation preferences
@@ -1492,6 +1707,18 @@ Seek guidance on:
 **Outputs**
 Professional bullet-point assessment supporting vendor approval decision and ongoing risk management.
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the supplier will raise against our red-flag findings
+- Alternative interpretation of the supplier's compliance documents and certifications
+- Where both parties can address gaps through contractual safeguards
+- Risks that weaken my conclusion if the public sources are outdated
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I confirm the due diligence scope and risk appetite with the client first.
+- I decide which findings are escalated.
+- I approve the go/no-go recommendation.
+
 **Sources & Action Log**
 - Corporate registries and regulatory database searches
 - Sanctions screening tools and watchlist databases
@@ -1579,6 +1806,17 @@ Seek guidance on:
 **Outputs**
 Professional bullet-point analysis suitable for sustainability and business leadership review.
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the counterparty will raise against the ESG obligations and audit rights
+- Alternative interpretation of the clause against CSRD and CSDDD expectations
+- Where both parties can agree on proportionate, measurable commitments
+- Risks that weaken the clause, such as greenwashing exposure or unenforceable wording
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide which ESG commitments the client can realistically meet.
+- I approve the final clause wording.
+
 **Sources & Action Log**
 - ESG Policy 2025 and internal sustainability commitments
 - EU sustainability regulations and guidance documents
@@ -1655,6 +1893,17 @@ Seek guidance on:
 
 **Outputs**
 Professional bullet-point screening note supporting transaction approval decision and ongoing compliance.
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument that the counterparty is not owned or controlled by a listed person
+- Alternative interpretation of the ownership and control test under EU sanctions guidance
+- Where both parties' compliance positions differ (EU, UK, US regimes)
+- Risks that weaken the screening result if ownership data is incomplete
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide whether the transaction may proceed.
+- I approve any escalation to the compliance officer.
 
 **Sources & Action Log**
 - Sanctions database searches and screening tools used
@@ -1760,6 +2009,18 @@ Internal and external messaging:
 - Client and business partner notification protocols
 - Regulatory cooperation strategy and timeline communication
 
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the authority (ACM or European Commission) will raise about the scope of the inspection
+- Alternative interpretation of legal professional privilege for in-house documents
+- Where both parties' interests allow cooperation without waiving rights
+- Risks that weaken the company's position, such as obstruction or seal breaches
+- Legal basis for each staff instruction (Awb inspection powers, Regulation 1/2003 art. 20-21)
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide which documents are claimed as privileged.
+- I approve every instruction given to staff during the inspection.
+
 **Sources & Action Log**
 - EU competition law inspection procedures and authority powers
 - National implementing legislation and local court decisions
@@ -1831,6 +2092,16 @@ Competition counsel approval on response procedures and management briefing on p
 - **Value Creation Thesis:** Expected returns and strategic benefits
 - **Risk-Reward Assessment:** Balanced evaluation supporting decision
 - **Timing Criticality:** Market window and competitive considerations
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument against the transaction from a board or shareholder perspective
+- Alternative interpretation of the valuation and synergy assumptions
+- Where both parties' boards share interests and where they diverge
+- Risks that weaken the recommendation, such as merger control or integration risks
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide the recommendation presented to the board.
 
 **Sources & Action Log**
 - Due diligence findings and third-party advisor reports
@@ -1917,6 +2188,16 @@ Seek guidance on:
 - Budget limits and cost escalation approval procedures
 - Communication strategy for sensitive or high-profile matters
 - Risk tolerance levels and decision-making criteria
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument or misunderstanding the client is likely to raise
+- Alternative interpretation of the matter that the client may have heard elsewhere
+- Where both parties' positions in the matter should be explained neutrally
+- Risks that weaken an answer if facts change, flagged per question
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I approve every answer before the FAQ goes to the client.
 
 **Sources & Action Log**
 - Case-specific facts and legal analysis
@@ -2007,6 +2288,17 @@ Set expectations for ongoing updates:
 - Preferred communication method and frequency
 - Emergency contact information for urgent matters
 - Regular reporting schedule for ongoing matters
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument the other party is likely to raise next
+- Alternative interpretation of the latest development and what it means for the client
+- Where both parties' next steps could lead to a negotiated outcome
+- Risks that weaken the proposed next steps, with timing
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide the recommended next steps.
+- I send the email myself after review.
 
 **Sources & Action Log**
 - Recent case files and correspondence reviewed
@@ -2101,6 +2393,18 @@ Establish oversight procedures:
 - **Violation Reporting:** Procedures for reporting policy violations and non-compliance issues
 - **Performance Metrics:** Key indicators measuring AI policy effectiveness and compliance rates
 - **Continuous Improvement:** Regular policy review and update procedures based on experience and regulatory developments
+
+**Counterarguments (Other Party's View)**
+- Strongest counterargument from lawyers who see the policy as too restrictive for daily work
+- Alternative interpretation of the EU AI Act duties (AI literacy, art. 4) for a law firm as deployer
+- Where both parties (innovation and risk management) can agree on permitted use cases
+- Risks that weaken the policy, such as shadow use of consumer tools
+Show the reasoning step by step and check each conclusion against the source, so I can trace it.
+
+**My Part (Lawyer)**
+- I decide which tools are on the approved list.
+- I set the rules on client disclosure myself.
+- I approve the final policy text with the managing partner.
 
 **Sources & Action Log**
 - AI Policy Baseline 2025 requirements and industry standards

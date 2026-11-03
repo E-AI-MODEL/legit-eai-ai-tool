@@ -207,6 +207,34 @@ export function generatePrompt(topic: string): string {
   return improvePrompt(t, RUBRICS.map((r) => ({ ...r, status: "warning" as EaiStatus })));
 }
 
+export interface PromptSpec {
+  task: string;
+  area?: string;
+  jurisdiction?: string;
+  format?: string;
+  /** What the lawyer keeps for themselves, e.g. "which clauses we accept". */
+  lawyerDecides?: string;
+}
+
+/** Generator: task + a few choices → a full professional prompt with every EAI section. */
+export function buildPrompt(spec: PromptSpec): string {
+  const lines = [spec.task.trim()];
+  const ctx = [
+    spec.area && `- Area of law: ${spec.area}`,
+    spec.jurisdiction && `- Jurisdiction: ${spec.jurisdiction}`,
+  ].filter(Boolean);
+  if (ctx.length) lines.push("", "Context", ...(ctx as string[]));
+  if (spec.format) lines.push("", "Required Output", `- Deliver the result as a ${spec.format.toLowerCase()} with headed sections.`);
+  const decides = spec.lawyerDecides?.trim().replace(/[.\s]+$/, "");
+  if (decides) lines.push("", "Lawyer Decision", `- I decide: ${decides}. Stop before this point and wait for my approval.`);
+  const task = lines.join("\n");
+  const results = RUBRICS.map((r) => ({
+    ...r,
+    status: (r.rubric === "Output Specification & Structure" && spec.format ? "pass" : "warning") as EaiStatus,
+  }));
+  return improvePrompt(task, results);
+}
+
 export function scoreResults(results: EaiResult[]): number {
   if (!results.length) return 0;
   const w = { pass: 100, warning: 55, fail: 15 } as const;

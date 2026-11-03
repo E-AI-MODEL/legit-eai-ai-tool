@@ -6,7 +6,7 @@ import { Scale, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SagaPresetGrid from "@/components/SagaPresetGrid";
-import SagaPromptChecker from "@/components/SagaPromptChecker";
+import PromptWorkbench from "@/components/eai/PromptWorkbench";
 import { LegalPreset } from "@/data/sagaPresets";
 import ClipboardNotification from "@/components/ClipboardNotification";
 
@@ -184,7 +184,7 @@ const Saga = () => {
               </p>
             </div>
             
-            <SagaPromptChecker prompt={prompt} onPromptChange={handlePromptChange} />
+            <PromptWorkbench prompt={prompt} onPromptChange={handlePromptChange} />
           </TabsContent>
         </Tabs>
       </section>
