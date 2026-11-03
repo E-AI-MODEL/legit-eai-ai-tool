@@ -593,7 +593,7 @@ Begin with a brief professional greeting and a one-line plan, then proceed with 
                       <Card 
                         key={index} 
                         className={`cursor-pointer transition-all hover:shadow-md border-2 ${
-                          selectedScenario === index ? 'border-primary bg-primary/5' : 'border-border hover:border-gray-300'
+                          selectedScenario === index ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/40'
                         }`}
                         onClick={() => handleScenarioSelect(selectedPhase, index)}
                       >

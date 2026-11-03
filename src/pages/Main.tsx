@@ -17,7 +17,6 @@ const Main = () => {
       icon: Brain,
       path: "/task-density",
       category: "EAI Analysis",
-      color: "from-blue-500 to-indigo-600"
     },
     {
       title: "Prompt Checker",
@@ -25,7 +24,6 @@ const Main = () => {
       icon: FileCheck,
       path: "/prompt-checker",
       category: "EAI Compliance",
-      color: "from-green-500 to-emerald-600"
     },
     {
       title: "Prompt Generator",
@@ -33,7 +31,6 @@ const Main = () => {
       icon: Wand2,
       path: "/prompt-generator",
       category: "EAI Tools",
-      color: "from-purple-500 to-violet-600"
     }
   ];
 
@@ -129,7 +126,7 @@ const Main = () => {
                       {tool.category}
                     </span>
                   </div>
-                  <CardTitle className="text-lg text-foreground group-hover:text-[#0B3C5D] transition-colors">
+                  <CardTitle className="text-lg text-foreground group-hover:text-primary transition-colors">
                     {tool.title}
                   </CardTitle>
                 </CardHeader>
@@ -137,7 +134,7 @@ const Main = () => {
                   <CardDescription className="text-muted-foreground mb-4 line-clamp-3">
                     {tool.description}
                   </CardDescription>
-                  <Button asChild className="w-full group-hover:bg-[#0B3C5D] transition-colors">
+                  <Button asChild className="w-full group-hover:bg-primary/90 transition-colors">
                     <Link to={tool.path} className="flex items-center justify-center gap-2">
                       Launch Tool
                       <ArrowRight className="w-4 h-4" />
