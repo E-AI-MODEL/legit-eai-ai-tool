@@ -120,7 +120,7 @@ const Main = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className={`w-12 h-12 rounded-lg bg-primary flex items-center justify-center`}>
-                      <IconComponent className="w-6 h-6 text-foreground" />
+                      <IconComponent className="w-6 h-6 text-primary-foreground" />
                     </div>
                     <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
                       {tool.category}
