@@ -21,7 +21,7 @@ const HUMAN_SUBJECT = /^(?:[-•*\d.)\s]*)(?:i|we|lawyer|the lawyer|user|the use
 const HUMAN_MENTION = /\b(i|me|we|lawyer|user|human|reviewer|partner)\b/;
 // "AI" as a topic ("AI literacy training") is not an instruction; only "you" or the AI as acting subject counts.
 const AI_MENTION = /\b(you|your)\b|\b(ai|assistant|model)\s+(will|should|must|can|may|to|drafts?|writes?|decides?|reviews?|analy[sz]es?|generates?|suggests?|proposes?|prepares?|checks?)\b/;
-const AI_VERB = /^(?:[-•*\d.)\s]*)(write|draft|analy[sz]e|summari[sz]e|list|extract|identify|review|give|create|generate|compare|provide|explain|check|cite|mark|reason|state|present|build|prepare|assess|flag|translate|rewrite|structure|propose|suggest|find|search|outline|calculate|determine|evaluate)\b/;
+const AI_VERB = /^(?:[-•*\d.)\s]*)(write|draft|analy[sz]e|summari[sz]e|list|extract|identify|review|give|create|generate|compare|provide|explain|check|cite|mark|reason|state|present|build|prepare|assess|flag|translate|rewrite|structure|propose|suggest|find|search|outline|calculate|determine|evaluate|research|decide|advise|interpret|negotiate|recommend|conclude)\b/;
 
 export function densityLabel(value: number): DensityLabel {
   if (value < TD_THRESHOLDS.humanLed) return "Human-led";
@@ -78,12 +78,15 @@ export function estimateTaskDensity(prompt: string): TaskDensity {
  * Fewest steps the lawyer should take back (heaviest AI work first) so the
  * task is no longer AI-heavy. Empty when the split is already acceptable.
  */
+// Steps where the AI would be judging rather than preparing; the lawyer should take these back first.
+const JUDGMENT = /\b(decide|decision|advise|advice|conclude|conclusion|recommend|assess|evaluate|determine|interpret|negotiate|approve|judge)\b/i;
+
 export function takeBackAdvice(steps: WorkStep[]): number[] {
   const working = steps.map((s) => ({ ...s }));
   const order = working
-    .map((s, i) => ({ i, w: s.performer === "ai" ? s.effort : s.performer === "shared" ? 0.5 * s.effort : 0 }))
+    .map((s, i) => ({ i, w: s.performer === "ai" ? s.effort : s.performer === "shared" ? 0.5 * s.effort : 0, j: JUDGMENT.test(s.text) ? 1 : 0 }))
     .filter((x) => x.w > 0)
-    .sort((a, b) => b.w - a.w);
+    .sort((a, b) => b.j - a.j || b.w - a.w);
   const picked: number[] = [];
   for (const { i } of order) {
     if (densityFromSteps(working).label !== "AI-heavy") break;

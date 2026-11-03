@@ -102,3 +102,19 @@ describe("task density audit", () => {
     expect(takeBackAdvice([{ text: "x", performer: "human", effort: 1 }])).toEqual([]);
   });
 });
+
+describe("task density audit: plain step lists", () => {
+  it("counts research and decide steps as AI work and 'I ...' steps as the lawyer's", () => {
+    const steps = classifyUnits("Research case law\nDecide which clauses to accept\nI check the sources");
+    expect(steps.map((s) => s.performer)).toEqual(["ai", "ai", "human"]);
+    expect(estimateTaskDensity("Research case law\nDecide which clauses to accept\nI check the sources").value).toBe(0.67);
+  });
+});
+
+describe("task density audit: take-back advice", () => {
+  it("asks the lawyer to take back deciding and advising before preparatory steps", () => {
+    const steps = classifyUnits("Review this NDA.\nIdentify the risky clauses.\nDecide which clauses to accept.\nDraft the advice letter to the client.");
+    const picked = takeBackAdvice(steps).map((i) => steps[i].text);
+    expect(picked).toEqual(["Decide which clauses to accept.", "Draft the advice letter to the client."]);
+  });
+});
