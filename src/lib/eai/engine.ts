@@ -100,6 +100,22 @@ const AI_DOMINANCE = ["ai will", "ai should", "ai must", "do everything", "write
 
 const has = (text: string, words: string[]) => words.some((w) => text.includes(w));
 
+// A control word only counts when a human is the one deciding, not the AI.
+// "Review this NDA" or "decide which clauses to accept" hand the decision to the AI.
+const NOT_AI = "(?:(?!\\byou\\b|\\bai\\b)[^.\\n]){0,40}";
+const HUMAN_CONTROL: RegExp[] = [
+  new RegExp(`\\b(lawyer|attorney|counsel|advocate|partner|human|user|client|i|we)\\b${NOT_AI}\\b(decides?|approves?|signs? off|reviews?|confirms?|amends?|validates?|verif(?:y|ies))\\b`),
+  /\b(my|our|lawyer's|human|lawyer)\s+(explicit\s+|final\s+)?(approval|review|sign-off|decision|confirmation)\b/,
+  /\bai\s+(does not|doesn't|must not|may not|should not|will not|never)\s+(decide|approve|make)/,
+  /\bfor\s+(my|our|the lawyer's|lawyer)\s+(review|approval)\b/,
+];
+
+/** True only when the prompt explicitly keeps the decision with a human. */
+export function humanKeepsDecision(prompt: string): boolean {
+  const t = prompt.toLowerCase();
+  return HUMAN_CONTROL.some((re) => re.test(t));
+}
+
 /** Deterministic rubric check of a prompt. */
 export function analyzePrompt(prompt: string): EaiResult[] {
   const t = prompt.toLowerCase();
@@ -109,6 +125,8 @@ export function analyzePrompt(prompt: string): EaiResult[] {
     let status: EaiStatus;
     switch (r.rubric) {
       case "Agency & Didactic Controllability":
+        status = humanKeepsDecision(prompt) ? "pass" : "fail";
+        break;
       case "Compliance, Audit & Logging":
         status = hit ? "pass" : "fail";
         break;

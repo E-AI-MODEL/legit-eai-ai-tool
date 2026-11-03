@@ -67,4 +67,14 @@ describe("lawyer checkpoints", () => {
   it("an improved prompt closes every checkpoint", () => {
     expect(humanCheckpoints(improvePrompt("Review this NDA.")).every((c) => c.ok)).toBe(true);
   });
+  it("letting the AI decide does not count as 'lawyer decides'", () => {
+    expect(byId("Write the full NDA review and decide which clauses to accept.").lawyerDecides).toBe(false);
+    expect(byId("Review this NDA.").lawyerDecides).toBe(false);
+    expect(byId("We need you to decide on the termination clause.").lawyerDecides).toBe(false);
+  });
+  it("an explicit human decision closes 'lawyer decides'", () => {
+    expect(byId("Suggest options; the lawyer decides which clauses to accept.").lawyerDecides).toBe(true);
+    expect(byId("List risks and wait for my approval.").lawyerDecides).toBe(true);
+    expect(byId("The AI does not decide anything.").lawyerDecides).toBe(true);
+  });
 });
