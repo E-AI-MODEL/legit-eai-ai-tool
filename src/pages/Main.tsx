@@ -57,7 +57,7 @@ const Main = () => {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
                 <BookOpen className="w-4 h-4" />
                 <span>EAI & Legal Tools</span>
               </div>
