@@ -8,3 +8,4 @@
 - Colors and fonts come only from semantic tokens in `src/index.css` / `tailwind.config.ts` (incl. `success`/`warning`); pages use no raw palette classes so one theme change restyles everything.
 - The hidden section (internal code name SAGA, never shown in UI) and the Prompt Checker share `components/eai/PromptWorkbench`; every tool shows `components/eai/EaiCockpit`, and the Task Density Audit uses `densityFromSteps` from `taskDensity.ts`, so all tools report the same numbers.
 - Hidden-section presets and Generator output must stay Certified (no reasons) and below 70% AI work; `src/lib/eai/presets.test.ts` enforces this for every preset and scenario.
+- Every tool page uses `components/eai/ToolShell` (wordmark, back link, small-caps label, serif headline) so all tools share one editorial frame.

@@ -59,7 +59,7 @@ const EaiCockpit = ({ prompt, before }: EaiCockpitProps) => {
                 return (
                   <li key={p.id} className="flex items-center gap-4 py-2.5 border-b border-border text-sm">
                     <span className="font-mono text-xs text-muted-foreground w-6">{String(i + 1).padStart(2, "0")}</span>
-                    <span className={`flex-1 ${done ? "text-foreground" : "text-muted-foreground"}`}>{p.name}</span>
+                    <span className={`flex-1 ${done ? "text-foreground" : "text-muted-foreground"}`}>{p.name.replace(/^\d+\.\s*/, "")}</span>
                     <span className={`text-[10px] tracking-[0.15em] uppercase ${done ? "text-success" : isNext ? "text-warning" : "text-muted-foreground/70"}`}>
                       {done ? "Covered" : isNext ? "Next" : "Open"}
                     </span>
