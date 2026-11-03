@@ -1,11 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, Gauge, Circle } from "lucide-react";
 import { useMemo } from "react";
 import { assessPrompt } from "@/lib/eai/certificate";
 import { type TaskDensity } from "@/lib/eai/taskDensity";
 import { PHASES } from "@/lib/eai/workflowPhases";
 import { humanCheckpoints } from "@/lib/eai/checkpoints";
+import { overline } from "@/components/eai/ToolShell";
 
 interface EaiCockpitProps {
   prompt: string;
@@ -25,88 +23,74 @@ const EaiCockpit = ({ prompt, before }: EaiCockpitProps) => {
   const nextPhase = live?.phases.next;
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center justify-between gap-2">
-          <span className="flex items-center gap-2">
-            <Gauge className="w-5 h-5" />
-            EAI Cockpit
-          </span>
-          {live && (
-            <Badge variant="outline" className="text-xs font-sans">
-              Score {live.score}/100
-            </Badge>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        {!live ? (
-          <p className="text-sm text-muted-foreground">
-            Start typing to see who does the thinking, which phase is next, and which lawyer checkpoints are still open.
-          </p>
-        ) : (
-          <>
-            <div>
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span>Work done by AI</span>
-                <span>
-                  {before && before.actionable > 0 && (
-                    <span className="text-muted-foreground/70">{Math.round(before.value * 100)}% → </span>
-                  )}
-                  {live.density.actionable ? `${densityPct}% · ${live.density.label}` : "no instructions yet"}
-                </span>
-              </div>
-              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                <div className={`h-full transition-all ${densityBarClass(live.density.label)}`} style={{ width: `${densityPct}%` }} />
-              </div>
-            </div>
+    <section className="border-t border-border pt-6 space-y-8">
+      <div className="flex items-baseline justify-between gap-4">
+        <p className={overline}>EAI Cockpit</p>
+        {live && <span className="font-mono text-xs text-muted-foreground">Score {live.score}/100</span>}
+      </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Process phases</span>
-                <span>{live.phases.covered.length}/{PHASES.length}</span>
-              </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {PHASES.map((p) => {
-                  const done = live.phases.covered.includes(p.id);
-                  const isNext = nextPhase?.id === p.id;
-                  return (
-                    <span
-                      key={p.id}
-                      className={`text-[11px] px-2 py-1 rounded border ${done ? "border-success/40 text-success" : isNext ? "border-warning/50 text-warning" : "border-border text-muted-foreground/80"}`}
-                    >
-                      {p.name}
-                    </span>
-                  );
-                })}
-              </div>
-              {nextPhase && <p className="text-xs text-muted-foreground">Next: {nextPhase.instruction}</p>}
+      {!live ? (
+        <p className="text-sm text-muted-foreground">Start typing. The cockpit shows who does the thinking, the next phase and the open checkpoints.</p>
+      ) : (
+        <>
+          <div>
+            <p className={overline}>Work done by AI</p>
+            <div className="flex items-baseline gap-3 mt-2">
+              {before && before.actionable > 0 && (
+                <span className="font-serif text-2xl text-muted-foreground">{Math.round(before.value * 100)}% →</span>
+              )}
+              <span className="font-serif text-4xl text-foreground">{live.density.actionable ? `${densityPct}%` : "—"}</span>
+              <span className="text-sm text-muted-foreground">{live.density.actionable ? live.density.label : "No instructions yet"}</span>
             </div>
+            <div className="h-1 bg-muted mt-3 overflow-hidden">
+              <div className={`h-full transition-all ${densityBarClass(live.density.label)}`} style={{ width: `${densityPct}%` }} />
+            </div>
+          </div>
 
-            <div className="space-y-1.5">
-              <span className="text-xs text-muted-foreground">Lawyer checkpoints</span>
-              <ul className="space-y-1">
-                {checkpoints.map((c) => (
-                  <li key={c.id} className="flex items-start gap-2 text-xs">
-                    {c.ok ? (
-                      <CheckCircle className="w-3.5 h-3.5 text-success mt-0.5 shrink-0" />
-                    ) : c.id === "privacy" ? (
-                      <XCircle className="w-3.5 h-3.5 text-destructive mt-0.5 shrink-0" />
-                    ) : (
-                      <Circle className="w-3.5 h-3.5 text-muted-foreground/80 mt-0.5 shrink-0" />
-                    )}
-                    <span className={c.ok ? "text-foreground" : "text-muted-foreground"}>
-                      {c.label}
-                      {!c.ok && <span className="block text-muted-foreground/80">{c.hint}</span>}
+          <div>
+            <div className="flex items-baseline justify-between mb-2">
+              <p className={overline}>Phases</p>
+              <span className="font-mono text-xs text-muted-foreground">{live.phases.covered.length}/{PHASES.length}</span>
+            </div>
+            <ol className="border-t border-border">
+              {PHASES.map((p, i) => {
+                const done = live.phases.covered.includes(p.id);
+                const isNext = nextPhase?.id === p.id;
+                return (
+                  <li key={p.id} className="flex items-center gap-4 py-2.5 border-b border-border text-sm">
+                    <span className="font-mono text-xs text-muted-foreground w-6">{String(i + 1).padStart(2, "0")}</span>
+                    <span className={`flex-1 ${done ? "text-foreground" : "text-muted-foreground"}`}>{p.name}</span>
+                    <span className={`text-[10px] tracking-[0.15em] uppercase ${done ? "text-success" : isNext ? "text-warning" : "text-muted-foreground/70"}`}>
+                      {done ? "Covered" : isNext ? "Next" : "Open"}
                     </span>
                   </li>
-                ))}
-              </ul>
-            </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
+                );
+              })}
+            </ol>
+            {nextPhase && <p className="text-sm text-muted-foreground mt-3">{nextPhase.instruction}</p>}
+          </div>
+
+          <div>
+            <p className={`${overline} mb-2`}>Lawyer checkpoints</p>
+            <ul className="border-t border-border">
+              {checkpoints.map((c) => (
+                <li key={c.id} className="py-2.5 border-b border-border">
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <span className={c.ok ? "text-foreground" : "text-muted-foreground"}>{c.label}</span>
+                    <span
+                      className={`text-[10px] tracking-[0.15em] uppercase ${c.ok ? "text-success" : c.id === "privacy" ? "text-destructive" : "text-muted-foreground/70"}`}
+                    >
+                      {c.ok ? "Closed" : "Open"}
+                    </span>
+                  </div>
+                  {!c.ok && <p className="text-xs text-muted-foreground mt-1">{c.hint}</p>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
+    </section>
   );
 };
 
