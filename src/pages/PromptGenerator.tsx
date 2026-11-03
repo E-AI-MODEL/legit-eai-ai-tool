@@ -156,7 +156,7 @@ const PromptGenerator = () => {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center justify-between gap-2">
                     <span className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary" /> Professional prompt</span>
-                    <Badge variant="outline" className={`text-xs font-sans ${certificate.verdict === "Certified" ? "text-success border-success/50" : "text-warning border-warning/50"}`}>
+                    <Badge variant="outline" className={`text-xs font-sans whitespace-nowrap ${certificate.verdict === "Certified" ? "text-success border-success/50" : "text-warning border-warning/50"}`}>
                       {certificate.verdict} · {certificate.assessment.score}/100
                     </Badge>
                   </CardTitle>
