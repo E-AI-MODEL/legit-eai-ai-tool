@@ -78,3 +78,27 @@ describe("lawyer checkpoints", () => {
     expect(byId("The AI does not decide anything.").lawyerDecides).toBe(true);
   });
 });
+
+import { densityFromSteps, takeBackAdvice, classifyUnits } from "./taskDensity";
+
+describe("task density audit", () => {
+  it("weights steps by effort: AI 3 + human 1 = 75% AI", () => {
+    expect(densityFromSteps([{ text: "a", performer: "ai", effort: 3 }, { text: "b", performer: "human", effort: 1 }]).value).toBe(0.75);
+  });
+  it("a shared step counts half", () => {
+    expect(densityFromSteps([{ text: "a", performer: "shared", effort: 1 }, { text: "b", performer: "human", effort: 1 }]).value).toBe(0.25);
+  });
+  it("audit and SAGA bar give the same number for the same prompt", () => {
+    const p = "Write the full NDA review and decide which clauses to accept.\nI will check the sources.";
+    expect(densityFromSteps(classifyUnits(p)).value).toBe(estimateTaskDensity(p).value);
+  });
+  it("advises taking back the heaviest AI step first, only until no longer AI-heavy", () => {
+    const steps = [
+      { text: "research", performer: "ai" as const, effort: 1 },
+      { text: "draft advice", performer: "ai" as const, effort: 3 },
+      { text: "check", performer: "human" as const, effort: 1 },
+    ];
+    expect(takeBackAdvice(steps)).toEqual([1]);
+    expect(takeBackAdvice([{ text: "x", performer: "human", effort: 1 }])).toEqual([]);
+  });
+});
