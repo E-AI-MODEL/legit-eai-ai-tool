@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { improvePrompt, generatePrompt } from "./engine";
-import { estimateTaskDensity, densityLabel, classifyUnits } from "./taskDensity";
+import { estimateTaskDensity, densityLabel } from "./taskDensity";
 import { detectPhases } from "./workflowPhases";
 import { issueCertificate, checkConfidentiality } from "./certificate";
 
